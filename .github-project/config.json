@@ -1,0 +1,183 @@
+{
+  "owner": "YOUR_GITHUB_USERNAME",
+  "repo": "scriptguard",
+  "project": {
+    "title": "ScriptGuard MVP v1.0",
+    "description": "MVP implementation tracking for ScriptGuard v1.0 GA release. 18-week timeline, 55 tickets, 9 epics, 4 milestones (Foundation / Alpha / Beta / GA).",
+    "readme": "# ScriptGuard MVP Board\n\n## 📊 At a Glance\n- **Timeline**: 18 weeks (Sprint 1-9, 2 weeks each)\n- **Tickets**: 55 (P0: 22, P1: 28, P2: 5)\n- **Team**: 2.5 engineers + 0.3 designer\n- **Target**: v1.0 GA release\n\n## 🎯 Milestones\n- 🟣 **Foundation** (Sprint 1, T+0-2w) - 9 tickets\n- 🟢 **Alpha** (Sprint 2-3, T+2-6w) - 18 tickets\n- 🟢 **Beta** (Sprint 4-7, T+6-14w) - 19 tickets\n- 🟢 **GA** (Sprint 8-9, T+14-18w) - 9 tickets\n\n## 📦 Epics\n- E1 基础设施 (Foundation) - 10 tickets\n- E2 插件核心 (Alpha) - 8 tickets\n- E3 规则引擎 (Alpha) - 1 ticket\n- E4 插件 UI (Alpha) - 8 tickets\n- E5 云端服务 (Beta) - 7 tickets\n- E6 云端测试 (Beta) - 5 tickets\n- E7 通知集成 (Beta) - 4 tickets\n- E8 Beta 完善 (Beta) - 3 tickets\n- E9 GA 收尾 (GA) - 9 tickets\n\n## 🚦 Status Flow\n`Todo` → `In Progress` → `In Review` → `Done`\n                ↓\n            `Blocked`\n\n## 📚 相关文档\n- [PRD](../PRD.md)\n- [TDD](../TDD.md)\n- [Wireframes](../Wireframes.md)\n- [Tickets](../tickets/INDEX.md)"
+  },
+  "fields": [
+    {
+      "name": "Status",
+      "type": "single_select",
+      "description": "工作流状态",
+      "options": [
+        { "name": "Todo", "color": "GRAY", "description": "已规划，未开始" },
+        { "name": "In Progress", "color": "YELLOW", "description": "正在处理" },
+        { "name": "In Review", "color": "PURPLE", "description": "PR 审核中" },
+        { "name": "Done", "color": "GREEN", "description": "已完成" },
+        { "name": "Blocked", "color": "RED", "description": "阻塞" }
+      ]
+    },
+    {
+      "name": "Priority",
+      "type": "single_select",
+      "description": "优先级",
+      "options": [
+        { "name": "P0", "color": "RED", "description": "必须 - MVP 必做" },
+        { "name": "P1", "color": "ORANGE", "description": "强烈建议 - 重要功能" },
+        { "name": "P2", "color": "YELLOW", "description": "可选 - GA 前完成即可" }
+      ]
+    },
+    {
+      "name": "Epic",
+      "type": "single_select",
+      "description": "所属 Epic",
+      "options": [
+        { "name": "E1 - 基础设施", "color": "BLUE", "description": "Sprint 1 - Monorepo + CI + 设计系统" },
+        { "name": "E2 - 插件核心", "color": "BLUE", "description": "Sprint 2 - Background + Content Script" },
+        { "name": "E3 - 规则引擎", "color": "BLUE", "description": "Sprint 3 - 健康检查执行器" },
+        { "name": "E4 - 插件 UI", "color": "BLUE", "description": "Sprint 3 - Popup / Options / 浮层" },
+        { "name": "E5 - 云端服务", "color": "PURPLE", "description": "Sprint 4 - API / DB / 认证" },
+        { "name": "E6 - 云端测试", "color": "PURPLE", "description": "Sprint 5 - Playwright Runner" },
+        { "name": "E7 - 通知集成", "color": "PURPLE", "description": "Sprint 6 - Webhook / 邮件 / GH Actions" },
+        { "name": "E8 - Beta 完善", "color": "PURPLE", "description": "Sprint 7 - 仪表盘 / 设置" },
+        { "name": "E9 - GA 收尾", "color": "GREEN", "description": "Sprint 8-9 - 上架 / 部署 / 文档" }
+      ]
+    },
+    {
+      "name": "Sprint",
+      "type": "single_select",
+      "description": "目标 Sprint",
+      "options": [
+        { "name": "Sprint 1 (T+0-2w)", "color": "GRAY" },
+        { "name": "Sprint 2 (T+2-4w)", "color": "GRAY" },
+        { "name": "Sprint 3 (T+4-6w)", "color": "GRAY" },
+        { "name": "Sprint 4 (T+6-8w)", "color": "BLUE" },
+        { "name": "Sprint 5 (T+8-10w)", "color": "BLUE" },
+        { "name": "Sprint 6 (T+10-12w)", "color": "BLUE" },
+        { "name": "Sprint 7 (T+12-14w)", "color": "BLUE" },
+        { "name": "Sprint 8 (T+14-16w)", "color": "GREEN" },
+        { "name": "Sprint 9 (T+16-18w)", "color": "GREEN" }
+      ]
+    },
+    {
+      "name": "Type",
+      "type": "single_select",
+      "description": "任务类型",
+      "options": [
+        { "name": "Feature", "color": "BLUE", "description": "新功能" },
+        { "name": "Bug", "color": "RED", "description": "缺陷" },
+        { "name": "Chore", "color": "GRAY", "description": "杂项/重构" },
+        { "name": "Docs", "color": "TEAL", "description": "文档" },
+        { "name": "Test", "color": "PINK", "description": "测试" },
+        { "name": "Spike", "color": "PURPLE", "description": "调研" }
+      ]
+    },
+    {
+      "name": "Owner Role",
+      "type": "single_select",
+      "description": "负责角色",
+      "options": [
+        { "name": "FE", "color": "BLUE", "description": "Frontend Engineer" },
+        { "name": "BE", "color": "PURPLE", "description": "Backend Engineer" },
+        { "name": "FS", "color": "INDIGO", "description": "Full-stack" },
+        { "name": "DevOps", "color": "GREEN", "description": "DevOps / SRE" },
+        { "name": "Designer", "color": "PINK", "description": "UI/UX Designer" },
+        { "name": "QA", "color": "YELLOW", "description": "QA Engineer" },
+        { "name": "Tech Lead", "color": "RED", "description": "Tech Lead" }
+      ]
+    },
+    {
+      "name": "Estimate",
+      "type": "number",
+      "description": "Story Point 估算"
+    },
+    {
+      "name": "Start Date",
+      "type": "date",
+      "description": "实际开始日期"
+    },
+    {
+      "name": "Target Date",
+      "type": "date",
+      "description": "目标完成日期"
+    }
+  ],
+  "views": [
+    {
+      "name": "📋 Board (by Status)",
+      "description": "默认看板视图，按状态分组",
+      "layout": "BOARD_LAYOUT",
+      "group_by": "Status"
+    },
+    {
+      "name": "🎯 By Priority",
+      "description": "按优先级查看",
+      "layout": "BOARD_LAYOUT",
+      "group_by": "Priority"
+    },
+    {
+      "name": "🚀 By Sprint",
+      "description": "按 Sprint 进度查看",
+      "layout": "BOARD_LAYOUT",
+      "group_by": "Sprint"
+    },
+    {
+      "name": "📦 By Epic",
+      "description": "按 Epic 分组",
+      "layout": "BOARD_LAYOUT",
+      "group_by": "Epic"
+    },
+    {
+      "name": "👤 By Owner",
+      "description": "按负责角色分组（用于分配工作）",
+      "layout": "BOARD_LAYOUT",
+      "group_by": "Owner Role"
+    },
+    {
+      "name": "📊 Backlog Table",
+      "description": "完整表格视图，支持排序与筛选",
+      "layout": "TABLE_LAYOUT"
+    }
+  ],
+  "automations": [
+    {
+      "name": "新 issue → Todo",
+      "trigger": "issues.opened",
+      "action": "set_field",
+      "field": "Status",
+      "value": "Todo"
+    },
+    {
+      "name": "PR 打开 → In Review",
+      "trigger": "pull_request.opened",
+      "action": "set_field",
+      "field": "Status",
+      "value": "In Review"
+    },
+    {
+      "name": "Issue 关闭 → Done",
+      "trigger": "issues.closed",
+      "action": "set_field",
+      "field": "Status",
+      "value": "Done"
+    },
+    {
+      "name": "PR 合并 → Done",
+      "trigger": "pull_request.merged",
+      "action": "set_field",
+      "field": "Status",
+      "value": "Done"
+    },
+    {
+      "name": "Label prio:P0 → Priority P0",
+      "trigger": "issues.labeled",
+      "label": "prio:P0",
+      "action": "set_field",
+      "field": "Priority",
+      "value": "P0"
+    }
+  ],
+  "issue_tickets_dir": "../tickets"
+}
