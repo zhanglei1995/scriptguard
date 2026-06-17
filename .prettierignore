@@ -1,0 +1,13 @@
+node_modules
+dist
+build
+.next
+.turbo
+coverage
+*.lock
+*.log
+.DS_Store
+.turbo
+.plasmo
+apps/extension/build
+apps/extension/.plasmo

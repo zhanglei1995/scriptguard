@@ -1,0 +1,8 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  # 排除非工作区目录
+  - '!**/.github-project'
+  - '!**/tickets'
+  - '!**/scripts'
+  - '!**/docs'
