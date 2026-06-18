@@ -12,6 +12,7 @@ const config: Config = {
     './components/**/*.{ts,tsx}',
     './lib/**/*.{ts,tsx}',
     './ui/**/*.{ts,tsx}',
+    './*.tsx',
   ],
   darkMode: 'class',
   theme: {

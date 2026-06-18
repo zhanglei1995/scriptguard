@@ -16,6 +16,9 @@
       "~/*": [
         "./*"
       ],
+      "@/*": [
+        "./*"
+      ],
       "@scriptguard/shared": [
         "../../packages/shared/src/index.ts"
       ],
@@ -39,7 +42,8 @@
     "content",
     "popup",
     "options",
-    "lib"
+    "lib",
+    "components"
   ],
   "exclude": [
     "node_modules",
