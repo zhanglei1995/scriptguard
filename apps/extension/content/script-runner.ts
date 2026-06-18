@@ -8,6 +8,7 @@
 import { injectScript, DEFAULT_TIMEOUT, type InjectResult } from './injector'
 import { executeRules, type CheckRule, type ExecuteResult } from './rule-engine'
 import { startCheck, type CheckReport } from '../lib/checks'
+import { getOverlayManager, type OverlayStatus } from './overlay'
 
 export type RunAt = 'document_start' | 'document_idle' | 'document_end' | 'manual'
 
@@ -141,6 +142,27 @@ export async function runScript(
     }
 
     await startCheck(report)
+
+    // SG-019: Show overlay based on result
+    try {
+      const overlayStatus: OverlayStatus =
+        record.ruleResult?.status === 'failed'
+          ? 'failed'
+          : record.ruleResult?.status === 'degraded'
+            ? 'degraded'
+            : 'success'
+
+      getOverlayManager().show({
+        scriptId: script.id,
+        status: overlayStatus,
+        scriptName: script.name,
+        failedRules: record.ruleResult?.failedRules ?? [],
+        errorMessage: result.error,
+        url: location.href,
+      })
+    } catch {
+      // Overlay is best-effort, don't fail the script
+    }
   } catch (err) {
     record.endedAt = Date.now()
     record.error = err instanceof Error ? err.message : String(err)
@@ -159,6 +181,20 @@ export async function runScript(
     }
 
     await startCheck(report)
+
+    // SG-019: Show failed overlay on error
+    try {
+      getOverlayManager().show({
+        scriptId: script.id,
+        status: 'failed',
+        scriptName: script.name,
+        failedRules: ['injection_error'],
+        errorMessage: record.error,
+        url: location.href,
+      })
+    } catch {
+      // Overlay is best-effort
+    }
   }
 
   return record
