@@ -8,11 +8,13 @@
 import { routeMessage } from './router'
 import { tabRegistry } from './registry'
 import { parseAlarmScriptId } from './alarms'
+import { scheduler } from './scheduler'
 
 // ====== 生命周期 ======
 chrome.runtime.onInstalled.addListener(async (details) => {
   console.log('[BG] Installed:', details.reason)
   await tabRegistry.init()
+  await scheduler.init()
   if (details.reason === 'install') {
     chrome.runtime.openOptionsPage?.()
   }
@@ -21,6 +23,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 chrome.runtime.onStartup.addListener(async () => {
   console.log('[BG] Starting up...')
   await tabRegistry.init()
+  await scheduler.init()
 })
 
 // ====== 消息路由 ======
@@ -50,7 +53,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   const scriptId = parseAlarmScriptId(alarm.name)
   if (scriptId) {
     console.log('[BG] Alarm triggered for script:', scriptId)
-    // TODO(SG-023): 执行本地检查
+    await scheduler.handleAlarm(scriptId)
   }
 })
 

@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware'
 import { z } from 'zod'
 import { ScriptCurrent, type Script } from '../storage/schemas'
+import { scheduler } from '../background/scheduler'
 
 // ====== Chrome Storage Adapter ======
 const chromeStorageAdapter: StateStorage = {
@@ -90,6 +91,10 @@ export const useScriptsStore = create<ScriptsState>()(
           updatedAt: now,
         })
         set((state) => ({ scripts: [...state.scripts, script] }))
+        if (script.enabled) {
+          const interval = (script.config as Record<string, unknown>)?.checkInterval
+          scheduler.scheduleScript(script.id, typeof interval === 'number' ? interval : 1800)
+        }
         return script
       },
 
@@ -105,6 +110,19 @@ export const useScriptsStore = create<ScriptsState>()(
         const newScripts = [...scripts]
         newScripts[index] = updated
         set({ scripts: newScripts })
+        if (patch.enabled !== undefined) {
+          if (patch.enabled) {
+            const interval = (updated.config as Record<string, unknown>)?.checkInterval
+            scheduler.scheduleScript(id, typeof interval === 'number' ? interval : 1800)
+          } else {
+            scheduler.unscheduleScript(id)
+          }
+        } else if (patch.config !== undefined) {
+          if (updated.enabled) {
+            const interval = (updated.config as Record<string, unknown>)?.checkInterval
+            scheduler.scheduleScript(id, typeof interval === 'number' ? interval : 1800)
+          }
+        }
         return updated
       },
 
@@ -113,6 +131,7 @@ export const useScriptsStore = create<ScriptsState>()(
         const index = scripts.findIndex((s) => s.id === id)
         if (index === -1) return false
         set({ scripts: scripts.filter((s) => s.id !== id) })
+        scheduler.unscheduleScript(id)
         return true
       },
 
