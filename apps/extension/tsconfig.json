@@ -43,7 +43,8 @@
     "popup",
     "options",
     "lib",
-    "components"
+    "components",
+    "storage"
   ],
   "exclude": [
     "node_modules",
