@@ -42,6 +42,13 @@
     },
     "format": {
       "cache": false
+    },
+    "docs": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.mdx"],
+      "outputs": [".next/**", "!.next/cache/**"]
     }
+  }
+}
   }
 }
