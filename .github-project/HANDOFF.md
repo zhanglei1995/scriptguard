@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：10/55 完成（18.2%）— Sprint 2 开始
+- **当前进度**：11/55 完成（20.0%）— Sprint 2 进行中
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -53,6 +53,7 @@
 | SG-010 | 客户端存储封装层（chrome + Dexie + session） | `ff26893` |
 | SG-005 | Docker Compose 本地开发环境 | `f6fd64b` |
 | SG-011 | Background Service Worker 架构 | `e1724e1` |
+| SG-012 | Content Script 注入框架 ⚠️ | `54cb052` |
 
 ---
 
@@ -79,7 +80,7 @@
 | ⭐⭐ | SG-017 | 6 类规则执行器（MVP 子集） | SG-016 |
 | ⭐⭐ | SG-018 | Popup 页面 MVP | SG-007 ✅ |
 
-> **推荐下一个做 SG-012**（Content Script 注入框架），⚠️ 有风险（执行时机冲突）。
+> **推荐下一个做 SG-013**（脚本匹配引擎）。
 
 完整 Sprint 计划见 `tickets.md` §3。
 
