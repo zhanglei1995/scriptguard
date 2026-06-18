@@ -264,6 +264,61 @@ export const TestNotifyChannelSchema = z.object({
   message: z.string().optional(),
 })
 
+// ============ Sync ============
+export const SyncScriptSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  version: z.string().optional(),
+  code: z.string().optional(),
+  matchRules: z.array(z.string()).optional(),
+  runAt: RunAtEnum.optional(),
+  enabled: z.boolean().optional(),
+  config: z.record(z.unknown()).optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string(),
+})
+
+export const SyncRuleSchema = z.object({
+  id: z.string().uuid(),
+  scriptId: z.string().uuid(),
+  name: z.string(),
+  type: z.string(),
+  config: z.record(z.unknown()).optional(),
+  required: z.boolean().optional(),
+  timeout: z.number().int().optional(),
+  alertLevel: AlertLevelEnum.optional(),
+  order: z.number().int().optional(),
+})
+
+export const ConflictSchema = z.object({
+  entity: z.enum(['script', 'rule']),
+  id: z.string().uuid(),
+  local: z.record(z.unknown()),
+  server: z.record(z.unknown()),
+})
+
+export const SyncRequestSchema = z.object({
+  clientVersion: z.number().int(),
+  lastSyncAt: z.number(),
+  changes: z.object({
+    scripts: z.array(SyncScriptSchema).optional(),
+    rules: z.array(SyncRuleSchema).optional(),
+    deletedScriptIds: z.array(z.string().uuid()).optional(),
+  }),
+})
+
+export const SyncResponseSchema = z.object({
+  serverVersion: z.number().int(),
+  syncedAt: z.number(),
+  changes: z.object({
+    scripts: z.array(ScriptSchema),
+    rules: z.array(CheckRuleSchema),
+    deletedScriptIds: z.array(z.string().uuid()),
+  }),
+  conflicts: z.array(ConflictSchema),
+})
+
 // ============ Auth ============
 export const RegisterSchema = z.object({
   email: z.string().email(),
