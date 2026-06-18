@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：9/55 完成（16.4%）— Foundation milestone 进行中
+- **当前进度**：10/55 完成（18.2%）— Sprint 2 开始
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -52,6 +52,7 @@
 | SG-009 | Drizzle Schema（9 张表 + 索引） | `1a0dc9a` |
 | SG-010 | 客户端存储封装层（chrome + Dexie + session） | `ff26893` |
 | SG-005 | Docker Compose 本地开发环境 | `f6fd64b` |
+| SG-011 | Background Service Worker 架构 | `e1724e1` |
 
 ---
 
@@ -78,7 +79,7 @@
 | ⭐⭐ | SG-017 | 6 类规则执行器（MVP 子集） | SG-016 |
 | ⭐⭐ | SG-018 | Popup 页面 MVP | SG-007 ✅ |
 
-> **推荐下一个做 SG-011**（Background Service Worker），它是 Sprint 2 的起点，阻塞 SG-012~017。
+> **推荐下一个做 SG-012**（Content Script 注入框架），⚠️ 有风险（执行时机冲突）。
 
 完整 Sprint 计划见 `tickets.md` §3。
 
@@ -109,6 +110,7 @@
 ScriptGuard/
 ├── apps/
 │   ├── extension/              SG-002 ✅ Plasmo 浏览器插件
+│   │   ├── background/        SG-011 ✅ SW 架构（router, registry, alarms）
 │   │   ├── components/ui/     SG-007 ✅ 17 个 shadcn/ui 组件
 │   │   ├── storage/           SG-010 ✅ 客户端存储封装层
 │   │   ├── lib/               工具函数（tokens.ts, utils.ts）
@@ -342,22 +344,21 @@ Schema 位于 `packages/db/src/schema.ts`。9 张表 + 4 个 enum + 完整索引
 
 ## 10. 你的下一个任务
 
-**推荐做 SG-011（Background Service Worker 架构）。**
+**推荐做 SG-012（Content Script 注入框架）。⚠️ 有风险。**
 
-### SG-011 简介
+### SG-012 简介
 
-- **位置**：`apps/extension/background/` （已有骨架）
-- **AC**（完整版见 `tickets/SG-011.md`）：
-  - [ ] Background Service Worker 生命周期管理
-  - [ ] chrome.runtime.onInstalled 初始化
-  - [ ] 消息路由系统（Content Script ↔ Background）
-  - [ ] 脚本注册表（内存缓存 + chrome.storage 持久化）
-  - [ ] TabRegistry 管理
-  - [ ] 与云端同步模块骨架
+- **位置**：`apps/extension/content/` （已有骨架）
+- **AC**（完整版见 `tickets/SG-012.md`）：
+  - [ ] Content Script 按 match_rules 注入目标页面
+  - [ ] ISOLATED world 隔离
+  - [ ] 注入时机控制（document_start）
+  - [ ] 错误捕获隔离
+  - [ ] 与 Background SW 通信
 
-- **技术参考**：`TDD.md` §3.1.1 Background Service Worker
+- **技术参考**：`TDD.md` §3.1.2 Content Script
 - **Owner Role**：FE
-- **依赖**：SG-010（已完成）
+- **依赖**：SG-011（已完成）
 
 ### 完成后
 
