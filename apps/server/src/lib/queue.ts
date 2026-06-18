@@ -8,9 +8,14 @@ let queueInstance: unknown = null
 
 async function tryConnectRedis(): Promise<boolean> {
   try {
-    const { Queue } = await import('bullmq')
-    const { default: IORedis } = await import('ioredis')
-    const connection = new IORedis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
+    // Dynamic imports for optional dependencies
+    const queueModule: { Queue: new (name: string, opts: unknown) => { add: (name: string, data: unknown) => Promise<unknown> } } =
+      // @ts-expect-error bullmq is an optional peer dependency
+      await import('bullmq')
+    const ioredisModule: { default: new (url: string, opts?: unknown) => { status: string; once: (evt: string, cb: () => void) => void; disconnect: () => void } } =
+      // @ts-expect-error ioredis is an optional peer dependency
+      await import('ioredis')
+    const connection = new ioredisModule.default(process.env.REDIS_URL ?? 'redis://localhost:6379', {
       maxRetriesPerRequest: null,
       enableReadyCheck: false,
       connectTimeout: 2000,
@@ -20,7 +25,7 @@ async function tryConnectRedis(): Promise<boolean> {
       new Promise<void>((resolve) => setTimeout(resolve, 2000)),
     ])
     if (connection.status === 'ready') {
-      queueInstance = new Queue('test-runs', { connection })
+      queueInstance = new queueModule.Queue('test-runs', { connection })
       redisAvailable = true
       return true
     }
@@ -50,6 +55,4 @@ export async function addTestJob(scriptId: string, url: string): Promise<void> {
     const q = queueInstance as { add: (name: string, data: TestJobData) => Promise<unknown> }
     await q.add('test-run', data)
   }
-  // When Redis is unavailable, the caller creates the run record directly.
-  // The queue is fire-and-forget for this MVP; actual execution happens in the run-now handler.
 }
