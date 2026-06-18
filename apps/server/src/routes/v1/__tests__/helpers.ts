@@ -10,7 +10,7 @@ function isZodSchema(val: unknown): val is z.ZodType {
 function createChain(defaultResult: unknown[] = []) {
   let result: unknown = defaultResult
   const chain: Record<string, unknown> = {}
-  const methods = ['from', 'where', 'limit', 'offset', 'orderBy', 'values', 'set']
+  const methods = ['from', 'where', 'limit', 'offset', 'orderBy', 'values', 'set', 'innerJoin']
   for (const m of methods) {
     chain[m] = vi.fn().mockReturnValue(chain)
   }
@@ -68,6 +68,34 @@ export async function buildTestApp(registerRoutes: (app: FastifyInstance) => Pro
     }
   })
   app.setSerializerCompiler(() => (data) => JSON.stringify(data))
+  await app.register(errorHandlerPlugin)
+  await registerRoutes(app)
+  await app.ready()
+  return app
+}
+
+export async function buildTestAppWithAuth(
+  registerRoutes: (app: FastifyInstance) => Promise<void>,
+  userId = '00000000-0000-0000-0000-000000000001',
+): Promise<FastifyInstance> {
+  const app = Fastify({ logger: false })
+  app.setValidatorCompiler(({ schema, httpPart }) => {
+    return (data) => {
+      if (httpPart === 'response') return { value: data }
+      if (isZodSchema(schema)) {
+        try {
+          return { value: schema.parse(data) }
+        } catch (err) {
+          return { error: err as Error }
+        }
+      }
+      return { value: data }
+    }
+  })
+  app.setSerializerCompiler(() => (data) => JSON.stringify(data))
+  app.addHook('onRequest', async (req) => {
+    (req as { userId?: string }).userId = userId
+  })
   await app.register(errorHandlerPlugin)
   await registerRoutes(app)
   await app.ready()

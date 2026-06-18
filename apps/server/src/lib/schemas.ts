@@ -141,6 +141,15 @@ export const ReorderSchema = z.object({
   })).min(1),
 })
 
+// ============ Cron Validation ============
+const CRON_5_REGEX =
+  /^(\*|([0-9]|[1-5][0-9])(\/[0-9]+)?|([0-9]|[1-5][0-9])(-[0-9]|[1-5][0-9])?|([0-9]|[1-5][0-9])(,[0-9]|[1-5][0-9])*)\s+(\*|([0-9]|1[0-9]|2[0-3])(\/[0-9]+)?|([0-9]|1[0-9]|2[0-3])(-([0-9]|1[0-9]|2[0-3]))?|([0-9]|1[0-9]|2[0-3])(,([0-9]|1[0-9]|2[0-3]))*)\s+(\*|([1-9]|[12][0-9]|3[01])(\/[0-9]+)?|([1-9]|[12][0-9]|3[01])(-([1-9]|[12][0-9]|3[01]))?|([1-9]|[12][0-9]|3[01])(,([1-9]|[12][0-9]|3[01]))*)\s+(\*|(0?[1-9]|1[0-2])(\/[0-9]+)?|(0?[1-9]|1[0-2])(-(0?[1-9]|1[0-2]))?|(0?[1-9]|1[0-2])(,(0?[1-9]|1[0-2]))*)\s+(\*|([0-6])(\/[0-9]+)?|([0-6])(-([0-6]))?|([0-6])(,([0-6]))*)$/
+
+export const CronExpression = z.string().regex(
+  CRON_5_REGEX,
+  'Invalid cron expression: expected 5-segment format (minute hour day month weekday)',
+)
+
 // ============ Test Schedules ============
 export const TestScheduleSchema = z.object({
   id: z.string().uuid(),
@@ -162,7 +171,7 @@ export const TestScheduleListSchema = z.object({
 
 export const CreateTestScheduleSchema = z.object({
   scriptId: z.string().uuid(),
-  cron: z.string().min(1),
+  cron: CronExpression,
   mode: z.string().min(1),
   config: z
     .object({
@@ -174,7 +183,7 @@ export const CreateTestScheduleSchema = z.object({
 })
 
 export const UpdateTestScheduleSchema = z.object({
-  cron: z.string().min(1).optional(),
+  cron: CronExpression.optional(),
   mode: z.string().min(1).optional(),
   config: z
     .object({
@@ -204,6 +213,11 @@ export const TestRunSchema = z.object({
 export const TestRunListSchema = z.object({
   items: z.array(TestRunSchema),
   total: z.number().int(),
+})
+
+export const RunListQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
 })
 
 // ============ Alerts ============
