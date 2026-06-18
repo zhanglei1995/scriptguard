@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：8/55 完成（14.5%）— Foundation milestone 进行中
+- **当前进度**：9/55 完成（16.4%）— Foundation milestone 进行中
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -51,6 +51,7 @@
 | SG-007 | shadcn/ui 组件库初始化（17 组件） | `18c3a92` |
 | SG-009 | Drizzle Schema（9 张表 + 索引） | `1a0dc9a` |
 | SG-010 | 客户端存储封装层（chrome + Dexie + session） | `ff26893` |
+| SG-005 | Docker Compose 本地开发环境 | `f6fd64b` |
 
 ---
 
@@ -60,8 +61,9 @@
 
 | 优先级 | Ticket | 说明 | 依赖 |
 |---|---|---|---|
-| ⭐ | SG-005 | Docker Compose 本地开发环境 | SG-001 |
 | ⭐ | SG-008 | Logo 与品牌物料 | — |
+
+> Sprint 1 仅剩 SG-008（品牌物料），可与 Sprint 2 并行。
 
 ### 4.2 Sprint 2（Alpha — 插件核心架构）
 
@@ -121,6 +123,7 @@ ScriptGuard/
 │   └── ui/                    预留
 ├── .github/workflows/
 │   └── ci.yml                 SG-004 ✅ CI 工作流
+├── docker-compose.yml         SG-005 ✅ PostgreSQL 16 + Redis 7
 ├── tickets/                   55 张 ticket .md + INDEX + CSV + JSON
 ├── scripts/                   generate-tickets.js
 ├── .github-project/           看板自动化脚本 + 本文档
