@@ -1,6 +1,10 @@
 /**
  * 健康检查执行入口
+ * 关联: TDD §5.1 消息协议 + §9.4 错误隔离
  */
+
+import { injectErrorCapture, type PageError } from '~content/error-capture'
+
 export type HealthStatus = 'healthy' | 'degraded' | 'failed' | 'unknown'
 
 export interface CheckReport {
@@ -15,24 +19,41 @@ export interface CheckReport {
 }
 
 /**
- * 捕获页面错误（最早时机注入）
+ * 捕获页面错误
+ * 在 ISOLATED world 中注入 MAIN world 错误捕获脚本
+ * 并监听 MAIN world 发来的错误消息
  */
-export function capturePageError(_win: Window) {
-  // 错误监听
-  _win.addEventListener('error', (e) => {
-    console.debug('[SG] page error:', e.error)
-  })
-  _win.addEventListener('unhandledrejection', (e) => {
-    console.debug('[SG] unhandled rejection:', e.reason)
+export function capturePageError(
+  win: Window,
+  onError?: (error: PageError) => void
+): void {
+  injectErrorCapture()
+
+  win.addEventListener('message', (e: MessageEvent) => {
+    if (
+      typeof e.data === 'object' &&
+      e.data !== null &&
+      e.data.source === 'scriptguard-error-capture'
+    ) {
+      console.debug('[SG] page error from MAIN world:', e.data)
+      onError?.(e.data as PageError)
+    }
   })
 }
 
 /**
- * 启动一次健康检查
+ * 向 Background 上报健康检查结果
  */
-export async function startCheck(report: CheckReport) {
-  // TODO(SG-017): 真实规则执行
-  // 现在先 stub
-  await new Promise((r) => setTimeout(r, 10))
-  console.debug('[SG] Check completed:', report.scriptId, report.status)
+export async function startCheck(report: CheckReport): Promise<void> {
+  await chrome.runtime.sendMessage({
+    type: 'REPORT_CHECK',
+    payload: {
+      scriptId: report.scriptId,
+      status: report.status,
+      url: report.url,
+      duration: report.duration,
+      failedRules: report.failedRules,
+      error: report.errorMessage,
+    },
+  })
 }

@@ -2,11 +2,13 @@
  * ScriptGuard Content Script
  * 注入到所有页面，捕获错误和执行健康检查
  *
- * 关联: TDD §3.1.2 + §9.4
+ * 关联: TDD §3.1.2 + §9.4 + §5.1
  */
 
-import { capturePageError, startCheck, type CheckReport } from '~lib/checks'
 import type { PlasmoCSConfig } from 'plasmo'
+import { capturePageError, startCheck, type CheckReport, type HealthStatus } from '~lib/checks'
+import { injectScript, DEFAULT_TIMEOUT } from '~content/injector'
+import { isPageError } from '~content/error-capture'
 
 // ====== Plasmo Content Script 配置 ======
 export const config: PlasmoCSConfig = {
@@ -16,19 +18,19 @@ export const config: PlasmoCSConfig = {
 }
 
 // ====== 错误捕获（最早时机） ======
-capturePageError(window)
+const pageErrors: Array<{ type: string; message: string; time: number }> = []
+
+capturePageError(window, (err: { type: string; message: string; reason?: string }) => {
+  pageErrors.push({
+    type: err.type,
+    message: err.type === 'error' ? err.message : err.reason ?? '',
+    time: Date.now(),
+  })
+})
 
 // ====== 启动 ======
 async function bootstrap() {
-  // 等待 DOM 就绪后开始
-  if (document.readyState === 'loading') {
-    await new Promise((resolve) => {
-      document.addEventListener('DOMContentLoaded', resolve, { once: true })
-    })
-  }
-
   try {
-    // 从 Background 拉取匹配当前 URL 的脚本
     const response = await chrome.runtime.sendMessage({
       type: 'GET_SCRIPTS_FOR_URL',
       payload: { url: location.href },
@@ -39,28 +41,73 @@ async function bootstrap() {
         await injectAndRun(script)
       }
     }
-  } catch (err) {
-    // Background 未响应时静默失败（不影响页面）
+  } catch (err: unknown) {
     console.debug('[ScriptGuard] Background not available:', err)
   }
 }
 
-async function injectAndRun(script: { id: string; name: string; runAt: string; code: string }) {
+async function injectAndRun(script: {
+  id: string
+  name: string
+  code: string
+  timeout?: number
+}) {
+  const startedAt = Date.now()
+  const errorsBefore = pageErrors.length
+
   try {
-    // TODO(SG-015): 真实的脚本注入 + 规则执行
+    const result = await injectScript(script.id, script.code, {
+      timeout: script.timeout ?? DEFAULT_TIMEOUT,
+    })
+
+    const endedAt = Date.now()
+    const duration = endedAt - startedAt
+    const newErrors = pageErrors.slice(errorsBefore)
+
+    let status: HealthStatus = 'healthy'
+    const failedRules: string[] = []
+
+    if (result.status === 'timeout') {
+      status = 'failed'
+      failedRules.push('timeout')
+    } else if (result.status === 'error') {
+      status = 'failed'
+      failedRules.push('runtime_error')
+    } else if (newErrors.length > 0) {
+      status = 'degraded'
+      for (const e of newErrors) {
+        failedRules.push(`page_error:${e.type}`)
+      }
+    }
+
     const report: CheckReport = {
       scriptId: script.id,
       url: location.href,
-      status: 'healthy',
-      startedAt: Date.now(),
-      endedAt: Date.now(),
-      duration: 0,
-      failedRules: [],
+      status,
+      startedAt,
+      endedAt,
+      duration,
+      failedRules,
+      errorMessage: result.error,
     }
+
     await startCheck(report)
   } catch (err) {
-    console.debug(`[ScriptGuard] Script ${script.name} failed:`, err)
+    const endedAt = Date.now()
+    const report: CheckReport = {
+      scriptId: script.id,
+      url: location.href,
+      status: 'failed',
+      startedAt,
+      endedAt,
+      duration: endedAt - startedAt,
+      failedRules: ['injection_error'],
+      errorMessage: err instanceof Error ? err.message : String(err),
+    }
+    await startCheck(report)
   }
 }
 
 bootstrap()
+
+export {}

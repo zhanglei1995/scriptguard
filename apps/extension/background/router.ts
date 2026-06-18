@@ -3,6 +3,61 @@
  * 关联: TDD §5.1 内部 API
  */
 
+// ====== 脚本存储类型 ======
+export interface StoredScript {
+  id: string
+  name: string
+  version: string
+  code: string
+  matchRules: MatchRule[]
+  timeout?: number
+}
+
+export interface MatchRule {
+  type: 'glob' | 'regex' | 'exact'
+  pattern: string
+}
+
+// ====== URL 匹配 ======
+export function matchUrl(url: string, rules: MatchRule[]): boolean {
+  if (rules.length === 0) return false
+
+  for (const rule of rules) {
+    if (matchSingleRule(url, rule)) return true
+  }
+  return false
+}
+
+function matchSingleRule(url: string, rule: MatchRule): boolean {
+  switch (rule.type) {
+    case 'exact':
+      return url === rule.pattern
+    case 'glob':
+      return matchGlob(url, rule.pattern)
+    case 'regex':
+      try {
+        return new RegExp(rule.pattern).test(url)
+      } catch {
+        return false
+      }
+    default:
+      return false
+  }
+}
+
+function matchGlob(url: string, pattern: string): boolean {
+  const regexStr = pattern
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*')
+    .replace(/\?/g, '.')
+  try {
+    return new RegExp(`^${regexStr}$`).test(url)
+  } catch {
+    return false
+  }
+}
+
+// ====== 消息类型 ======
 export type Message =
   | { type: 'GET_SCRIPTS_FOR_URL'; payload: { url: string } }
   | { type: 'REPORT_CHECK'; payload: { scriptId: string; status: string; url: string } }
@@ -11,7 +66,7 @@ export type Message =
   | { type: 'HIDE_OVERLAY' }
 
 export type MessageResponse =
-  | { type: 'SCRIPTS_RESULT'; scripts: unknown[] }
+  | { type: 'SCRIPTS_RESULT'; scripts: StoredScript[] }
   | { type: 'PONG'; timestamp: number }
   | { ok: true }
   | { ok: false; error: string }
@@ -46,9 +101,11 @@ registerHandler('PING', async () => ({
 }))
 
 registerHandler('GET_SCRIPTS_FOR_URL', async (msg, _sender) => {
-  // TODO(SG-014): 接入脚本注册表
-  void msg
-  return { type: 'SCRIPTS_RESULT', scripts: [] }
+  const { url } = (msg as Extract<Message, { type: 'GET_SCRIPTS_FOR_URL' }>).payload
+  const result = await chrome.storage.local.get('scripts')
+  const scripts = (result.scripts ?? []) as StoredScript[]
+  const matched = scripts.filter((s) => matchUrl(url, s.matchRules))
+  return { type: 'SCRIPTS_RESULT', scripts: matched }
 })
 
 registerHandler('REPORT_CHECK', async (msg, _sender) => {
