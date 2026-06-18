@@ -84,6 +84,7 @@ export const scripts = pgTable(
     config: jsonb('config').$type<Record<string, unknown>>().notNull().default({}),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    deletedAt: timestamp('deleted_at'),
   },
   (t) => [
     index('idx_scripts_user_enabled')
@@ -92,6 +93,9 @@ export const scripts = pgTable(
     index('idx_scripts_team')
       .on(t.teamId)
       .where(sql`${t.teamId} IS NOT NULL`),
+    index('idx_scripts_deleted')
+      .on(t.deletedAt)
+      .where(sql`${t.deletedAt} IS NULL`),
   ],
 )
 

@@ -40,6 +40,7 @@ export const ScriptSchema = z.object({
 export const ScriptListSchema = z.object({
   items: z.array(ScriptSchema),
   total: z.number().int(),
+  nextCursor: z.string().nullable(),
 })
 
 export const CreateScriptSchema = z.object({
@@ -62,8 +63,14 @@ export const UpdateScriptSchema = z.object({
   config: z.record(z.unknown()).optional(),
 })
 
-export const ScriptListQuerySchema = PaginationQuerySchema.extend({
+export const ScriptListQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  cursor: z.string().optional(),
   teamId: z.string().uuid().optional(),
+})
+
+export const RollbackSchema = z.object({
+  versionId: z.string().uuid(),
 })
 
 // ============ Script Versions ============
