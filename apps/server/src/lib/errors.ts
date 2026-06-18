@@ -35,6 +35,24 @@ export class UnauthorizedError extends AppError {
   }
 }
 
+export class ForbiddenError extends AppError {
+  constructor(message = 'Forbidden', details?: unknown) {
+    super(403, 'FORBIDDEN', message, details)
+  }
+}
+
+export class ConflictError extends AppError {
+  constructor(message = 'Resource conflict', details?: unknown) {
+    super(409, 'CONFLICT', message, details)
+  }
+}
+
+export class UnprocessableEntityError extends AppError {
+  constructor(message = 'Unprocessable entity', details?: unknown) {
+    super(422, 'UNPROCESSABLE_ENTITY', message, details)
+  }
+}
+
 /**
  * 统一错误响应
  * 关联: TDD §5.2

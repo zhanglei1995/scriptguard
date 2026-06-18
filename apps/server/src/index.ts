@@ -1,16 +1,48 @@
 /**
  * ScriptGuard Server - Fastify 主入口
- * 关联: TDD §3.1.2
+ * 关联: TDD §3.1.2 / SG-028
  */
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import swagger from '@fastify/swagger'
 import swaggerUI from '@fastify/swagger-ui'
+import { z } from 'zod'
+import { zodToJsonSchema } from 'zod-to-json-schema'
 import { config } from './config.js'
 import { rootRoutes } from './routes/root.js'
 import { apiV1Routes } from './routes/api.js'
 import errorHandlerPlugin from './plugins/error-handler.js'
+
+function isZodSchema(val: unknown): val is z.ZodType {
+  return val !== null && typeof val === 'object' && '_def' in (val as Record<string, unknown>)
+}
+
+function swaggerTransform(args: { schema: import('fastify').FastifySchema; url: string; route: import('fastify').RouteOptions }) {
+  const { schema, url } = args
+  if (!schema || typeof schema !== 'object') return { schema, url }
+  const out: Record<string, unknown> = {}
+
+  for (const [key, value] of Object.entries(schema as Record<string, unknown>)) {
+    if (key === 'response' && typeof value === 'object' && value !== null) {
+      const respObj = value as Record<string, unknown>
+      const converted: Record<string, unknown> = {}
+      for (const [status, s] of Object.entries(respObj)) {
+        converted[status] = isZodSchema(s)
+          ? zodToJsonSchema(s, { target: 'openApi3', $refStrategy: 'none' })
+          : s
+      }
+      out.response = converted
+    } else if (['body', 'params', 'querystring', 'query'].includes(key)) {
+      out[key] = isZodSchema(value)
+        ? zodToJsonSchema(value, { target: 'openApi3', $refStrategy: 'none' })
+        : value
+    } else {
+      out[key] = value
+    }
+  }
+  return { schema: out as import('fastify').FastifySchema, url }
+}
 
 async function buildServer() {
   const fastify = Fastify({
@@ -24,6 +56,20 @@ async function buildServer() {
     disableRequestLogging: false,
     trustProxy: true,
     bodyLimit: 10 * 1024 * 1024,
+  })
+
+  // 0. Disable Ajv validation — Zod validates in handlers
+  fastify.setValidatorCompiler(({ schema }) => {
+    return (data) => {
+      try {
+        if (isZodSchema(schema)) {
+          return { value: schema.parse(data) }
+        }
+        return { value: data }
+      } catch (err) {
+        return { error: err as Error }
+      }
+    }
   })
 
   // 1. 错误处理
@@ -55,6 +101,7 @@ async function buildServer() {
         },
       },
     },
+    transform: swaggerTransform,
   })
 
   await fastify.register(swaggerUI, {
