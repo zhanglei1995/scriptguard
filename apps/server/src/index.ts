@@ -13,6 +13,7 @@ import { config } from './config.js'
 import { rootRoutes } from './routes/root.js'
 import { apiV1Routes } from './routes/api.js'
 import errorHandlerPlugin from './plugins/error-handler.js'
+import authPlugin from './plugins/auth.js'
 
 function isZodSchema(val: unknown): val is z.ZodType {
   return val !== null && typeof val === 'object' && '_def' in (val as Record<string, unknown>)
@@ -74,6 +75,9 @@ async function buildServer() {
 
   // 1. 错误处理
   await fastify.register(errorHandlerPlugin)
+
+  // 1.5. 认证
+  await fastify.register(authPlugin)
 
   // 2. 安全
   await fastify.register(helmet, { contentSecurityPolicy: false })

@@ -235,3 +235,31 @@ export const CreateNotifyChannelSchema = z.object({
 export const TestNotifyChannelSchema = z.object({
   message: z.string().optional(),
 })
+
+// ============ Auth ============
+export const RegisterSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(128),
+})
+
+export const LoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+})
+
+export const TokenResponseSchema = z.object({
+  accessToken: z.string(),
+  tokenType: z.literal('Bearer'),
+  expiresIn: z.string(),
+})
+
+export const RefreshTokenSchema = z.object({
+  token: z.string().min(1),
+})
+
+export const UserSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  plan: PlanEnum,
+  createdAt: z.string(),
+})
