@@ -5,6 +5,7 @@ export const HealthStatusEnum = z.enum(['healthy', 'degraded', 'failed', 'unknow
 export const RunAtEnum = z.enum(['document_start', 'document_idle', 'document_end', 'manual'])
 export const AlertLevelEnum = z.enum(['low', 'medium', 'high', 'critical'])
 export const PlanEnum = z.enum(['free', 'pro', 'team', 'enterprise'])
+export const NotifyChannelTypeEnum = z.enum(['webhook', 'email', 'browser'])
 
 // ============ Common ============
 export const ErrorResponseSchema = z.object({
@@ -239,6 +240,13 @@ export const AlertListSchema = z.object({
   total: z.number().int(),
 })
 
+export const AlertListQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
+  acknowledged: z.coerce.boolean().optional(),
+  scriptId: z.string().uuid().optional(),
+})
+
 // ============ Notify Channels ============
 export const NotifyChannelSchema = z.object({
   id: z.string().uuid(),
@@ -255,7 +263,7 @@ export const NotifyChannelListSchema = z.object({
 })
 
 export const CreateNotifyChannelSchema = z.object({
-  type: z.string().min(1),
+  type: NotifyChannelTypeEnum,
   config: z.record(z.unknown()),
   enabled: z.boolean().optional(),
 })

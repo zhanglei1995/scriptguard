@@ -1,12 +1,21 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import type { FastifyInstance } from 'fastify'
 import { buildTestApp, mockDb, resetMocks } from './helpers.js'
+
+const mockNotificationService = {
+  sendTest: vi.fn().mockResolvedValue({ success: true }),
+  send: vi.fn().mockResolvedValue(undefined),
+}
+vi.mock('../../../lib/notify/index.js', () => ({
+  notificationService: mockNotificationService,
+}))
 
 describe('Channels API (SG-028)', () => {
   let app: FastifyInstance
 
   beforeEach(async () => {
     resetMocks()
+    mockNotificationService.sendTest.mockResolvedValue({ success: true })
     const { channelsRoutes } = await import('../channels.js')
     app = await buildTestApp(async (a) => { await a.register(channelsRoutes) })
   })

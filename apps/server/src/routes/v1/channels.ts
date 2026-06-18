@@ -11,6 +11,7 @@ import {
   TestNotifyChannelSchema,
   PaginationQuerySchema,
 } from '../../lib/schemas.js'
+import { notificationService } from '../../lib/notify/index.js'
 import { zodToJsonSchema } from 'zod-to-json-schema'
 
 const IdParams = z.object({ id: z.string().uuid() })
@@ -56,9 +57,16 @@ export const channelsRoutes: FastifyPluginAsync = async (fastify) => {
     },
   }, async (req) => {
     const { id } = IdParams.parse(req.params)
-    TestNotifyChannelSchema.parse(req.body)
+    const body = TestNotifyChannelSchema.parse(req.body)
     const [item] = await db.select().from(notifyChannels).where(eq(notifyChannels.id, id)).limit(1)
     if (!item) throw new NotFoundError('Channel not found')
+    const result = await notificationService.sendTest(
+      { type: item.type, config: item.config as Record<string, unknown> },
+      body.message,
+    )
+    if (!result.success) {
+      return { success: false, message: result.error ?? 'Failed to send test message' }
+    }
     return { success: true, message: `Test message sent to ${item.type} channel` }
   })
 }

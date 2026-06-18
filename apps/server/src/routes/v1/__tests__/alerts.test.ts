@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import type { FastifyInstance } from 'fastify'
 import { buildTestApp, mockDb, resetMocks } from './helpers.js'
 
-describe('Alerts API (SG-028)', () => {
+describe('Alerts API (SG-039)', () => {
   let app: FastifyInstance
 
   beforeEach(async () => {
@@ -33,6 +33,52 @@ describe('Alerts API (SG-028)', () => {
       })
 
     const res = await app.inject({ method: 'GET', url: '/alerts' })
+    expect(res.statusCode).toBe(200)
+  })
+
+  it('GET /alerts filters by acknowledged', async () => {
+    mockDb.select
+      .mockImplementationOnce(() => {
+        const chain: Record<string, unknown> = {}
+        chain.from = vi.fn().mockReturnValue(chain)
+        chain.where = vi.fn().mockReturnValue(chain)
+        chain.limit = vi.fn().mockReturnValue(chain)
+        chain.offset = vi.fn().mockResolvedValue([])
+        chain.then = (resolve: (v: unknown) => void) => Promise.resolve([]).then(resolve)
+        return chain
+      })
+      .mockImplementationOnce(() => {
+        const chain: Record<string, unknown> = {}
+        chain.from = vi.fn().mockReturnValue(chain)
+        chain.where = vi.fn().mockReturnValue(chain)
+        chain.then = (resolve: (v: unknown) => void) => Promise.resolve([{ count: 0 }]).then(resolve)
+        return chain
+      })
+
+    const res = await app.inject({ method: 'GET', url: '/alerts?acknowledged=false' })
+    expect(res.statusCode).toBe(200)
+  })
+
+  it('GET /alerts filters by scriptId', async () => {
+    mockDb.select
+      .mockImplementationOnce(() => {
+        const chain: Record<string, unknown> = {}
+        chain.from = vi.fn().mockReturnValue(chain)
+        chain.where = vi.fn().mockReturnValue(chain)
+        chain.limit = vi.fn().mockReturnValue(chain)
+        chain.offset = vi.fn().mockResolvedValue([])
+        chain.then = (resolve: (v: unknown) => void) => Promise.resolve([]).then(resolve)
+        return chain
+      })
+      .mockImplementationOnce(() => {
+        const chain: Record<string, unknown> = {}
+        chain.from = vi.fn().mockReturnValue(chain)
+        chain.where = vi.fn().mockReturnValue(chain)
+        chain.then = (resolve: (v: unknown) => void) => Promise.resolve([{ count: 0 }]).then(resolve)
+        return chain
+      })
+
+    const res = await app.inject({ method: 'GET', url: '/alerts?scriptId=550e8400-e29b-41d4-a716-446655440000' })
     expect(res.statusCode).toBe(200)
   })
 
