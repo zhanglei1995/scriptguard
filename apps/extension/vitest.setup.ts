@@ -89,6 +89,12 @@ const chromeMock = {
       addListener: vi.fn(),
     },
   },
+  notifications: {
+    create: vi.fn(async () => 'notif-id'),
+    onClicked: {
+      addListener: vi.fn(),
+    },
+  },
 }
 
 // @ts-ignore

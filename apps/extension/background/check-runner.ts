@@ -3,7 +3,8 @@
  * SG-021: 手动测试功能
  */
 
-import { addCheck } from '../storage/db'
+import { addCheck, getChecksByScript } from '../storage/db'
+import { notifier } from './notifier'
 import type { HealthStatus } from '../storage/schemas'
 
 // ====== Types ======
@@ -79,9 +80,20 @@ export class CheckRunner {
         return { ok: false, error: contentResponse?.error || 'Content script check failed' }
       }
 
-      // 4. Process results and write to IndexedDB
+      // 4. Process results, send notifications, write to IndexedDB
       const results: CheckResult[] = contentResponse.results || []
       for (const result of results) {
+        if (result.status === 'failed') {
+          const reason = result.errorMessage || `检查规则未通过: ${result.failedRules.join(', ')}`
+          await notifier.notifyFailure(result.scriptName, reason, result.scriptId)
+        } else {
+          const prevChecks = await getChecksByScript(result.scriptId)
+          const lastCheck = prevChecks[0]
+          if (lastCheck && lastCheck.status === 'failed') {
+            await notifier.notifyRecovered(result.scriptName, result.scriptId)
+          }
+        }
+
         await addCheck({
           scriptId: result.scriptId,
           timestamp: new Date(),

@@ -57,6 +57,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 // ====== 通知点击 ======
 chrome.notifications?.onClicked.addListener((notificationId) => {
   console.log('[BG] Notification clicked:', notificationId)
+  chrome.runtime.openOptionsPage()
 })
 
 console.log('[BG] Background service worker loaded')
