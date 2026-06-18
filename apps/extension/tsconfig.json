@@ -1,0 +1,50 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "chrome",
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./*"
+      ],
+      "@scriptguard/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
+      "@scriptguard/sdk": [
+        "../../packages/sdk/src/index.ts"
+      ],
+      "@scriptguard/ui": [
+        "../../packages/ui/src/index.ts"
+      ]
+    },
+    "noEmit": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": [
+    ".plasmo/index.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "background",
+    "content",
+    "popup",
+    "options",
+    "lib"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    ".plasmo",
+    "dist"
+  ]
+}

@@ -18,8 +18,7 @@
     "test:e2e": "turbo run test:e2e",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .prettierignore",
-    "clean": "turbo run clean && rm -rf node_modules .turbo",
-    "prepare": "husky"
+    "clean": "turbo run clean && rm -rf node_modules .turbo"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
@@ -29,5 +28,19 @@
     "turbo": "^2.3.0",
     "typescript": "^5.4.0"
   },
-  "engines-comment": "Engines: Node >= 20, pnpm >= 9 (packageManager: pnpm@11.7.0)"
+  "engines-comment": "Engines: Node >= 20, pnpm >= 9 (packageManager: pnpm@11.7.0)",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@parcel/core",
+      "@parcel/fs",
+      "@parcel/package-manager",
+      "@swc/core",
+      "esbuild",
+      "lmdb",
+      "msgpackr-extract",
+      "better-sqlite3",
+      "playwright"
+    ]
+  }
 }

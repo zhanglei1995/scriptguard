@@ -1,0 +1,78 @@
+/* ====================================
+ * ScriptGuard 全局样式 + Tailwind
+ * 关联: Wireframes §1 设计 Token
+ * ==================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 颜色 - 浅色 */
+    --background: 0 0% 100%;        /* #FFFFFF */
+    --foreground: 222 47% 11%;      /* #0F172A */
+    --muted: 210 40% 96%;           /* #F1F5F9 */
+    --muted-foreground: 215 16% 47%; /* #64748B */
+    --border: 214 32% 91%;          /* #E2E8F0 */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    /* 间距 */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+
+    /* 动效 */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-fast: 150ms;
+    --duration-base: 250ms;
+    --duration-slow: 400ms;
+  }
+
+  .dark {
+    --background: 222 47% 11%;      /* #0F172A */
+    --foreground: 210 40% 98%;      /* #F1F5F9 */
+    --muted: 217 33% 17%;           /* #1E293B */
+    --muted-foreground: 215 20% 65%; /* #94A3B8 */
+    --border: 217 33% 17%;          /* #334155 */
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html, body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', 'PingFang SC', -apple-system, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* 健康状态徽章 */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border;
+  }
+  .badge-success {
+    @apply bg-success/10 text-success-700 border-success/20;
+  }
+  .badge-warning {
+    @apply bg-warning/10 text-warning-700 border-warning/20;
+  }
+  .badge-destructive {
+    @apply bg-destructive/10 text-destructive-700 border-destructive/20;
+  }
+  .badge-muted {
+    @apply bg-muted text-muted-foreground border-border;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+}

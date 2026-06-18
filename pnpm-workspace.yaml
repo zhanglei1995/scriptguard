@@ -6,3 +6,23 @@ packages:
   - '!**/tickets'
   - '!**/scripts'
   - '!**/docs'
+
+allowBuilds:
+  '@parcel/watcher': set this to true or false
+  '@swc/core': set this to true or false
+  esbuild: set this to true or false
+  lmdb: set this to true or false
+  msgpackr-extract: set this to true or false
+
+# 允许 Plasmo 生态的 build scripts
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@parcel/core'
+  - '@parcel/fs'
+  - '@parcel/package-manager'
+  - '@swc/core'
+  - esbuild
+  - lmdb
+  - msgpackr-extract
+  - better-sqlite3
+  - playwright
