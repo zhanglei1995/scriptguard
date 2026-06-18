@@ -1,8 +1,11 @@
 /**
  * ScriptGuard Content Script
- * 注入到所有页面，捕获错误
+ * 注入到所有页面，捕获错误 + 执行手动检查
  * 关联: TDD §3.1.2 + §9.4
+ * SG-021: 手动测试功能
  */
+
+import { executeRules, type CheckRule, type ExecuteResult } from './content/rule-engine'
 
 // 错误捕获（最早时机）
 window.addEventListener('error', (e) => {
@@ -31,6 +34,62 @@ async function bootstrap() {
   } catch {
     // Background 未响应时静默失败
   }
+}
+
+// ====== RUN_CHECK handler ======
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === 'RUN_CHECK') {
+    handleRunCheck(message.payload?.scripts ?? [])
+      .then(sendResponse)
+      .catch((err) => {
+        sendResponse({ ok: false, error: String(err) })
+      })
+    return true // async response
+  }
+})
+
+interface ScriptPayload {
+  id: string
+  name: string
+  code: string
+  rules?: CheckRule[]
+  timeout?: number
+}
+
+async function handleRunCheck(scripts: ScriptPayload[]) {
+  const results = []
+  const url = location.href
+
+  for (const script of scripts) {
+    const startedAt = Date.now()
+    let status: 'healthy' | 'degraded' | 'failed' = 'healthy'
+    let failedRules: string[] = []
+    let errorMessage: string | undefined
+
+    try {
+      if (script.rules && script.rules.length > 0) {
+        const ruleResult: ExecuteResult = executeRules(script.rules, document, url)
+        status = ruleResult.status
+        failedRules = ruleResult.failedRules
+      }
+    } catch (err) {
+      status = 'failed'
+      errorMessage = err instanceof Error ? err.message : String(err)
+      failedRules = ['execution_error']
+    }
+
+    results.push({
+      scriptId: script.id,
+      scriptName: script.name,
+      status,
+      url,
+      duration: Date.now() - startedAt,
+      failedRules,
+      errorMessage,
+    })
+  }
+
+  return { ok: true, results }
 }
 
 export {}

@@ -61,25 +61,73 @@ export function formatRelativeTime(ts: number): string {
   return `${days}天前`
 }
 
-export function useTestRunner() {
-  const [testing, setTesting] = useState(false)
-  const [result, setResult] = useState<'success' | 'error' | null>(null)
+// ====== Test Runner Types ======
+export type TestStatus = 'idle' | 'running' | 'completed' | 'failed'
 
-  const runTest = useCallback(async (scriptId: string) => {
-    setTesting(true)
+export interface ScriptCheckResult {
+  scriptId: string
+  scriptName: string
+  status: 'healthy' | 'degraded' | 'failed'
+  url: string
+  duration: number
+  failedRules: string[]
+  errorMessage?: string
+}
+
+export interface TestResult {
+  totalScripts: number
+  passed: number
+  failed: number
+  degraded: number
+  details: ScriptCheckResult[]
+}
+
+// ====== useTestRunner ======
+export function useTestRunner() {
+  const [status, setStatus] = useState<TestStatus>('idle')
+  const [result, setResult] = useState<TestResult | null>(null)
+  const [progress, setProgress] = useState({ current: 0, total: 0 })
+
+  const runTest = useCallback(async () => {
+    setStatus('running')
     setResult(null)
+    setProgress({ current: 0, total: 0 })
+
     try {
-      await chrome.runtime.sendMessage({
-        type: 'RUN_CHECK',
-        payload: { scriptId },
+      const response = await chrome.runtime.sendMessage({
+        type: 'RUN_MANUAL_CHECK',
       })
-      setResult('success')
+
+      if (!response?.ok) {
+        setStatus('failed')
+        setResult(null)
+        return
+      }
+
+      const details: ScriptCheckResult[] = response.results ?? []
+      const passed = details.filter((r) => r.status === 'healthy').length
+      const failed = details.filter((r) => r.status === 'failed').length
+      const degraded = details.filter((r) => r.status === 'degraded').length
+
+      setResult({
+        totalScripts: details.length,
+        passed,
+        failed,
+        degraded,
+        details,
+      })
+      setStatus('completed')
     } catch {
-      setResult('error')
-    } finally {
-      setTesting(false)
+      setStatus('failed')
+      setResult(null)
     }
   }, [])
 
-  return { testing, result, runTest }
+  const reset = useCallback(() => {
+    setStatus('idle')
+    setResult(null)
+    setProgress({ current: 0, total: 0 })
+  }, [])
+
+  return { status, result, progress, runTest, reset }
 }

@@ -62,6 +62,7 @@ export type Message =
   | { type: 'GET_SCRIPTS_FOR_URL'; payload: { url: string } }
   | { type: 'REPORT_CHECK'; payload: { scriptId: string; status: string; url: string } }
   | { type: 'PING' }
+  | { type: 'RUN_MANUAL_CHECK' }
   | { type: 'SHOW_OVERLAY'; payload: { scriptId: string; message: string } }
   | { type: 'HIDE_OVERLAY' }
 
@@ -113,4 +114,9 @@ registerHandler('REPORT_CHECK', async (msg, _sender) => {
   console.log('[Router] Check report:', report.payload)
   // TODO(SG-022): 写入 IndexedDB
   return { ok: true }
+})
+
+registerHandler('RUN_MANUAL_CHECK', async (_msg, _sender) => {
+  const { checkRunner } = await import('./check-runner')
+  return checkRunner.runManualCheck()
 })

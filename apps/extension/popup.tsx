@@ -7,6 +7,8 @@ import {
   useMatchedScripts,
   useTestRunner,
   formatRelativeTime,
+  type TestResult,
+  type ScriptCheckResult,
 } from './popup/hooks'
 import type { Script } from '~storage/schemas'
 
@@ -29,7 +31,6 @@ function ScriptCard({
   lastStatus: string
   lastCheckTime: number | null
 }) {
-  const { testing, runTest } = useTestRunner()
   const cfg = statusConfig[lastStatus] ?? statusConfig.unknown
 
   return (
@@ -45,15 +46,6 @@ function ScriptCard({
         <span className="text-xs text-muted-foreground">
           上次检测：{lastCheckTime ? formatRelativeTime(lastCheckTime) : '未检测'}
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 px-2 text-xs"
-          onClick={() => runTest(script.id)}
-          disabled={testing}
-        >
-          详情
-        </Button>
       </div>
     </Card>
   )
@@ -69,10 +61,59 @@ function EmptyState() {
   )
 }
 
+function TestResultSummary({ result }: { result: TestResult }) {
+  return (
+    <Card className="p-3">
+      <div className="text-xs text-muted-foreground mb-2">测试结果</div>
+      <div className="flex items-center gap-3 mb-2">
+        <Badge variant="success" className="text-xs">✅ {result.passed} 通过</Badge>
+        {result.failed > 0 && <Badge variant="destructive" className="text-xs">❌ {result.failed} 失败</Badge>}
+        {result.degraded > 0 && <Badge variant="warning" className="text-xs">⚠️ {result.degraded} 降级</Badge>}
+      </div>
+      <div className="space-y-1">
+        {result.details.map((d) => (
+          <ResultDetail key={d.scriptId} detail={d} />
+        ))}
+      </div>
+    </Card>
+  )
+}
+
+function ResultDetail({ detail }: { detail: ScriptCheckResult }) {
+  const cfg = statusConfig[detail.status] ?? statusConfig.unknown
+
+  return (
+    <div className="flex items-center justify-between text-xs py-1 border-b border-border last:border-0">
+      <span className="truncate max-w-[200px]">{detail.scriptName}</span>
+      <div className="flex items-center gap-2 shrink-0">
+        <span className="text-muted-foreground">{detail.duration}ms</span>
+        <Badge variant={cfg.variant} className="text-[10px] px-1">
+          {cfg.icon} {cfg.label}
+        </Badge>
+      </div>
+    </div>
+  )
+}
+
+function ErrorOverlay({ error, onClose }: { error: string; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <Card className="mx-4 p-4 max-w-[320px]">
+        <div className="text-sm font-medium mb-2">测试失败</div>
+        <div className="text-xs text-muted-foreground mb-3">{error}</div>
+        <Button size="sm" className="w-full" onClick={onClose}>
+          关闭
+        </Button>
+      </Card>
+    </div>
+  )
+}
+
 function PopupApp() {
   const { tab, loading, displayUrl } = useCurrentTab()
   const matchedScripts = useMatchedScripts(tab?.url ?? null)
-  const { testing, runTest } = useTestRunner()
+  const { status, result, runTest, reset } = useTestRunner()
+  const [showError, setShowError] = useState(false)
 
   const handleOpenOptions = () => {
     chrome.runtime.openOptionsPage()
@@ -82,8 +123,9 @@ function PopupApp() {
     if (tab?.url) navigator.clipboard.writeText(tab.url)
   }
 
-  const handleRunAllTests = () => {
-    matchedScripts.forEach((s) => runTest(s.id))
+  const handleRunTest = async () => {
+    setShowError(false)
+    await runTest()
   }
 
   if (loading) {
@@ -93,6 +135,10 @@ function PopupApp() {
       </div>
     )
   }
+
+  const isRunning = status === 'running'
+  const hasResult = status === 'completed' && result
+  const hasFailed = status === 'failed'
 
   return (
     <div className="w-[380px] h-[500px] flex flex-col bg-background text-foreground">
@@ -141,26 +187,31 @@ function PopupApp() {
 
         <hr className="border-border" />
 
+        {/* Test result summary */}
+        {hasResult && <TestResultSummary result={result} />}
+
         {/* Matched scripts */}
-        <section>
-          <div className="text-xs text-muted-foreground mb-2">
-            匹配脚本 ({matchedScripts.length})
-          </div>
-          {matchedScripts.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <div className="space-y-2">
-              {matchedScripts.map((script) => (
-                <ScriptCard
-                  key={script.id}
-                  script={script}
-                  lastStatus="unknown"
-                  lastCheckTime={script.updatedAt}
-                />
-              ))}
+        {!hasResult && (
+          <section>
+            <div className="text-xs text-muted-foreground mb-2">
+              匹配脚本 ({matchedScripts.length})
             </div>
-          )}
-        </section>
+            {matchedScripts.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <div className="space-y-2">
+                {matchedScripts.map((script) => (
+                  <ScriptCard
+                    key={script.id}
+                    script={script}
+                    lastStatus="unknown"
+                    lastCheckTime={script.updatedAt}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </main>
 
       {/* Footer actions */}
@@ -168,10 +219,10 @@ function PopupApp() {
         <Button
           className="flex-1"
           size="sm"
-          onClick={handleRunAllTests}
-          disabled={testing || matchedScripts.length === 0}
+          onClick={hasResult ? reset : handleRunTest}
+          disabled={isRunning || matchedScripts.length === 0}
         >
-          🧪 立即测试
+          {isRunning ? '⏳ 测试中...' : hasResult ? '🔄 重新测试' : '🧪 立即测试'}
         </Button>
         <Button variant="outline" className="flex-1" size="sm" disabled>
           📋 查看日志
@@ -190,6 +241,11 @@ function PopupApp() {
         </div>
         <span className="text-[10px]">⌘K 搜索</span>
       </nav>
+
+      {/* Error overlay */}
+      {hasFailed && showError && (
+        <ErrorOverlay error="测试执行失败，请稍后重试" onClose={() => setShowError(false)} />
+      )}
     </div>
   )
 }

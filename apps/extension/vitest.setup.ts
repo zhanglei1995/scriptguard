@@ -8,12 +8,16 @@ const mockSessionStore: Record<string, unknown> = {}
 const chromeMock = {
   tabs: {
     query: vi.fn(async () => []),
+    sendMessage: vi.fn(async () => ({ ok: true })),
     onRemoved: {
       addListener: vi.fn(),
     },
     onUpdated: {
       addListener: vi.fn(),
     },
+  },
+  scripting: {
+    executeScript: vi.fn(async () => []),
   },
   storage: {
     local: {
