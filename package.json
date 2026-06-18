@@ -41,6 +41,10 @@
       "msgpackr-extract",
       "better-sqlite3",
       "playwright"
-    ]
+    ],
+    "overrides": {
+      "pino": "9.5.0",
+      "pino-pretty": "13.0.0"
+    }
   }
 }

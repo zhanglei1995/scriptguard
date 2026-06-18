@@ -1,0 +1,65 @@
+# ====================================
+# ScriptGuard Server - Production Image
+# 关联: TDD §11.4
+# ====================================
+# 构建阶段
+FROM node:20-alpine AS builder
+
+# pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
+
+WORKDIR /app
+
+# 依赖文件
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml .npmrc ./
+COPY tsconfig.base.json ./
+COPY apps/server/package.json ./apps/server/
+COPY packages/shared/package.json ./packages/shared/ 2>/dev/null || true
+
+# 安装依赖
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile --filter @scriptguard/server...
+
+# 源码
+COPY apps/server ./apps/server
+COPY packages/shared ./packages/shared 2>/dev/null || true
+
+# 构建
+WORKDIR /app/apps/server
+RUN pnpm build
+
+# ====================================
+# 运行阶段
+FROM node:20-alpine AS runner
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
+
+WORKDIR /app
+
+# 仅复制生产依赖
+COPY --from=builder /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml /app/.npmrc ./
+COPY --from=builder /app/apps/server/package.json ./apps/server/
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/ 2>/dev/null || true
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile --prod --filter @scriptguard/server...
+
+# 复制构建产物
+COPY --from=builder /app/apps/server/dist ./apps/server/dist
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/v1/health || exit 1
+
+# 非 root 运行
+USER node
+
+WORKDIR /app/apps/server
+
+EXPOSE 3000
+
+CMD ["node", "dist/index.js"]

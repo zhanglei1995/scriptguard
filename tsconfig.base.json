@@ -18,8 +18,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": false,
-    "useDefineForClassFields": true,
-    "resolvePackageJsonAuto": true
+    "useDefineForClassFields": true
   },
   "exclude": ["**/node_modules", "**/dist", "**/build", "**/.next", "**/.turbo"]
 }
