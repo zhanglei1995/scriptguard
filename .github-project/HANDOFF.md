@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：6/55 完成（10.9%）
+- **当前进度**：7/55 完成（12.7%）— Foundation milestone 进行中
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -39,7 +39,7 @@
 - **Project Board**：https://github.com/users/zhanglei1995/projects/1
 - **Owner**：zhanglei1995
 
-### 已完成
+### 已完成（Sprint 1 Foundation）
 
 | Ticket | 说明 | Commit |
 |---|---|---|
@@ -48,21 +48,35 @@
 | SG-003 | Fastify 云端服务骨架 | `3feacd8` |
 | SG-004 | GitHub Actions CI 工作流 | `aa1f971` |
 | SG-006 | 设计 Token + Tailwind 主题 | `ce6e328` |
-| SG-009 | Drizzle Schema（9 张表） | `1a0dc9a` |
+| SG-007 | shadcn/ui 组件库初始化（17 组件） | `18c3a92` |
+| SG-009 | Drizzle Schema（9 张表 + 索引） | `1a0dc9a` |
 
 ---
 
 ## 4. 接下来的任务
 
-按 Project Board 的 **Todo** 状态筛选，从 Sprint 1 剩余开始：
+### 4.1 Sprint 1 剩余（Foundation milestone）
 
 | 优先级 | Ticket | 说明 | 依赖 |
 |---|---|---|---|
-| ⭐⭐⭐ | **SG-009** | Drizzle Schema（9 张表） | SG-001 |
-| ⭐⭐ | SG-004 | GitHub Actions CI 工作流 | SG-001 |
-| ⭐ | SG-007 | shadcn/ui 组件库初始化 | SG-006 |
+| ⭐⭐ | **SG-010** | 客户端存储封装层（Dexie.js + chrome.storage） | SG-002 |
+| ⭐ | SG-005 | Docker Compose 本地开发环境 | SG-001 |
+| ⭐ | SG-008 | Logo 与品牌物料 | — |
 
-> **推荐下一个做 SG-009**（Drizzle Schema），它阻塞 SG-028~043 一整批云端 ticket。
+### 4.2 Sprint 2（Alpha — 插件核心架构）
+
+| 优先级 | Ticket | 说明 | 依赖 |
+|---|---|---|---|
+| ⭐⭐⭐ | **SG-011** | Background Service Worker 架构 | SG-010 |
+| ⭐⭐⭐ | **SG-012** | Content Script 注入框架 ⚠️ 风险 | SG-011 |
+| ⭐⭐⭐ | SG-013 | 脚本匹配引擎 | SG-012 |
+| ⭐⭐ | SG-014 | 脚本 CRUD（本地） | SG-010 |
+| ⭐⭐ | SG-015 | 用户脚本注入与执行 | SG-012 |
+| ⭐⭐ | SG-016 | 规则执行器接口与基类 | SG-010 |
+| ⭐⭐ | SG-017 | 6 类规则执行器（MVP 子集） | SG-016 |
+| ⭐⭐ | SG-018 | Popup 页面 MVP | SG-007 |
+
+> **推荐下一个做 SG-010**（客户端存储），它阻塞 SG-011~017 一整批核心 ticket。
 
 完整 Sprint 计划见 `tickets.md` §3。
 
@@ -81,7 +95,7 @@
 | 任务队列 | BullMQ + Redis | TDD §1 |
 | 浏览器自动化 | Playwright | TDD §1 |
 | 测试 | Vitest + happy-dom | 已用 |
-| UI 组件 | shadcn/ui + Radix | TDD §1 |
+| UI 组件 | shadcn/ui + Radix + 17 个组件 | SG-007 |
 | 鉴权 | JWT (Lucia Auth / Auth.js) | TDD §1 |
 | Lint | ESLint + Prettier | 已用 |
 
@@ -92,18 +106,28 @@
 ```
 ScriptGuard/
 ├── apps/
-│   ├── extension/         SG-002 ✅ Plasmo 浏览器插件
-│   └── server/            SG-003 ✅ Fastify 云端
-├── packages/              预留（shared, sdk, ui, db 暂为空）
-│   └── shared/            最小占位
-├── tickets/               55 张 ticket .md + INDEX + CSV + JSON
-├── scripts/               generate-tickets.js
-├── .github-project/       看板自动化脚本 + 本文档
+│   ├── extension/              SG-002 ✅ Plasmo 浏览器插件
+│   │   ├── components/ui/     SG-007 ✅ 17 个 shadcn/ui 组件
+│   │   ├── lib/               工具函数（tokens.ts, utils.ts）
+│   │   ├── styles/            globals.css（设计 Token CSS 变量）
+│   │   ├── tailwind.config.ts SG-006 ✅ 完整 Tailwind 主题
+│   │   └── components.json    SG-007 ✅ shadcn/ui 配置
+│   └── server/                SG-003 ✅ Fastify 云端
+├── packages/
+│   ├── db/                    SG-009 ✅ Drizzle Schema（9 表 + 索引）
+│   ├── shared/                最小占位
+│   ├── sdk/                   预留
+│   └── ui/                    预留
+├── .github/workflows/
+│   └── ci.yml                 SG-004 ✅ CI 工作流
+├── tickets/                   55 张 ticket .md + INDEX + CSV + JSON
+├── scripts/                   generate-tickets.js
+├── .github-project/           看板自动化脚本 + 本文档
 ├── PRD.md / TDD.md / Wireframes.md / tickets.md
-├── package.json           根 workspaces + turbo
+├── package.json               根 workspaces + turbo
 ├── pnpm-workspace.yaml
 ├── turbo.json
-└── tsconfig.base.json     strict TS 基线
+└── tsconfig.base.json         strict TS 基线
 ```
 
 ---
@@ -138,11 +162,12 @@ chore(monorepo): ...        工具/构建
 docs: ...                   文档
 refactor: ...               重构
 test: ...                   测试
+ci: ...                     CI/CD
 ```
 
 ### 8.2 完成一张 ticket 的步骤
 
-1. 找到对应 ticket（如 SG-009），读 `tickets/SG-009.md` 了解 AC
+1. 找到对应 ticket（如 SG-010），读 `tickets/SG-010.md` 了解 AC
 2. 创建/修改代码
 3. `pnpm install`（如新增依赖）→ `pnpm build` → `pnpm test` 全部通过
 4. `git add -A && git commit -m "feat(...): ... Refs SG-XXX"`
@@ -270,34 +295,59 @@ pnpm dlx husky init
 
 图标源文件**必须是** `assets/icon.png`。Plasmo 自动生成 5 种尺寸。不要自己放 `icon-16.png` 等命名。
 
+### 9.7 shadcn/ui 组件库（SG-007）
+
+已在 `apps/extension/components/ui/` 添加 17 个组件。CSS 变量已配置在 `globals.css`（light + dark）。
+
+- Toast 是自建的（非 Radix），适合浏览器插件场景
+- Command 使用 `cmdk` 包实现 ⌘K 搜索
+- `lib/utils.ts` 的 `cn()` 函数用于合并 className
+- 新增组件用 `npx shadcn@latest add <component>` 或手动创建
+
+### 9.8 Drizzle Schema（SG-009）
+
+Schema 位于 `packages/db/src/schema.ts`。9 张表 + 4 个 enum + 完整索引。
+
+- 连接配置在 `packages/db/src/drizzle.ts`（读 `DATABASE_URL` 环境变量）
+- 种子脚本：`pnpm --filter @scriptguard/db db:seed`
+- 生成迁移：`pnpm --filter @scriptguard/db db:generate`
+- 条件索引使用 `sql` 模板字面量（如 `where(sql\`${t.enabled} = true\`)`）
+
+### 9.9 CI 工作流（SG-004）
+
+位于 `.github/workflows/ci.yml`。
+
+- PR 触发：typecheck + lint + test:unit + build
+- push main：额外 e2e
+- PostgreSQL 16 service container 用于 server 测试
+- Codecov 覆盖率上传
+- Docker build 暂时跳过（无 Dockerfile）
+
 ---
 
-## 10. 你的第一个任务
+## 10. 你的下一个任务
 
-**实现 SG-009 (Drizzle Schema) 并提交。**
+**推荐做 SG-010（客户端存储封装层）。**
 
-### SG-009 简介
+### SG-010 简介
 
-- **位置**：`packages/db/src/schema.ts`（创建 packages/db/）
-- **规模**：9 张表，约 255 story points
-- **AC**（完整版见 `tickets/SG-009.md`）：
-  - [ ] 9 张表 schema：users, teams, scripts, check_rules, test_schedules, test_runs, alerts, notify_channels, script_versions
-  - [ ] 完整 enum：plan, health_status, run_at, alert_level
-  - [ ] 外键 + 索引 + 唯一约束齐全
-  - [ ] `pnpm db:generate` 生成迁移文件
-  - [ ] `pnpm db:migrate` 在干净库成功执行
-  - [ ] Seed 脚本可创建测试用户 + 脚本
+- **位置**：`apps/extension/lib/storage.ts` 或 `apps/extension/store/`
+- **AC**（完整版见 `tickets/SG-010.md`）：
+  - [ ] Dexie.js IndexedDB 封装
+  - [ ] chrome.storage.local 结构化存储
+  - [ ] Schema 版本管理与迁移
+  - [ ] 离线优先读写 API
+  - [ ] 存储清理策略
 
-- **技术参考**：`TDD.md` §4.2 有完整 Drizzle Schema 模板
-- **Owner Role**：BE
-- **依赖**：SG-001（已完成）
+- **技术参考**：`TDD.md` §4.1 客户端存储
+- **Owner Role**：FE
+- **依赖**：SG-002（已完成）
 
 ### 完成后
 
-1. commit 信息：`feat(db): initialize Drizzle schema (SG-009)\n\nRefs SG-009`
-2. 关闭 issue #9（SG-009 在 GitHub Issues 中的编号）
-3. 更新 Project Status 为 Done（用 §8.4 脚本）
-4. **来这里确认**，我（zhanglei1995）会继续做后续任务
+1. commit 信息：`feat(extension): implement client storage layer (SG-010)`
+2. 关闭对应 issue
+3. 更新 Project Status 为 Done
 
 ---
 
@@ -325,6 +375,12 @@ pnpm lint
 # 单包操作
 pnpm --filter @scriptguard/server typecheck
 pnpm --filter @scriptguard/server build
+pnpm --filter @scriptguard/db typecheck
+
+# DB 操作
+pnpm --filter @scriptguard/db db:generate
+pnpm --filter @scriptguard/db db:migrate
+pnpm --filter @scriptguard/db db:seed
 
 # GitHub
 gh issue list --repo zhanglei1995/scriptguard
@@ -369,11 +425,10 @@ gh project item-list 1 --owner zhanglei1995
 
 ## 14. 一句话总结
 
-> **ScriptGuard 是 18 周 MVP 浏览器插件 + 云端。**
-> **现在做 SG-009 (Drizzle Schema)，所有信息都在本文档和 TDD.md 里。**
+> **ScriptGuard 是 18 周 MVP 浏览器插件 + 云端，Sprint 1 已完成 7/10。**
+> **下一步做 SG-010（客户端存储），它阻塞 Sprint 2 核心功能。**
 > **写完代码 → commit + push → 关闭 issue → 更新看板状态。**
-> **来这里确认，我继续。**
 
 ---
 
-*Generated 2026-06-17 · Project Owner: zhanglei1995*
+*Updated 2026-06-18 · Project Owner: zhanglei1995*
