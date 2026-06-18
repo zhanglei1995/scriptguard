@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：16/55 完成（29.1%）— Sprint 2 进行中
+- **当前进度**：17/55 完成（30.9%）— Sprint 2 完成，Sprint 3 开始
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -59,6 +59,7 @@
 | SG-015 | 用户脚本注入与执行 | `b998067` |
 | SG-016 | 规则执行器接口与基类 | `8d5e767` |
 | SG-017 | 6 类规则执行器（MVP 子集） | `870effe` |
+| SG-018 | Popup 页面 MVP | `9ab916e` |
 
 ---
 
@@ -72,20 +73,30 @@
 
 > Sprint 1 仅剩 SG-008（品牌物料），可与 Sprint 2 并行。
 
-### 4.2 Sprint 2（Alpha — 插件核心架构）
+### 4.2 Sprint 2（Alpha — 插件核心架构）✅ 已完成
+
+| Ticket | 说明 | Commit |
+|---|---|---|
+| SG-011 | Background Service Worker 架构 | `e1724e1` |
+| SG-012 | Content Script 注入框架 | `54cb052` |
+| SG-013 | 脚本匹配引擎 | `47ae0d0` |
+| SG-014 | 脚本 CRUD（本地） | `91f4176` |
+| SG-015 | 用户脚本注入与执行 | `b998067` |
+| SG-016 | 规则执行器接口与基类 | `8d5e767` |
+| SG-017 | 6 类规则执行器（MVP） | `870effe` |
+| SG-018 | Popup 页面 MVP | `9ab916e` |
+
+### 4.3 Sprint 3（Alpha — 健康检查引擎 + UI）
 
 | 优先级 | Ticket | 说明 | 依赖 |
 |---|---|---|---|
-| ⭐⭐⭐ | **SG-011** | Background Service Worker 架构 | SG-010 ✅ |
-| ⭐⭐⭐ | **SG-012** | Content Script 注入框架 ⚠️ 风险 | SG-011 |
-| ⭐⭐⭐ | SG-013 | 脚本匹配引擎 | SG-012 |
-| ⭐⭐ | SG-014 | 脚本 CRUD（本地） | SG-010 ✅ |
-| ⭐⭐ | SG-015 | 用户脚本注入与执行 | SG-012 |
-| ⭐⭐ | SG-016 | 规则执行器接口与基类 | SG-010 ✅ |
-| ⭐⭐ | SG-017 | 6 类规则执行器（MVP 子集） | SG-016 |
-| ⭐⭐ | SG-018 | Popup 页面 MVP | SG-007 ✅ |
+| ⭐⭐⭐ | **SG-019** | 页面内失效浮层 ⚠️ 风险 | SG-012 |
+| ⭐⭐ | SG-020 | 浏览器桌面通知 | SG-011 |
+| ⭐⭐ | SG-021 | 手动测试功能 | SG-018 |
+| ⭐⭐ | SG-022 | 本地运行日志 | SG-010 |
+| ⭐ | SG-023 | chrome.alarms 本地定时检测 ⚠️ 风险 | SG-011 |
 
-> **推荐下一个做 SG-018**（Popup 页面 MVP）。
+> **推荐下一个做 SG-019**（页面内失效浮层），Sprint 3 核心功能。
 
 完整 Sprint 计划见 `tickets.md` §3。
 
@@ -122,6 +133,7 @@ ScriptGuard/
 │   │   ├── store/             SG-014 ✅ Zustand scripts store
 │   │   ├── content/           SG-015 ✅ ScriptRunner + rule engine
 │   │   ├── rules/             SG-016+017 ✅ 6 个执行器 + BaseExecutor
+│   │   ├── popup/             SG-018 ✅ Popup MVP (Tailwind/shadcn)
 │   │   ├── components/ui/     SG-007 ✅ 17 个 shadcn/ui 组件
 │   │   ├── storage/           SG-010 ✅ 客户端存储封装层
 │   │   ├── lib/               工具函数（tokens.ts, utils.ts）
@@ -355,21 +367,21 @@ Schema 位于 `packages/db/src/schema.ts`。9 张表 + 4 个 enum + 完整索引
 
 ## 10. 你的下一个任务
 
-**推荐做 SG-012（Content Script 注入框架）。⚠️ 有风险。**
+**推荐做 SG-019（页面内失效浮层）。⚠️ 有风险。**
 
-### SG-012 简介
+### SG-019 简介
 
-- **位置**：`apps/extension/content/` （已有骨架）
-- **AC**（完整版见 `tickets/SG-012.md`）：
-  - [ ] Content Script 按 match_rules 注入目标页面
-  - [ ] ISOLATED world 隔离
-  - [ ] 注入时机控制（document_start）
-  - [ ] 错误捕获隔离
-  - [ ] 与 Background SW 通信
+- **位置**：`apps/extension/content/overlay.tsx`
+- **AC**（完整版见 `tickets/SG-019.md`）：
+  - [ ] 脚本检测失败时在页面内显示浮层
+  - [ ] 显示失败原因 + 脚本名称
+  - [ ] 支持手动关闭
+  - [ ] 不影响页面布局
+  - [ ] 支持暗色模式
 
-- **技术参考**：`TDD.md` §3.1.2 Content Script
-- **Owner Role**：FE
-- **依赖**：SG-011（已完成）
+- **技术参考**：`Wireframes.md` §W11
+- **Owner Role**：FE + DS
+- **依赖**：SG-012（已完成）
 
 ### 完成后
 
