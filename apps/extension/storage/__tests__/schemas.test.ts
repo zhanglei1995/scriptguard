@@ -28,8 +28,18 @@ describe('Schemas', () => {
 
   describe('ScriptV2 (ScriptCurrent)', () => {
     it('validates script with alertLevel', () => {
-      const script = { id: '1', name: 'Test', version: '1.0.0', alertLevel: 'medium' }
-      expect(ScriptCurrent.parse(script)).toEqual(script)
+      const now = Date.now()
+      const script = {
+        id: '1', name: 'Test', version: '1.0.0', alertLevel: 'medium',
+        createdAt: now, updatedAt: now,
+      }
+      const parsed = ScriptCurrent.parse(script)
+      expect(parsed.id).toBe('1')
+      expect(parsed.name).toBe('Test')
+      expect(parsed.alertLevel).toBe('medium')
+      expect(parsed.createdAt).toBe(now)
+      expect(parsed.enabled).toBe(true)
+      expect(parsed.tags).toEqual([])
     })
 
     it('rejects invalid alertLevel', () => {
@@ -129,16 +139,20 @@ describe('Schemas', () => {
   })
 
   describe('migrateScript', () => {
-    it('migrates from V1 to V2', () => {
+    it('migrates from V1 to V3 (current)', () => {
       const v1Data = { id: '1', name: 'Test', version: '1.0.0' }
-      const result = migrateScript(v1Data, 1) as { alertLevel: string }
+      const result = migrateScript(v1Data, 1) as { alertLevel: string; createdAt: number; updatedAt: number }
       expect(result.alertLevel).toBe('medium')
+      expect(result.createdAt).toBeGreaterThan(0)
+      expect(result.updatedAt).toBeGreaterThan(0)
     })
 
-    it('keeps V2 data as-is', () => {
+    it('migrates from V2 to V3 (current)', () => {
       const v2Data = { id: '1', name: 'Test', version: '1.0.0', alertLevel: 'high' }
-      const result = migrateScript(v2Data, 2)
+      const result = migrateScript(v2Data, 2) as { alertLevel: string; createdAt: number; updatedAt: number }
       expect(result.alertLevel).toBe('high')
+      expect(result.createdAt).toBeGreaterThan(0)
+      expect(result.updatedAt).toBeGreaterThan(0)
     })
   })
 })

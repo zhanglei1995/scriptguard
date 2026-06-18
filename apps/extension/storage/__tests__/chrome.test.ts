@@ -14,9 +14,18 @@ import {
 describe('Chrome Storage', () => {
   describe('scriptsStore', () => {
     it('sets and gets scripts', async () => {
+      const now = Date.now()
       const scripts = [
-        { id: '1', name: 'Script 1', version: '1.0.0', alertLevel: 'medium' as const },
-        { id: '2', name: 'Script 2', version: '2.0.0', alertLevel: 'high' as const },
+        {
+          id: '1', name: 'Script 1', version: '1.0.0', alertLevel: 'medium' as const,
+          description: '', code: '', matchRules: [], runAt: 'document_idle' as const,
+          enabled: true, tags: [], groupId: null, config: {}, createdAt: now, updatedAt: now,
+        },
+        {
+          id: '2', name: 'Script 2', version: '2.0.0', alertLevel: 'high' as const,
+          description: '', code: '', matchRules: [], runAt: 'document_idle' as const,
+          enabled: true, tags: [], groupId: null, config: {}, createdAt: now, updatedAt: now,
+        },
       ]
       await scriptsStore.set(scripts)
       const result = await scriptsStore.get()
@@ -30,7 +39,12 @@ describe('Chrome Storage', () => {
     })
 
     it('removes scripts', async () => {
-      await scriptsStore.set([{ id: '1', name: 'Test', version: '1.0', alertLevel: 'low' as const }])
+      const now = Date.now()
+      await scriptsStore.set([{
+        id: '1', name: 'Test', version: '1.0', alertLevel: 'low' as const,
+        description: '', code: '', matchRules: [], runAt: 'document_idle' as const,
+        enabled: true, tags: [], groupId: null, config: {}, createdAt: now, updatedAt: now,
+      }])
       await scriptsStore.remove()
       const result = await scriptsStore.get()
       expect(result).toBeUndefined()

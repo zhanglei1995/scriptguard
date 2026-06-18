@@ -21,7 +21,21 @@ export const ScriptV2 = ScriptV1.extend({
 })
 export type ScriptV2 = z.infer<typeof ScriptV2>
 
-export const ScriptCurrent = ScriptV2
+export const RunAt = z.enum(['document_idle', 'document_start', 'document_end'])
+export type RunAt = z.infer<typeof RunAt>
+
+export const ScriptCurrent = ScriptV2.extend({
+  description: z.string().default(''),
+  code: z.string().default(''),
+  matchRules: z.array(z.string()).default([]),
+  runAt: RunAt.default('document_idle'),
+  enabled: z.boolean().default(true),
+  tags: z.array(z.string()).default([]),
+  groupId: z.string().nullable().default(null),
+  config: z.record(z.unknown()).default({}),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+})
 export type Script = z.infer<typeof ScriptCurrent>
 
 // ====== CheckRule ======
@@ -115,11 +129,27 @@ export const scriptMigrations: Record<number, (data: unknown) => unknown> = {
     const v1 = ScriptV1.parse(data)
     return ScriptV2.parse({ ...v1, alertLevel: 'medium' })
   },
+  3: (data: unknown) => {
+    const v2 = ScriptV2.parse(data)
+    return ScriptCurrent.parse({
+      ...v2,
+      description: '',
+      code: '',
+      matchRules: [],
+      runAt: 'document_idle',
+      enabled: true,
+      tags: [],
+      groupId: null,
+      config: {},
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+  },
 }
 
 export function migrateScript(data: unknown, fromVersion: number): Script {
   let result = data
-  for (let v = fromVersion + 1; v <= 2; v++) {
+  for (let v = fromVersion + 1; v <= 3; v++) {
     const migration = scriptMigrations[v]
     if (migration) {
       result = migration(result)
