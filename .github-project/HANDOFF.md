@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：3/55 完成（5.5%）
+- **当前进度**：6/55 完成（10.9%）
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -46,6 +46,9 @@
 | SG-001 | Monorepo 初始化（pnpm + Turborepo） | `29ce78f` |
 | SG-002 | Plasmo 浏览器插件骨架 | `68698da` |
 | SG-003 | Fastify 云端服务骨架 | `3feacd8` |
+| SG-004 | GitHub Actions CI 工作流 | `aa1f971` |
+| SG-006 | 设计 Token + Tailwind 主题 | `ce6e328` |
+| SG-009 | Drizzle Schema（9 张表） | `1a0dc9a` |
 
 ---
 
@@ -56,7 +59,6 @@
 | 优先级 | Ticket | 说明 | 依赖 |
 |---|---|---|---|
 | ⭐⭐⭐ | **SG-009** | Drizzle Schema（9 张表） | SG-001 |
-| ⭐⭐ | SG-006 | 设计 Token + Tailwind 主题 | SG-001 |
 | ⭐⭐ | SG-004 | GitHub Actions CI 工作流 | SG-001 |
 | ⭐ | SG-007 | shadcn/ui 组件库初始化 | SG-006 |
 
