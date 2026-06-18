@@ -1,73 +1,195 @@
-/**
- * ScriptGuard Popup 页面 (W1)
- * 关联: Wireframes §W1
- */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { Button } from '~components/ui/button'
+import { Badge } from '~components/ui/badge'
+import { Card } from '~components/ui/card'
+import {
+  useCurrentTab,
+  useMatchedScripts,
+  useTestRunner,
+  formatRelativeTime,
+} from './popup/hooks'
+import type { Script } from '~storage/schemas'
 
-type HealthStatus = 'healthy' | 'degraded' | 'failed' | 'unknown'
-
-interface MatchedScript {
-  id: string
-  name: string
-  version: string
-  status: HealthStatus
+const statusConfig: Record<
+  string,
+  { label: string; icon: string; variant: 'success' | 'warning' | 'destructive' | 'muted' }
+> = {
+  healthy: { label: '通过', icon: '✅', variant: 'success' },
+  degraded: { label: '降级', icon: '⚠️', variant: 'warning' },
+  failed: { label: '失效', icon: '❌', variant: 'destructive' },
+  unknown: { label: '未检测', icon: '🔘', variant: 'muted' },
 }
 
-const statusLabel: Record<HealthStatus, string> = {
-  healthy: '✅ 正常',
-  degraded: '⚠️ 降级',
-  failed: '❌ 失效',
-  unknown: '🔘 未检测',
+function ScriptCard({
+  script,
+  lastStatus,
+  lastCheckTime,
+}: {
+  script: Script
+  lastStatus: string
+  lastCheckTime: number | null
+}) {
+  const { testing, runTest } = useTestRunner()
+  const cfg = statusConfig[lastStatus] ?? statusConfig.unknown
+
+  return (
+    <Card className="p-3">
+      <div className="flex items-center justify-between mb-1">
+        <Badge variant={cfg.variant} className="text-xs">
+          {cfg.icon} {cfg.label}
+        </Badge>
+        <span className="text-xs text-muted-foreground">v{script.version}</span>
+      </div>
+      <div className="font-medium text-sm mt-1">{script.name}</div>
+      <div className="flex items-center justify-between mt-1">
+        <span className="text-xs text-muted-foreground">
+          上次检测：{lastCheckTime ? formatRelativeTime(lastCheckTime) : '未检测'}
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs"
+          onClick={() => runTest(script.id)}
+          disabled={testing}
+        >
+          详情
+        </Button>
+      </div>
+    </Card>
+  )
+}
+
+function EmptyState() {
+  return (
+    <div className="text-center py-8 text-sm text-muted-foreground">
+      <div className="text-4xl mb-2">📭</div>
+      <div>当前页面没有匹配的脚本</div>
+      <div className="mt-1 text-xs">点击右上角 [＋] 为此页面创建脚本</div>
+    </div>
+  )
 }
 
 function PopupApp() {
-  const [hostname, setHostname] = useState('加载中...')
-  const [scripts, setScripts] = useState<MatchedScript[]>([])
+  const { tab, loading, displayUrl } = useCurrentTab()
+  const matchedScripts = useMatchedScripts(tab?.url ?? null)
+  const { testing, runTest } = useTestRunner()
 
-  useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-      if (tab?.url) {
-        try {
-          setHostname(new URL(tab.url).hostname)
-        } catch {
-          setHostname(tab.url)
-        }
-      }
-    })
-  }, [])
+  const handleOpenOptions = () => {
+    chrome.runtime.openOptionsPage()
+  }
+
+  const handleCopyUrl = () => {
+    if (tab?.url) navigator.clipboard.writeText(tab.url)
+  }
+
+  const handleRunAllTests = () => {
+    matchedScripts.forEach((s) => runTest(s.id))
+  }
+
+  if (loading) {
+    return (
+      <div className="w-[380px] h-[500px] flex items-center justify-center text-sm text-muted-foreground">
+        加载中...
+      </div>
+    )
+  }
 
   return (
-    <div style={{ width: 380, minHeight: 500, fontFamily: 'system-ui, sans-serif', fontSize: 14 }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ fontWeight: 600 }}>🛡️ ScriptGuard</div>
-        <div style={{ color: '#64748b', fontSize: 12 }}>v0.1.0</div>
+    <div className="w-[380px] h-[500px] flex flex-col bg-background text-foreground">
+      {/* Header */}
+      <header className="flex items-center justify-between px-4 h-11 border-b shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">🛡️</span>
+          <span className="font-semibold text-sm">ScriptGuard</span>
+        </div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <button
+            className="hover:text-foreground transition-colors"
+            title="设置"
+            onClick={handleOpenOptions}
+          >
+            ⚙
+          </button>
+          <button className="hover:text-foreground transition-colors" title="新建脚本">
+            ＋
+          </button>
+          <button className="hover:text-foreground transition-colors" title="更多">
+            ⋯
+          </button>
+        </div>
       </header>
-      <main style={{ padding: 16 }}>
-        <div style={{ color: '#64748b', fontSize: 12, marginBottom: 4 }}>当前页面</div>
-        <div style={{ fontFamily: 'monospace', fontSize: 13, marginBottom: 16 }}>🌐 {hostname}</div>
-        <div style={{ color: '#64748b', fontSize: 12, marginBottom: 8 }}>匹配脚本 ({scripts.length})</div>
-        {scripts.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 32, color: '#64748b' }}>
-            <div style={{ fontSize: 36 }}>📭</div>
-            <div style={{ marginTop: 8 }}>当前页面没有匹配的脚本</div>
-          </div>
-        ) : (
-          scripts.map((s) => (
-            <div key={s.id} style={{ padding: 12, border: '1px solid #e2e8f0', borderRadius: 8, marginBottom: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>{statusLabel[s.status]}</span>
-                <span style={{ color: '#64748b', fontSize: 12 }}>v{s.version}</span>
-              </div>
-              <div style={{ marginTop: 4, fontWeight: 500 }}>{s.name}</div>
+
+      {/* Body */}
+      <main className="flex-1 overflow-y-auto p-4 space-y-3">
+        {/* Current page */}
+        <section>
+          <div className="text-xs text-muted-foreground mb-1">当前页面</div>
+          <div className="flex items-center justify-between gap-1">
+            <div className="flex items-center gap-1 text-sm font-mono truncate min-w-0">
+              <span className="shrink-0">🌐</span>
+              <span className="truncate">{displayUrl || '未知页面'}</span>
             </div>
-          ))
-        )}
+            <button
+              className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+              title="复制链接"
+              onClick={handleCopyUrl}
+            >
+              📋
+            </button>
+          </div>
+        </section>
+
+        <hr className="border-border" />
+
+        {/* Matched scripts */}
+        <section>
+          <div className="text-xs text-muted-foreground mb-2">
+            匹配脚本 ({matchedScripts.length})
+          </div>
+          {matchedScripts.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <div className="space-y-2">
+              {matchedScripts.map((script) => (
+                <ScriptCard
+                  key={script.id}
+                  script={script}
+                  lastStatus="unknown"
+                  lastCheckTime={script.updatedAt}
+                />
+              ))}
+            </div>
+          )}
+        </section>
       </main>
-      <footer style={{ display: 'flex', gap: 8, padding: 12, borderTop: '1px solid #e2e8f0' }}>
-        <button style={{ flex: 1, padding: 8, background: '#3B82F6', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}>🧪 立即测试</button>
-        <button style={{ flex: 1, padding: 8, background: 'white', border: '1px solid #e2e8f0', borderRadius: 6, cursor: 'pointer' }}>📋 日志</button>
-        <button style={{ flex: 1, padding: 8, background: 'white', border: '1px solid #e2e8f0', borderRadius: 6, cursor: 'pointer' }}>⚙ 后台</button>
+
+      {/* Footer actions */}
+      <footer className="border-t p-3 flex gap-2 shrink-0">
+        <Button
+          className="flex-1"
+          size="sm"
+          onClick={handleRunAllTests}
+          disabled={testing || matchedScripts.length === 0}
+        >
+          🧪 立即测试
+        </Button>
+        <Button variant="outline" className="flex-1" size="sm" disabled>
+          📋 查看日志
+        </Button>
+        <Button variant="outline" className="flex-1" size="sm" onClick={handleOpenOptions}>
+          ⚙ 打开后台
+        </Button>
       </footer>
+
+      {/* Bottom tab bar */}
+      <nav className="border-t px-4 h-9 flex items-center justify-between text-xs text-muted-foreground shrink-0">
+        <div className="flex items-center gap-3">
+          <button className="hover:text-foreground transition-colors">通知</button>
+          <button className="hover:text-foreground transition-colors">报告</button>
+          <button className="hover:text-foreground transition-colors">设置</button>
+        </div>
+        <span className="text-[10px]">⌘K 搜索</span>
+      </nav>
     </div>
   )
 }

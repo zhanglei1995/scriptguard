@@ -18,6 +18,7 @@ export default defineConfig({
     alias: [
       { find: /^~\/(.*)/, replacement: `${root}$1` },
       { find: /^~([^/])/, replacement: `${root}$1` },
+      { find: /^@\//, replacement: `${root}` },
       { find: '@scriptguard/shared', replacement: '../../packages/shared/src/index.ts' },
       { find: '@scriptguard/sdk', replacement: '../../packages/sdk/src/index.ts' },
     ],
