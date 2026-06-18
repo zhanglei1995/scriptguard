@@ -28,23 +28,5 @@
     "turbo": "^2.3.0",
     "typescript": "^5.4.0"
   },
-  "engines-comment": "Engines: Node >= 20, pnpm >= 9 (packageManager: pnpm@11.7.0)",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "@parcel/core",
-      "@parcel/fs",
-      "@parcel/package-manager",
-      "@swc/core",
-      "esbuild",
-      "lmdb",
-      "msgpackr-extract",
-      "better-sqlite3",
-      "playwright"
-    ],
-    "overrides": {
-      "pino": "9.5.0",
-      "pino-pretty": "13.0.0"
-    }
-  }
+  "engines-comment": "Engines: Node >= 20, pnpm >= 9 (packageManager: pnpm@11.7.0)"
 }

@@ -1,7 +1,6 @@
 packages:
   - 'apps/*'
   - 'packages/*'
-  # 排除非工作区目录
   - '!**/.github-project'
   - '!**/tickets'
   - '!**/scripts'
@@ -14,15 +13,20 @@ allowBuilds:
   lmdb: set this to true or false
   msgpackr-extract: set this to true or false
 
-# 允许 Plasmo 生态的 build scripts
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@parcel/core'
-  - '@parcel/fs'
-  - '@parcel/package-manager'
-  - '@swc/core'
-  - esbuild
-  - lmdb
-  - msgpackr-extract
-  - better-sqlite3
-  - playwright
+pnpm:
+  # pnpm 11.7 推荐格式（在 pnpm: key 下）
+  onlyBuiltDependencies:
+    - '@parcel/watcher'
+    - '@parcel/core'
+    - '@parcel/fs'
+    - '@parcel/package-manager'
+    - '@swc/core'
+    - esbuild
+    - lmdb
+    - msgpackr-extract
+    - better-sqlite3
+    - playwright
+  # overrides 也要在 pnpm: 下
+  overrides:
+    pino: 9.5.0
+    'pino-pretty': 13.0.0
