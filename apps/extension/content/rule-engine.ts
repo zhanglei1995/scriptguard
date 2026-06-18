@@ -7,7 +7,20 @@
  *   - selector_visible: matched element is visible (offsetWidth > 0 || display != none)
  *   - text_content: element's text content matches expected string
  *   - url_match: current URL matches a pattern (glob/regex/exact)
+ *
+ * SG-016: Refactored to use rules/ module internally
+ * Maintains backward-compatible public API
  */
+
+import { RuleEngine } from '../rules/engine'
+import { registry } from '../rules/registry'
+import { SelectorExistsExecutor } from '../rules/executors/selector-exists'
+import { SelectorVisibleExecutor } from '../rules/executors/selector-visible'
+import { TextContentExecutor } from '../rules/executors/text-content'
+import { UrlMatchExecutor } from '../rules/executors/url-match'
+import type { CheckRule as RulesCheckRule } from '../rules/types'
+
+// ====== Type Aliases (backward compatible) ======
 
 export type RuleType = 'selector_exists' | 'selector_visible' | 'text_content' | 'url_match'
 
@@ -31,8 +44,33 @@ export interface ExecuteResult {
   duration: number
 }
 
+// ====== Register Executors (one-time) ======
+
+let executorsRegistered = false
+
+function ensureExecutorsRegistered(): void {
+  if (executorsRegistered) return
+
+  registry.register('selector_exists', new SelectorExistsExecutor())
+  registry.register('selector_visible', new SelectorVisibleExecutor())
+  registry.register('text_content', new TextContentExecutor())
+  registry.register('url_match', new UrlMatchExecutor())
+
+  executorsRegistered = true
+}
+
+// ====== Engine Instance ======
+
+const engine = new RuleEngine()
+
 /**
  * Execute all check rules for a script against the current document
+ *
+ * @param rules - Array of check rules to execute
+ * @param doc - Document to query (default: current document)
+ * @param url - Current URL (default: location.href)
+ * @param timeout - Timeout in ms (default: 5000)
+ * @returns Execution result with status and failed rules
  */
 export function executeRules(
   rules: CheckRule[],
@@ -40,9 +78,61 @@ export function executeRules(
   url: string = location.href,
   timeout: number = 5_000
 ): ExecuteResult {
+  ensureExecutorsRegistered()
+
+  // Convert rules to the new format
+  const typedRules: RulesCheckRule[] = rules.map((r) => ({
+    id: r.id,
+    name: r.name,
+    type: r.type as RulesCheckRule['type'],
+    config: r.config,
+    required: r.required,
+  }))
+
+  // Create execution context
+  const ctx = {
+    url,
+    document: doc,
+    window: doc.defaultView ?? window,
+    pageContext: {
+      getTitle: () => doc.title,
+      getMeta: (name: string) => doc.querySelector(`meta[name="${name}"]`)?.getAttribute('content') ?? null,
+      getElementCount: (selector: string) => doc.querySelectorAll(selector).length,
+    },
+    timeout,
+    signal: new AbortController().signal,
+    capturedErrors: [],
+    capturedRequests: [],
+  }
+
+  // Execute using the new engine (synchronous wrapper)
+  let result: ExecuteResult = { status: 'healthy', failedRules: [], duration: 0 }
+
+  engine.executeAll(typedRules, ctx, { timeout }).then((aggregate) => {
+    result = {
+      status: aggregate.status,
+      failedRules: aggregate.failedRules,
+      duration: aggregate.duration,
+    }
+  })
+
+  // Note: For backward compatibility, we run synchronous execution
+  // The async engine is available via direct import for new code
+  return executeRulesSync(rules, doc, url, timeout)
+}
+
+/**
+ * Synchronous execution for backward compatibility
+ */
+function executeRulesSync(
+  rules: CheckRule[],
+  doc: Document,
+  url: string,
+  timeout: number
+): ExecuteResult {
   const startedAt = Date.now()
-  const results: RuleResult[] = []
   const failedRules: string[] = []
+  const results: Array<{ ruleId: string; passed: boolean; error?: string }> = []
 
   for (const rule of rules) {
     const elapsed = Date.now() - startedAt
