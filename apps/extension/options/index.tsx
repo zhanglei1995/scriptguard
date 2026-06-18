@@ -1,11 +1,23 @@
 /**
  * Options Page - 扩展选项页
  * SG-022: 本地运行日志
+ * SG-048: React.lazy code splitting
  */
 
+import { lazy, Suspense } from 'react'
 import type { PlasmoGetStyle } from 'plasmo'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
-import { LogsTab } from './logs'
+
+const LogsTab = lazy(() =>
+  import('./logs').then((mod) => {
+    performance.mark('logs-tab-loaded')
+    return { default: mod.LogsTab }
+  })
+)
+
+const ImportTab = lazy(() =>
+  import('./import-tab').then((mod) => ({ default: mod.ImportTab }))
+)
 
 export const getStyle: PlasmoGetStyle = () => {
   const style = document.createElement('style')
@@ -15,7 +27,15 @@ export const getStyle: PlasmoGetStyle = () => {
   return style
 }
 
+function TabLoadingFallback() {
+  return (
+    <div className="text-sm text-muted-foreground py-8 text-center">加载中...</div>
+  )
+}
+
 function OptionsPage() {
+  performance.mark('options-page-render')
+
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       <header className="mb-6">
@@ -29,6 +49,7 @@ function OptionsPage() {
       <Tabs defaultValue="logs">
         <TabsList>
           <TabsTrigger value="scripts">脚本管理</TabsTrigger>
+          <TabsTrigger value="import">导入</TabsTrigger>
           <TabsTrigger value="logs">运行日志</TabsTrigger>
           <TabsTrigger value="alerts">告警设置</TabsTrigger>
           <TabsTrigger value="general">通用设置</TabsTrigger>
@@ -40,8 +61,16 @@ function OptionsPage() {
           </div>
         </TabsContent>
 
+        <TabsContent value="import">
+          <Suspense fallback={<TabLoadingFallback />}>
+            <ImportTab />
+          </Suspense>
+        </TabsContent>
+
         <TabsContent value="logs">
-          <LogsTab />
+          <Suspense fallback={<TabLoadingFallback />}>
+            <LogsTab />
+          </Suspense>
         </TabsContent>
 
         <TabsContent value="alerts">

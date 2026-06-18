@@ -21,6 +21,9 @@ const ConfigSchema = z.object({
   JWT_SECRET: z.string().min(16).default('dev-secret-change-in-production-please'),
   JWT_EXPIRES_IN: z.string().default('7d'),
 
+  // Webhook
+  WEBHOOK_SECRET: z.string().min(16).default('dev-webhook-secret-change-in-prod'),
+
   // Public (exposed to extension via /api/config)
   PLASMO_PUBLIC_API_URL: z.string().url().default('http://localhost:3000'),
 })

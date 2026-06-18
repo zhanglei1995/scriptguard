@@ -18,6 +18,7 @@ export type RuleType =
   | 'js_assertion'
   | 'console_clean'
   | 'duration'
+  | 'network_status'
 
 // ====== Check Rule ======
 

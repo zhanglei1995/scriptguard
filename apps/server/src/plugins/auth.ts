@@ -10,6 +10,7 @@ const WHITELIST_PATHS = [
   '/health',
   '/ready',
   '/docs',
+  '/webhook',
   '/',
 ]
 

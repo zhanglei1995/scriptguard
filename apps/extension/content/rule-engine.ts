@@ -18,11 +18,12 @@ import { SelectorExistsExecutor } from '../rules/executors/selector-exists'
 import { SelectorVisibleExecutor } from '../rules/executors/selector-visible'
 import { TextContentExecutor } from '../rules/executors/text-content'
 import { UrlMatchExecutor } from '../rules/executors/url-match'
+import { NetworkStatusExecutor } from '../rules/executors/network-status'
 import type { CheckRule as RulesCheckRule } from '../rules/types'
 
 // ====== Type Aliases (backward compatible) ======
 
-export type RuleType = 'selector_exists' | 'selector_visible' | 'text_content' | 'url_match'
+export type RuleType = 'selector_exists' | 'selector_visible' | 'text_content' | 'url_match' | 'network_status'
 
 export interface CheckRule {
   id: string
@@ -55,6 +56,7 @@ function ensureExecutorsRegistered(): void {
   registry.register('selector_visible', new SelectorVisibleExecutor())
   registry.register('text_content', new TextContentExecutor())
   registry.register('url_match', new UrlMatchExecutor())
+  registry.register('network_status', new NetworkStatusExecutor())
 
   executorsRegistered = true
 }
@@ -185,6 +187,8 @@ function evaluateRule(rule: CheckRule, doc: Document, url: string): boolean {
       return evalTextContent(rule.config, doc)
     case 'url_match':
       return evalUrlMatch(rule.config, url)
+    case 'network_status':
+      return evalNetworkStatus(rule.config)
     default:
       return false
   }
@@ -261,4 +265,13 @@ function evalUrlMatch(config: Record<string, unknown>, url: string): boolean {
   } catch {
     return false
   }
+}
+
+function evalNetworkStatus(config: Record<string, unknown>): boolean {
+  const _urlPattern = config.urlPattern as string | undefined
+  const _mustExist = (config.mustExist as boolean) ?? true
+  if (!_urlPattern) return false
+  // In the backward-compatible sync layer, capturedRequests is always empty
+  // Network status rules require the async engine for proper evaluation
+  return _mustExist ? false : true
 }
