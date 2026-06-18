@@ -64,3 +64,6 @@ docs/out/
 
 # Project board automation cache
 .github-project/.cache/
+
+# 其他 agent 的工作目录
+tasks/

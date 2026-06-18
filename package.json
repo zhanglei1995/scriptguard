@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "ScriptGuard - 用户脚本健康监控与管理平台",
   "private": true,
-  "packageManager": "pnpm@11.7.0",
+  "packageManager": "pnpm@10.11.0",
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
