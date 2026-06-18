@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：19/55 完成（34.5%）— Sprint 3 进行中
+- **当前进度**：21/55 完成（38.2%）— Sprint 3 进行中
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -62,6 +62,8 @@
 | SG-018 | Popup 页面 MVP | `9ab916e` |
 | SG-019 | 页面内失效浮层 ⚠️ | `1c77f24` |
 | SG-021 | 手动测试功能 | `d65984e` |
+| SG-020 | 浏览器桌面通知 | `96bfed1` |
+| SG-022 | 本地运行日志 | `5e8b7b2` |
 
 ---
 
@@ -95,10 +97,10 @@
 | ⭐⭐⭐ | SG-019 | 页面内失效浮层 ⚠️ | SG-012 | ✅ |
 | ⭐⭐ | **SG-020** | 浏览器桌面通知 | SG-019 | 🔜 |
 | ⭐⭐ | SG-021 | 手动测试功能 | SG-017, SG-018 | ✅ |
-| ⭐⭐ | **SG-022** | 本地运行日志 | SG-010, SG-021 | 🔜 |
-| ⭐ | SG-023 | chrome.alarms 本地定时检测 ⚠️ | SG-011 | ⏳ |
+| ⭐⭐ | SG-022 | 本地运行日志 | SG-010, SG-021 | ✅ |
+| ⭐ | **SG-023** | chrome.alarms 本地定时检测 ⚠️ | SG-011 | 🔜 |
 
-> **推荐下一个做 SG-020**（桌面通知）或 **SG-022**（运行日志）。
+> **推荐下一个做 SG-023**（本地定时检测），Sprint 3 最后一个 ticket。
 
 完整 Sprint 计划见 `tickets.md` §3。
 
@@ -137,6 +139,7 @@ ScriptGuard/
 │   │   ├── rules/             SG-016+017 ✅ 6 个执行器 + BaseExecutor
 │   │   ├── popup/             SG-018 ✅ Popup MVP (Tailwind/shadcn)
 │   │   ├── content/           SG-019 ✅ 页面内失效浮层 (overlay)
+│   │   ├── options/           SG-022 ✅ Options 页 + 日志 Tab
 │   │   ├── components/ui/     SG-007 ✅ 17 个 shadcn/ui 组件
 │   │   ├── storage/           SG-010 ✅ 客户端存储封装层
 │   │   ├── lib/               工具函数（tokens.ts, utils.ts）
