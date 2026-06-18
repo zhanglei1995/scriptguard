@@ -64,6 +64,7 @@ const chromeMock = {
     create: vi.fn(),
     clear: vi.fn(),
     clearAll: vi.fn(),
+    getAll: vi.fn(async () => []),
     onAlarm: {
       addListener: vi.fn(),
     },
