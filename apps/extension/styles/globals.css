@@ -9,16 +9,32 @@
 
 @layer base {
   :root {
-    /* 颜色 - 浅色 */
-    --background: 0 0% 100%;        /* #FFFFFF */
-    --foreground: 222 47% 11%;      /* #0F172A */
-    --muted: 210 40% 96%;           /* #F1F5F9 */
-    --muted-foreground: 215 16% 47%; /* #64748B */
-    --border: 214 32% 91%;          /* #E2E8F0 */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    /* 品牌色 */
+    --primary: 217 91% 60%;           /* #3B82F6 */
+    --primary-foreground: 0 0% 100%;  /* #FFFFFF */
 
-    /* 间距 */
+    /* 中性色 */
+    --background: 0 0% 100%;          /* #FFFFFF */
+    --foreground: 222 47% 11%;        /* #0F172A */
+    --muted: 210 40% 96%;             /* #F1F5F9 */
+    --muted-foreground: 215 16% 47%;  /* #64748B */
+    --border: 214 32% 91%;            /* #E2E8F0 */
+    --card: 0 0% 100%;                /* #FFFFFF */
+    --card-foreground: 222 47% 11%;   /* #0F172A */
+
+    /* 状态色 */
+    --success: 160 84% 39%;           /* #10B981 */
+    --warning: 38 92% 50%;            /* #F59E0B */
+    --destructive: 0 84% 60%;         /* #EF4444 */
+    --unknown: 220 9% 46%;            /* #6B7280 */
+
+    /* 报警级别 */
+    --alert-low: 160 84% 39%;         /* #10B981 */
+    --alert-medium: 38 92% 50%;       /* #F59E0B */
+    --alert-high: 25 95% 53%;         /* #F97316 */
+    --alert-critical: 0 84% 48%;      /* #DC2626 */
+
+    /* 圆角 */
     --radius-sm: 4px;
     --radius-md: 6px;
     --radius-lg: 8px;
@@ -32,13 +48,31 @@
   }
 
   .dark {
-    --background: 222 47% 11%;      /* #0F172A */
-    --foreground: 210 40% 98%;      /* #F1F5F9 */
-    --muted: 217 33% 17%;           /* #1E293B */
-    --muted-foreground: 215 20% 65%; /* #94A3B8 */
-    --border: 217 33% 17%;          /* #334155 */
-    --card: 217 33% 17%;
-    --card-foreground: 210 40% 98%;
+    --primary: 217 91% 71%;           /* #60A5FA */
+    --primary-foreground: 222 47% 11%; /* #0F172A */
+
+    --background: 222 47% 11%;        /* #0F172A */
+    --foreground: 210 40% 98%;        /* #F1F5F9 */
+    --muted: 217 33% 17%;             /* #1E293B */
+    --muted-foreground: 215 20% 65%;  /* #94A3B8 */
+    --border: 217 33% 20%;            /* #334155 */
+    --card: 217 33% 17%;              /* #1E293B */
+    --card-foreground: 210 40% 98%;   /* #F1F5F9 */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dark {
+      --primary: 217 91% 71%;           /* #60A5FA */
+      --primary-foreground: 222 47% 11%; /* #0F172A */
+
+      --background: 222 47% 11%;        /* #0F172A */
+      --foreground: 210 40% 98%;        /* #F1F5F9 */
+      --muted: 217 33% 17%;             /* #1E293B */
+      --muted-foreground: 215 20% 65%;  /* #94A3B8 */
+      --border: 217 33% 20%;            /* #334155 */
+      --card: 217 33% 17%;              /* #1E293B */
+      --card-foreground: 210 40% 98%;   /* #F1F5F9 */
+    }
   }
 
   * {
@@ -60,13 +94,13 @@
     @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border;
   }
   .badge-success {
-    @apply bg-success/10 text-success-700 border-success/20;
+    @apply bg-success/10 text-success border-success/20;
   }
   .badge-warning {
-    @apply bg-warning/10 text-warning-700 border-warning/20;
+    @apply bg-warning/10 text-warning border-warning/20;
   }
   .badge-destructive {
-    @apply bg-destructive/10 text-destructive-700 border-destructive/20;
+    @apply bg-destructive/10 text-destructive border-destructive/20;
   }
   .badge-muted {
     @apply bg-muted text-muted-foreground border-border;
