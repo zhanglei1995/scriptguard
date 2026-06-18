@@ -1,11 +1,10 @@
 packages:
   - 'apps/*'
   - 'packages/*'
-  - 'marketing'
+  - 'docs'
   - '!**/.github-project'
   - '!**/tickets'
   - '!**/scripts'
-  - '!**/docs'
 
 # pnpm 11.7 批准 build scripts
 allowBuilds:

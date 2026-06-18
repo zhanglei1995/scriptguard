@@ -1,0 +1,101 @@
+---
+title: 快速开始
+description: 安装、配置和创建第一个监控脚本
+---
+
+## 系统要求
+
+- Node.js >= 20.0.0
+- pnpm >= 9.0.0
+- PostgreSQL >= 16
+- Redis >= 7
+
+## 安装
+
+### 克隆仓库
+
+```bash
+git clone https://github.com/scriptguard/scriptguard.git
+cd scriptguard
+```
+
+### 安装依赖
+
+```bash
+pnpm install
+```
+
+### 环境配置
+
+复制环境变量示例文件并填入实际值：
+
+```bash
+cp .env.example .env.local
+```
+
+主要配置项：
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `DATABASE_URL` | PostgreSQL 连接串 | `postgresql://localhost:5432/scriptguard` |
+| `REDIS_URL` | Redis 连接串 | `redis://localhost:6379` |
+| `JWT_SECRET` | JWT 签名密钥 | 开发环境默认值 |
+| `PORT` | 服务端口 | `3000` |
+
+### 启动数据库
+
+使用 Docker Compose 启动 PostgreSQL 和 Redis：
+
+```bash
+docker compose up -d postgres redis
+```
+
+### 运行数据库迁移
+
+```bash
+pnpm --filter @scriptguard/db migrate
+```
+
+### 启动开发服务器
+
+```bash
+pnpm dev
+```
+
+服务启动后访问：
+- API 服务：`http://localhost:3000`
+- API 文档：`http://localhost:3000/docs`
+- 健康检查：`http://localhost:3000/health`
+
+## 安装浏览器扩展
+
+### 开发模式
+
+```bash
+pnpm --filter @scriptguard/extension dev
+```
+
+这会启动 Plasmo 开发服务器。在 Chrome 中访问 `chrome://extensions`，开启「开发者模式」，点击「加载已解压的扩展程序`，选择 `apps/extension/build` 目录。
+
+### 构建生产版本
+
+```bash
+pnpm --filter @scriptguard/extension build:prod
+```
+
+## 创建第一个脚本
+
+安装扩展后，你可以通过 API 注册需要监控的脚本：
+
+```bash
+curl -X POST http://localhost:3000/api/v1/scripts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-token>" \
+  -d '{
+    "name": "示例脚本",
+    "url": "https://greasyfork.org/scripts/12345/example.user.js",
+    "checkInterval": 3600
+  }'
+```
+
+扩展将自动开始监控该脚本的健康状态。

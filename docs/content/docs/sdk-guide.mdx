@@ -1,0 +1,132 @@
+---
+title: SDK 指南
+description: 用户脚本作者 SDK 使用教程
+---
+
+## 概述
+
+ScriptGuard SDK 为用户脚本作者提供与 ScriptGuard 平台交互的工具，用于：
+
+- 注册和管理脚本
+- 上报健康状态
+- 接收检测结果
+
+## 安装
+
+在用户脚本头部通过 `@require` 引入 SDK：
+
+```javascript
+// ==UserScript==
+// @name         我的脚本
+// @namespace    https://example.com
+// @version      1.0.0
+// @require      https://cdn.jsdelivr.net/npm/@scriptguard/sdk@latest/dist/index.umd.js
+// ==/UserScript==
+```
+
+或者通过 npm 安装（适用于打包工具）：
+
+```bash
+pnpm add @scriptguard/sdk
+```
+
+```typescript
+import { ScriptGuardClient } from '@scriptguard/sdk'
+```
+
+## 初始化
+
+```typescript
+const client = new ScriptGuardClient({
+  apiUrl: 'https://api.scriptguard.dev',
+  apiKey: 'your-api-key',
+})
+```
+
+## 注册脚本
+
+```typescript
+await client.scripts.register({
+  name: '我的脚本',
+  url: window.location.href,
+  version: '1.0.0',
+})
+```
+
+## 上报健康数据
+
+```typescript
+await client.health.report({
+  scriptId: 'script-id',
+  status: 'healthy',
+  metrics: {
+    loadTime: 150,
+    memoryUsage: 1024 * 1024,
+    networkRequests: 3,
+  },
+})
+```
+
+## 监听变更通知
+
+```typescript
+client.events.on('version-changed', (event) => {
+  console.log('脚本版本已变更:', event)
+  // 显示用户警告
+  ScriptGuard.notify({
+    title: '脚本变更检测',
+    message: `${event.scriptName} 的代码已发生变更`,
+    severity: 'warning',
+  })
+})
+```
+
+## API 参考
+
+### ScriptGuardClient
+
+#### 构造函数
+
+```typescript
+new ScriptGuardClient(options: ClientOptions)
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `apiUrl` | string | 是 | API 服务地址 |
+| `apiKey` | string | 是 | API 密钥 |
+| `timeout` | number | 否 | 请求超时时间 (ms)，默认 5000 |
+
+#### client.scripts
+
+- `register(config)` — 注册新脚本
+- `list()` — 获取脚本列表
+- `get(id)` — 获取脚本详情
+- `update(id, config)` — 更新脚本配置
+- `delete(id)` — 删除脚本
+
+#### client.health
+
+- `report(data)` — 上报健康数据
+- `history(scriptId, options)` — 获取健康历史
+
+#### client.events
+
+- `on(event, handler)` — 监听事件
+- `off(event, handler)` — 取消监听
+
+### 事件类型
+
+| 事件 | 说明 |
+|------|------|
+| `version-changed` | 脚本版本发生变更 |
+| `behavior-anomaly` | 检测到异常行为 |
+| `health-degraded` | 健康状态下降 |
+| `alert` | 收到新告警 |
+
+## 最佳实践
+
+1. **异步初始化**：在脚本加载时初始化 SDK，避免阻塞主流程
+2. **错误处理**：捕获 SDK 调用异常，确保脚本正常运行不受影响
+3. **上报频率**：根据 `checkInterval` 配置合理的上报频率
+4. **数据脱敏**：不要上报包含敏感信息的指标数据

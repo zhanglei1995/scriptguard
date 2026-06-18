@@ -1,0 +1,173 @@
+---
+title: 自托管部署
+description: 使用 Docker 部署 ScriptGuard 服务
+---
+
+## 系统要求
+
+- Docker >= 24.0
+- Docker Compose >= 2.20
+- 至少 2GB 可用内存
+
+## 快速部署
+
+### 1. 克隆仓库
+
+```bash
+git clone https://github.com/scriptguard/scriptguard.git
+cd scriptguard
+```
+
+### 2. 配置环境变量
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env` 文件，修改以下关键配置：
+
+```bash
+# 生产环境务必修改以下值
+JWT_SECRET=<生成一个安全的随机字符串>
+POSTGRES_PASSWORD=<设置强密码>
+DATABASE_URL=postgresql://postgres:<password>@postgres:5432/scriptguard
+```
+
+生成 JWT 密钥：
+
+```bash
+openssl rand -base64 32
+```
+
+### 3. 构建并启动服务
+
+```bash
+# 构建镜像并启动所有服务
+docker compose -f docker/docker-compose.prod.yml up -d --build
+
+# 查看服务状态
+docker compose -f docker/docker-compose.prod.yml ps
+
+# 查看日志
+docker compose -f docker/docker-compose.prod.yml logs -f server
+```
+
+### 4. 验证部署
+
+```bash
+# 健康检查
+curl http://localhost:3000/health
+
+# API 根信息
+curl http://localhost:3000/
+```
+
+## 服务组件
+
+| 服务 | 说明 | 端口 |
+|------|------|------|
+| `postgres` | PostgreSQL 数据库 | 5432 |
+| `redis` | Redis 缓存和队列 | 6379 |
+| `server` | Fastify API 服务 | 3000 |
+| `runner` | Playwright 任务执行器 | - |
+| `nginx` | 反向代理 | 80, 443 |
+
+## 数据持久化
+
+以下数据通过 Docker Volumes 持久化：
+
+- `pgdata` — PostgreSQL 数据
+- `redisdata` — Redis 数据
+- `nginx-certs` — SSL 证书
+
+备份数据：
+
+```bash
+# 备份 PostgreSQL
+docker compose -f docker/docker-compose.prod.yml exec postgres \
+  pg_dump -U postgres scriptguard > backup.sql
+
+# 恢复 PostgreSQL
+cat backup.sql | docker compose -f docker/docker-compose.prod.yml exec -T postgres \
+  psql -U postgres scriptguard
+```
+
+## SSL 配置
+
+将 SSL 证书放入 `docker/nginx/certs/` 目录：
+
+```bash
+mkdir -p docker/nginx/certs
+cp /path/to/fullchain.pem docker/nginx/certs/
+cp /path/to/privkey.pem docker/nginx/certs/
+```
+
+更新 `docker/nginx/nginx.conf` 中的证书路径。
+
+## Runner 扩展
+
+Runner 容器默认启动 2 个副本。根据负载调整：
+
+```yaml
+# docker/docker-compose.prod.yml
+runner:
+  deploy:
+    replicas: 4
+```
+
+水平扩展：
+
+```bash
+docker compose -f docker/docker-compose.prod.yml up -d --scale runner=4
+```
+
+## 监控
+
+### Prometheus 指标
+
+Server 暴露 Prometheus 指标端点：`http://localhost:3000/metrics`
+
+### 日志
+
+```bash
+# 实时查看所有服务日志
+docker compose -f docker/docker-compose.prod.yml logs -f
+
+# 查看特定服务日志
+docker compose -f docker/docker-compose.prod.yml logs -f server
+```
+
+## 更新部署
+
+```bash
+# 拉取最新代码
+git pull origin main
+
+# 重新构建并部署
+docker compose -f docker/docker-compose.prod.yml up -d --build
+
+# 清理旧镜像
+docker image prune -f
+```
+
+## 故障排查
+
+### 服务无法启动
+
+```bash
+# 查看服务状态和日志
+docker compose -f docker/docker-compose.prod.yml ps
+docker compose -f docker/docker-compose.prod.yml logs server
+```
+
+### 数据库连接失败
+
+确保 PostgreSQL 健康检查通过：
+
+```bash
+docker compose -f docker/docker-compose.prod.yml exec postgres pg_isready -U postgres
+```
+
+### Runner 内存不足
+
+增加 Docker 分配的内存（建议 4GB+），或减少 Runner 副本数。

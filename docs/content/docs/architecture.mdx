@@ -1,0 +1,99 @@
+---
+title: 系统架构
+description: ScriptGuard 系统整体架构概览
+---
+
+## 架构总览
+
+ScriptGuard 采用前后端分离的微服务架构，由以下核心组件组成：
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  Browser Extension│────▶│   Cloud Server   │────▶│   PostgreSQL    │
+│  (Plasmo MV3)   │     │   (Fastify)      │     │   (数据存储)     │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+                              │       │
+                              ▼       ▼
+                        ┌──────┐  ┌───────────┐
+                        │Redis │  │  Runner    │
+                        │(队列) │  │(Playwright)│
+                        └──────┘  └───────────┘
+```
+
+## 核心组件
+
+### 浏览器扩展 (`apps/extension`)
+
+基于 Plasmo 框架构建的 Manifest V3 浏览器扩展，负责：
+
+- **脚本拦截**：拦截并分析用户脚本的加载和执行
+- **行为监控**：记录脚本的网络请求、DOM 操作等行为
+- **健康检测**：对比脚本指纹，检测未授权变更
+- **本地存储**：使用 IndexedDB (Dexie) 存储脚本数据
+- **通知告警**：发现异常时通过浏览器通知提醒用户
+
+技术栈：React 18 + TypeScript + Tailwind CSS + Zustand + Dexie
+
+### 云端服务 (`apps/server`)
+
+基于 Fastify 构建的 REST API 服务，提供：
+
+- **用户认证**：JWT + bcryptjs 认证机制
+- **脚本管理**：CRUD 操作和版本管理
+- **任务调度**：BullMQ 队列管理定时检测任务
+- **数据同步**：多设备间脚本配置同步
+- **监控指标**：Prometheus metrics 端点
+
+技术栈：Fastify + Drizzle ORM + Zod + BullMQ + Pino
+
+### 任务执行器 (`runner`)
+
+基于 Playwright 的独立执行容器，负责：
+
+- **脚本下载**：从源头下载脚本最新版本
+- **指纹计算**：计算脚本内容哈希用于变更检测
+- **行为分析**：在沙盒环境中执行脚本并分析行为
+
+## 数据库设计
+
+### 核心表
+
+- `users` - 用户账户信息
+- `scripts` - 脚本元数据和配置
+- `script_versions` - 脚本版本历史
+- `health_records` - 健康检测记录
+- `alerts` - 告警记录
+- `channels` - 通知渠道配置
+- `rules` - 检测规则
+- `schedules` - 定时任务配置
+
+### 技术选型
+
+- **ORM**: Drizzle ORM — 类型安全的 SQL 查询
+- **迁移**: Drizzle Kit 管理数据库迁移
+- **驱动**: postgres.js (node-postgres)
+
+## 消息队列
+
+使用 BullMQ (基于 Redis) 管理异步任务：
+
+- **健康检测任务**：定期执行脚本健康检查
+- **同步任务**：处理多设备数据同步
+- **告警任务**：异步发送通知告警
+
+## 安全机制
+
+- **CORS**：白名单域名控制
+- **Helmet**：HTTP 安全头
+- **Rate Limit**：API 限流保护
+- **CSP**：扩展内容安全策略
+- **JWT**：无状态认证令牌
+
+## 部署架构
+
+生产环境使用 Docker Compose 编排：
+
+- PostgreSQL 和 Redis 使用官方 Alpine 镜像
+- Server 使用多阶段构建减小镜像体积
+- Runner 容器支持水平扩展 (replicas: 2+)
+- Nginx 作为反向代理处理 SSL 终止
