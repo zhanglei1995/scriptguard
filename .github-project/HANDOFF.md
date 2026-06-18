@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：12/55 完成（21.8%）— Sprint 2 进行中
+- **当前进度**：13/55 完成（23.6%）— Sprint 2 进行中
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -55,6 +55,7 @@
 | SG-011 | Background Service Worker 架构 | `e1724e1` |
 | SG-012 | Content Script 注入框架 ⚠️ | `54cb052` |
 | SG-013 | 脚本匹配引擎 | `47ae0d0` |
+| SG-014 | 脚本 CRUD（本地） | `91f4176` |
 
 ---
 
@@ -81,7 +82,7 @@
 | ⭐⭐ | SG-017 | 6 类规则执行器（MVP 子集） | SG-016 |
 | ⭐⭐ | SG-018 | Popup 页面 MVP | SG-007 ✅ |
 
-> **推荐下一个做 SG-014**（脚本 CRUD 本地）。
+> **推荐下一个做 SG-015**（用户脚本注入与执行）。
 
 完整 Sprint 计划见 `tickets.md` §3。
 
@@ -115,6 +116,7 @@ ScriptGuard/
 │   │   ├── background/        SG-011 ✅ SW 架构（router, registry, alarms）
 │   │   ├── content/           SG-012 ✅ 注入框架（error-capture, injector）
 │   │   ├── matcher/           SG-013 ✅ URL 匹配引擎
+│   │   ├── store/             SG-014 ✅ Zustand scripts store
 │   │   ├── components/ui/     SG-007 ✅ 17 个 shadcn/ui 组件
 │   │   ├── storage/           SG-010 ✅ 客户端存储封装层
 │   │   ├── lib/               工具函数（tokens.ts, utils.ts）
