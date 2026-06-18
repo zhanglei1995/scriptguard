@@ -54,8 +54,9 @@ export const scriptsRoutes: FastifyPluginAsync = async (fastify) => {
     const total = countResult[0]?.count ?? 0
     const hasMore = items.length > limit
     const sliced = hasMore ? items.slice(0, limit) : items
-    const nextCursor = hasMore && sliced.length > 0
-      ? encodeCursor(sliced[sliced.length - 1].createdAt, sliced[sliced.length - 1].id)
+    const lastItem = sliced[sliced.length - 1]
+    const nextCursor = hasMore && lastItem
+      ? encodeCursor(lastItem.createdAt, lastItem.id)
       : null
     return { items: sliced, total: hasMore ? total : sliced.length, nextCursor }
   })
