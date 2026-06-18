@@ -69,6 +69,12 @@ const chromeMock = {
       addListener: vi.fn(),
     },
   },
+  runtime: {
+    sendMessage: vi.fn(async () => ({ ok: true })),
+    onMessage: {
+      addListener: vi.fn(),
+    },
+  },
 }
 
 // @ts-ignore

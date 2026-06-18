@@ -1,4 +1,7 @@
 import { defineConfig } from 'vitest/config'
+import { fileURLToPath } from 'node:url'
+
+const root = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
   test: {
@@ -12,10 +15,11 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      '~': '.',
-      '@scriptguard/shared': '../../packages/shared/src/index.ts',
-      '@scriptguard/sdk': '../../packages/sdk/src/index.ts',
-    },
+    alias: [
+      { find: /^~\/(.*)/, replacement: `${root}$1` },
+      { find: /^~([^/])/, replacement: `${root}$1` },
+      { find: '@scriptguard/shared', replacement: '../../packages/shared/src/index.ts' },
+      { find: '@scriptguard/sdk', replacement: '../../packages/sdk/src/index.ts' },
+    ],
   },
 })

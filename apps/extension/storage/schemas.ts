@@ -21,7 +21,7 @@ export const ScriptV2 = ScriptV1.extend({
 })
 export type ScriptV2 = z.infer<typeof ScriptV2>
 
-export const RunAt = z.enum(['document_idle', 'document_start', 'document_end'])
+export const RunAt = z.enum(['document_idle', 'document_start', 'document_end', 'manual'])
 export type RunAt = z.infer<typeof RunAt>
 
 export const ScriptCurrent = ScriptV2.extend({
