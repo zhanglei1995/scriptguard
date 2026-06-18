@@ -45,6 +45,9 @@ export { SelectorExistsExecutor } from './executors/selector-exists'
 export { SelectorVisibleExecutor } from './executors/selector-visible'
 export { TextContentExecutor } from './executors/text-content'
 export { UrlMatchExecutor } from './executors/url-match'
+export { JsAssertionExecutor } from './executors/js-assertion'
+export { ConsoleCleanExecutor } from './executors/console-clean'
+export { DurationExecutor } from './executors/duration'
 
 // Default context factory
 export { createDefaultExecutionContext } from './context'

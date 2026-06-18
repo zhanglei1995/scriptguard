@@ -15,6 +15,9 @@ export type RuleType =
   | 'selector_visible'
   | 'text_content'
   | 'url_match'
+  | 'js_assertion'
+  | 'console_clean'
+  | 'duration'
 
 // ====== Check Rule ======
 
