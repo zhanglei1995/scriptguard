@@ -14,6 +14,10 @@ import { rootRoutes } from './routes/root.js'
 import { apiV1Routes } from './routes/api.js'
 import errorHandlerPlugin from './plugins/error-handler.js'
 import authPlugin from './plugins/auth.js'
+import bullBoardPlugin from './plugins/bull-board.js'
+import metricsPlugin from './plugins/metrics.js'
+import { initQueue, closeQueue } from './lib/queue.js'
+import { startTestRunHandler, stopTestRunHandler } from './workers/test-run-handler.js'
 
 function isZodSchema(val: unknown): val is z.ZodType {
   return val !== null && typeof val === 'object' && '_def' in (val as Record<string, unknown>)
@@ -118,6 +122,23 @@ async function buildServer() {
 
   // 6. 业务路由（v1 命名空间）
   await fastify.register(apiV1Routes, { prefix: '/api/v1' })
+
+  // 7. Bull Board UI (开发环境)
+  await fastify.register(bullBoardPlugin)
+
+  // 8. Prometheus Metrics
+  await fastify.register(metricsPlugin)
+
+  // 9. Initialize queue
+  await initQueue()
+
+  // 10. Start test run handler
+  startTestRunHandler()
+
+  // 11. Graceful shutdown
+  fastify.addHook('onClose', async () => {
+    await stopTestRunHandler()
+  })
 
   return fastify
 }
