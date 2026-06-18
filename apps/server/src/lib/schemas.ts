@@ -134,6 +134,13 @@ export const UpdateCheckRuleSchema = z.object({
   order: z.number().int().optional(),
 })
 
+export const ReorderSchema = z.object({
+  items: z.array(z.object({
+    id: z.string().uuid(),
+    order: z.number().int(),
+  })).min(1),
+})
+
 // ============ Test Schedules ============
 export const TestScheduleSchema = z.object({
   id: z.string().uuid(),

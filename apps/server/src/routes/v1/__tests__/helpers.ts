@@ -29,6 +29,7 @@ export const mockDb = {
   insert: vi.fn(() => createChain()),
   update: vi.fn(() => createChain()),
   delete: vi.fn(() => createChain()),
+  transaction: vi.fn(async (cb: (tx: typeof mockDb) => Promise<unknown>) => cb(mockDb)),
 }
 
 export function resetMocks() {
@@ -37,6 +38,7 @@ export function resetMocks() {
   mockDb.insert.mockImplementation(() => createChain())
   mockDb.update.mockImplementation(() => createChain())
   mockDb.delete.mockImplementation(() => createChain())
+  mockDb.transaction.mockImplementation(async (cb: (tx: typeof mockDb) => Promise<unknown>) => cb(mockDb))
 }
 
 export function mockDbResult(result: unknown) {
