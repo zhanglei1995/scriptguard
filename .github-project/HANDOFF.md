@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：7/55 完成（12.7%）— Foundation milestone 进行中
+- **当前进度**：8/55 完成（14.5%）— Foundation milestone 进行中
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -50,6 +50,7 @@
 | SG-006 | 设计 Token + Tailwind 主题 | `ce6e328` |
 | SG-007 | shadcn/ui 组件库初始化（17 组件） | `18c3a92` |
 | SG-009 | Drizzle Schema（9 张表 + 索引） | `1a0dc9a` |
+| SG-010 | 客户端存储封装层（chrome + Dexie + session） | `ff26893` |
 
 ---
 
@@ -59,7 +60,6 @@
 
 | 优先级 | Ticket | 说明 | 依赖 |
 |---|---|---|---|
-| ⭐⭐ | **SG-010** | 客户端存储封装层（Dexie.js + chrome.storage） | SG-002 |
 | ⭐ | SG-005 | Docker Compose 本地开发环境 | SG-001 |
 | ⭐ | SG-008 | Logo 与品牌物料 | — |
 
@@ -67,16 +67,16 @@
 
 | 优先级 | Ticket | 说明 | 依赖 |
 |---|---|---|---|
-| ⭐⭐⭐ | **SG-011** | Background Service Worker 架构 | SG-010 |
+| ⭐⭐⭐ | **SG-011** | Background Service Worker 架构 | SG-010 ✅ |
 | ⭐⭐⭐ | **SG-012** | Content Script 注入框架 ⚠️ 风险 | SG-011 |
 | ⭐⭐⭐ | SG-013 | 脚本匹配引擎 | SG-012 |
-| ⭐⭐ | SG-014 | 脚本 CRUD（本地） | SG-010 |
+| ⭐⭐ | SG-014 | 脚本 CRUD（本地） | SG-010 ✅ |
 | ⭐⭐ | SG-015 | 用户脚本注入与执行 | SG-012 |
-| ⭐⭐ | SG-016 | 规则执行器接口与基类 | SG-010 |
+| ⭐⭐ | SG-016 | 规则执行器接口与基类 | SG-010 ✅ |
 | ⭐⭐ | SG-017 | 6 类规则执行器（MVP 子集） | SG-016 |
-| ⭐⭐ | SG-018 | Popup 页面 MVP | SG-007 |
+| ⭐⭐ | SG-018 | Popup 页面 MVP | SG-007 ✅ |
 
-> **推荐下一个做 SG-010**（客户端存储），它阻塞 SG-011~017 一整批核心 ticket。
+> **推荐下一个做 SG-011**（Background Service Worker），它是 Sprint 2 的起点，阻塞 SG-012~017。
 
 完整 Sprint 计划见 `tickets.md` §3。
 
@@ -108,6 +108,7 @@ ScriptGuard/
 ├── apps/
 │   ├── extension/              SG-002 ✅ Plasmo 浏览器插件
 │   │   ├── components/ui/     SG-007 ✅ 17 个 shadcn/ui 组件
+│   │   ├── storage/           SG-010 ✅ 客户端存储封装层
 │   │   ├── lib/               工具函数（tokens.ts, utils.ts）
 │   │   ├── styles/            globals.css（设计 Token CSS 变量）
 │   │   ├── tailwind.config.ts SG-006 ✅ 完整 Tailwind 主题
@@ -323,25 +324,37 @@ Schema 位于 `packages/db/src/schema.ts`。9 张表 + 4 个 enum + 完整索引
 - Codecov 覆盖率上传
 - Docker build 暂时跳过（无 Dockerfile）
 
+### 9.10 客户端存储（SG-010）
+
+位于 `apps/extension/storage/`。
+
+- `chrome.ts`: chrome.storage.local 封装，typed stores（scripts, rules, schedules, channels, preferences, syncMeta, auth）
+- `db.ts`: Dexie IndexedDB（checks, snapshots, alerts）+ 30 天自动清理
+- `session.ts`: chrome.storage.session 临时态（页面检测状态、通信 token）
+- `schemas.ts`: Zod schema + 版本迁移链（ScriptV1 → ScriptV2）
+- 测试：5 个测试文件，49 个测试用例
+- 注意：Dexie 在 Plasmo Content Script 中可能受限，优先用 chrome.storage
+
 ---
 
 ## 10. 你的下一个任务
 
-**推荐做 SG-010（客户端存储封装层）。**
+**推荐做 SG-011（Background Service Worker 架构）。**
 
-### SG-010 简介
+### SG-011 简介
 
-- **位置**：`apps/extension/lib/storage.ts` 或 `apps/extension/store/`
-- **AC**（完整版见 `tickets/SG-010.md`）：
-  - [ ] Dexie.js IndexedDB 封装
-  - [ ] chrome.storage.local 结构化存储
-  - [ ] Schema 版本管理与迁移
-  - [ ] 离线优先读写 API
-  - [ ] 存储清理策略
+- **位置**：`apps/extension/background/` （已有骨架）
+- **AC**（完整版见 `tickets/SG-011.md`）：
+  - [ ] Background Service Worker 生命周期管理
+  - [ ] chrome.runtime.onInstalled 初始化
+  - [ ] 消息路由系统（Content Script ↔ Background）
+  - [ ] 脚本注册表（内存缓存 + chrome.storage 持久化）
+  - [ ] TabRegistry 管理
+  - [ ] 与云端同步模块骨架
 
-- **技术参考**：`TDD.md` §4.1 客户端存储
+- **技术参考**：`TDD.md` §3.1.1 Background Service Worker
 - **Owner Role**：FE
-- **依赖**：SG-002（已完成）
+- **依赖**：SG-010（已完成）
 
 ### 完成后
 
@@ -425,8 +438,8 @@ gh project item-list 1 --owner zhanglei1995
 
 ## 14. 一句话总结
 
-> **ScriptGuard 是 18 周 MVP 浏览器插件 + 云端，Sprint 1 已完成 7/10。**
-> **下一步做 SG-010（客户端存储），它阻塞 Sprint 2 核心功能。**
+> **ScriptGuard 是 18 周 MVP 浏览器插件 + 云端，Sprint 1 已完成 8/10。**
+> **下一步做 SG-011（Background Service Worker），开启 Sprint 2。**
 > **写完代码 → commit + push → 关闭 issue → 更新看板状态。**
 
 ---
