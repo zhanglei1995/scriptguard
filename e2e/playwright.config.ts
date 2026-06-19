@@ -5,13 +5,15 @@ const EXTENSION_PATH = fileURLToPath(
   new URL('../apps/extension/build/chrome-mv3-prod', import.meta.url),
 )
 
+const isCI = !!process.env.CI
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
   workers: 1,
-  reporter: process.env.CI ? [['html', { open: 'never' }], ['github']] : 'html',
+  reporter: isCI ? [['html', { open: 'never' }], ['github']] : 'html',
   timeout: 60_000,
 
   use: {
@@ -25,7 +27,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         launchOptions: {
-          headless: false,
+          headless: isCI,
           args: [
             `--disable-extensions-except=${EXTENSION_PATH}`,
             `--load-extension=${EXTENSION_PATH}`,
@@ -38,7 +40,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Firefox'],
         launchOptions: {
-          headless: false,
+          headless: isCI,
           firefoxUserPrefs: {
             'xpinstall.signatures.required': false,
             'extensions.experiments.enabled': true,
@@ -51,7 +53,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Edge'],
         launchOptions: {
-          headless: false,
+          headless: isCI,
           channel: 'msedge',
           args: [
             `--disable-extensions-except=${EXTENSION_PATH}`,
