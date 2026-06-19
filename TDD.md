@@ -1858,13 +1858,14 @@ scriptguard/
 ├── apps/
 │   ├── extension/          # Plasmo 浏览器插件
 │   ├── server/             # Fastify 云端服务
-│   └── runner/             # Playwright Runner 镜像
+│   ├── runner/             # Playwright Runner 镜像
+│   ├── docs/               # 文档站 (Fumadocs / Next.js)
+│   └── marketing/          # 营销官网 (Next.js + Tailwind)
 ├── packages/
 │   ├── shared/             # 共享 TS 类型 / Zod schema / 消息协议
 │   ├── sdk/                # 用户嵌入的 SDK
 │   ├── ui/                 # 共享 React 组件
 │   └── db/                 # Drizzle schema (被 server 引用)
-├── docs/                   # 文档站 (Fumadocs / Nextra)
 ├── e2e/                    # E2E 测试
 ├── .github/workflows/
 ├── docker/

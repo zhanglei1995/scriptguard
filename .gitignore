@@ -59,8 +59,8 @@ desktop.ini
 .cache
 
 # Generated docs
-docs/.next/
-docs/out/
+apps/docs/.next/
+apps/docs/out/
 
 # Project board automation cache
 .github-project/.cache/
