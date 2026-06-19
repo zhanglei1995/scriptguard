@@ -3,7 +3,10 @@
  * 注入到所有页面，捕获错误 + 执行手动检查
  * 关联: TDD §3.1.2 + §9.4
  * SG-021: 手动测试功能
+ * SG-048: Performance marks
  */
+
+performance.mark('content-script-start')
 
 import { executeRules, type CheckRule, type ExecuteResult } from './content/rule-engine'
 
@@ -23,6 +26,7 @@ if (document.readyState === 'loading') {
 }
 
 async function bootstrap() {
+  performance.mark('content-script-bootstrap-start')
   try {
     const response = await chrome.runtime.sendMessage({
       type: 'GET_SCRIPTS_FOR_URL',
@@ -34,6 +38,8 @@ async function bootstrap() {
   } catch {
     // Background 未响应时静默失败
   }
+  performance.mark('content-script-bootstrap-end')
+  performance.measure('content-script-bootstrap', 'content-script-bootstrap-start', 'content-script-bootstrap-end')
 }
 
 // ====== RUN_CHECK handler ======
@@ -93,3 +99,6 @@ async function handleRunCheck(scripts: ScriptPayload[]) {
 }
 
 export {}
+
+performance.mark('content-script-end')
+performance.measure('content-script-total', 'content-script-start', 'content-script-end')

@@ -110,10 +110,14 @@ function ErrorOverlay({ error, onClose }: { error: string; onClose: () => void }
 }
 
 function PopupApp() {
+  performance.mark('popup-render-start')
   const { tab, loading, displayUrl } = useCurrentTab()
   const matchedScripts = useMatchedScripts(tab?.url ?? null)
   const { status, result, runTest, reset } = useTestRunner()
   const [showError, setShowError] = useState(false)
+
+  performance.mark('popup-render-end')
+  performance.measure('popup-render', 'popup-render-start', 'popup-render-end')
 
   const handleOpenOptions = () => {
     chrome.runtime.openOptionsPage()
