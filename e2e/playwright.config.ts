@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
-import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const EXTENSION_PATH = path.resolve(__dirname, '../apps/extension/build/chrome-mv3-prod')
+const EXTENSION_PATH = fileURLToPath(
+  new URL('../apps/extension/build/chrome-mv3-prod', import.meta.url),
+)
 
 export default defineConfig({
   testDir: './tests',

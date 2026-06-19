@@ -66,6 +66,10 @@ apps/docs/.source/
 # Next.js auto-generated
 **/next-env.d.ts
 
+# Playwright
+e2e/playwright-report/
+e2e/test-results/
+
 # Project board automation cache
 .github-project/.cache/
 
