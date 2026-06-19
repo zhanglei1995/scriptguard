@@ -39,32 +39,7 @@
 - **Project Board**：https://github.com/users/zhanglei1995/projects/1
 - **Owner**：zhanglei1995
 
-### 已完成（Sprint 1 Foundation）
-
-| Ticket | 说明 | Commit |
-|---|---|---|
-| SG-001 | Monorepo 初始化（pnpm + Turborepo） | `29ce78f` |
-| SG-002 | Plasmo 浏览器插件骨架 | `68698da` |
-| SG-003 | Fastify 云端服务骨架 | `3feacd8` |
-| SG-004 | GitHub Actions CI 工作流 | `aa1f971` |
-| SG-006 | 设计 Token + Tailwind 主题 | `ce6e328` |
-| SG-007 | shadcn/ui 组件库初始化（17 组件） | `18c3a92` |
-| SG-009 | Drizzle Schema（9 张表 + 索引） | `1a0dc9a` |
-| SG-010 | 客户端存储封装层（chrome + Dexie + session） | `ff26893` |
-| SG-005 | Docker Compose 本地开发环境 | `f6fd64b` |
-| SG-011 | Background Service Worker 架构 | `e1724e1` |
-| SG-012 | Content Script 注入框架 ⚠️ | `54cb052` |
-| SG-013 | 脚本匹配引擎 | `47ae0d0` |
-| SG-014 | 脚本 CRUD（本地） | `91f4176` |
-| SG-015 | 用户脚本注入与执行 | `b998067` |
-| SG-016 | 规则执行器接口与基类 | `8d5e767` |
-| SG-017 | 6 类规则执行器（MVP 子集） | `870effe` |
-| SG-018 | Popup 页面 MVP | `9ab916e` |
-| SG-019 | 页面内失效浮层 ⚠️ | `1c77f24` |
-| SG-021 | 手动测试功能 | `d65984e` |
-| SG-020 | 浏览器桌面通知 | `96bfed1` |
-| SG-022 | 本地运行日志 | `5e8b7b2` |
-| SG-023 | chrome.alarms 本地定时检测 ⚠️ | `c41c4c3` |
+> **55/55 tickets 全部完成**。各 Sprint ticket 完成情况见 §4。
 
 ### 已完成（Sprint 4 Beta — 云端服务）
 
@@ -79,15 +54,24 @@
 
 ---
 
-## 4. 接下来的任务
+## 4. 接下来没有任务（55/55 已完成）✅
 
-### 4.1 Sprint 1 剩余（Foundation milestone）
+> 章节编号保留是为了让 reader 仍能按 Sprint 顺序索引。每一节都是"已完成"状态。
 
-| 优先级 | Ticket | 说明 | 依赖 |
-|---|---|---|---|
-| ⭐ | SG-008 | Logo 与品牌物料 | — |
+### 4.1 Sprint 1（Foundation）✅ 已完成
 
-> Sprint 1 仅剩 SG-008（品牌物料），可与 Sprint 2 并行。
+| Ticket | 说明 | Commit |
+|---|---|---|
+| SG-001 | Monorepo 初始化（pnpm + Turborepo） | `29ce78f` |
+| SG-002 | Plasmo 浏览器插件骨架 | `68698da` |
+| SG-003 | Fastify 云端服务骨架 | `3feacd8` |
+| SG-004 | GitHub Actions CI 工作流 | `aa1f971` |
+| SG-005 | Docker Compose 本地开发环境 | `f6fd64b` |
+| SG-006 | 设计 Token + Tailwind 主题 | `ce6e328` |
+| SG-007 | shadcn/ui 组件库初始化（17 组件） | `18c3a92` |
+| SG-008 | Logo 与品牌物料 | `0b6ff23` |
+| SG-009 | Drizzle Schema（9 张表 + 索引） | `1a0dc9a` |
+| SG-010 | 客户端存储封装层（chrome + Dexie + session） | `ff26893` |
 
 ### 4.2 Sprint 2（Alpha — 插件核心架构）✅ 已完成
 
@@ -102,7 +86,7 @@
 | SG-017 | 6 类规则执行器（MVP） | `870effe` |
 | SG-018 | Popup 页面 MVP | `9ab916e` |
 
-### 4.3 Sprint 3（Alpha — 健康检查引擎 + UI）
+### 4.3 Sprint 3（Alpha — 健康检查引擎 + UI）✅ 已完成
 
 | 优先级 | Ticket | 说明 | 依赖 | 状态 |
 |---|---|---|---|---|
@@ -126,47 +110,47 @@
 
 > **Sprint 4 全部完成！**
 
-### 已完成（Sprint 5 — 任务队列 + Runner）
+### 4.5 Sprint 5（Beta — 任务队列 + Runner）✅ 已完成
 
-| Ticket | 说明 |
-|---|---|
-| SG-034 | BullMQ vs Inngest 调研（Spike） |
-| SG-035 | BullMQ 任务队列基础设施 |
-| SG-036 | Playwright Runner 容器 |
-| SG-037 | 测试报告持久化 |
-| SG-038 | 测试报告 UI |
+| Ticket | 说明 | Commit |
+|---|---|---|
+| SG-034 | BullMQ vs Inngest 调研（Spike） | `4aca62f` |
+| SG-035 | BullMQ 任务队列基础设施 | `a521f61` |
+| SG-036 | Playwright Runner 容器 | — |
+| SG-037 | 测试报告持久化 | — |
+| SG-038 | 测试报告 UI | `6f4fcbe` |
 
-### 已完成（Sprint 6 — 通知与集成）
+### 4.6 Sprint 6（通知与集成）✅ 已完成
 
-| Ticket | 说明 |
-|---|---|
-| SG-039 | 告警与通知 API |
-| SG-040 | 通知中心（多通道适配器） |
-| SG-041 | Webhook 适配器（飞书/钉钉/Slack/通用） |
-| SG-042 | 邮件通知（Nodemailer） |
-| SG-043 | GitHub Actions 集成 |
+| Ticket | 说明 | Commit |
+|---|---|---|
+| SG-039 | 告警与通知 API | `e718064` |
+| SG-040 | 通知中心（多通道适配器） | `e718064` |
+| SG-041 | Webhook 适配器（飞书/钉钉/Slack/通用） | `e718064` |
+| SG-042 | 邮件通知（Nodemailer） | `e718064` |
+| SG-043 | GitHub Actions 集成 | — |
 
-### 已完成（Sprint 7 — Beta 完善）
+### 4.7 Sprint 7（Beta 完善）✅ 已完成
 
-| Ticket | 说明 |
-|---|---|
-| SG-044 | 告警中心 UI |
-| SG-045 | 设置页面（通知 + 通用） |
-| SG-046 | 选择器采集助手 |
+| Ticket | 说明 | Commit |
+|---|---|---|
+| SG-044 | 告警中心 UI | `6f4fcbe` |
+| SG-045 | 设置页面（通知 + 通用） | `6f4fcbe` |
+| SG-046 | 选择器采集助手 | `6775d2f` |
 
-### 已完成（Sprint 8-9 — GA 收尾）
+### 4.8 Sprint 8-9（GA 收尾）✅ 已完成
 
-| Ticket | 说明 |
-|---|---|
-| SG-047 | 关键流程 E2E 自动化 |
-| SG-048 | 性能优化（Bundle 与首屏） |
-| SG-049 | 跨浏览器兼容性测试 |
-| SG-050 | 文档站（v1.0） |
-| SG-051 | Chrome Web Store 上架 |
-| SG-052 | 服务端生产部署 |
-| SG-053 | 营销官网 |
-| SG-054 | 4 类补充规则执行器（v1.0 收口） |
-| SG-055 | Tampermonkey 协同与导入 |
+| Ticket | 说明 | Commit |
+|---|---|---|
+| SG-047 | 关键流程 E2E 自动化 | `dbd613c` |
+| SG-048 | 性能优化（Bundle 与首屏） | `3f1f599` |
+| SG-049 | 跨浏览器兼容性测试 | — |
+| SG-050 | 文档站（v1.0） | `771dc11` |
+| SG-051 | Chrome Web Store 上架 | — |
+| SG-052 | 服务端生产部署 | — |
+| SG-053 | 营销官网 | `1570279` |
+| SG-054 | 4 类补充规则执行器（v1.0 收口） | — |
+| SG-055 | Tampermonkey 协同与导入 | — |
 
 ---
 
