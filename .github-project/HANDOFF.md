@@ -11,7 +11,7 @@
 
 - **周期**：18 周 MVP
 - **规模**：55 张 ticket、9 个 Epic、4 个 milestone（Foundation / Alpha / Beta / GA）
-- **当前进度**：27/55 完成（49.1%）— Sprint 4 完成，接近一半
+- **当前进度**：55/55 完成（100%）— 全部 Sprint 完成 🎉
 
 核心价值：让 Tampermonkey 脚本作者在网站改版后第一时间发现脚本失效问题。
 
@@ -124,19 +124,49 @@
 | ⭐⭐ | **SG-031** | 同步协议（增量同步 + 冲突解决）⚠️ | SG-030 | ✅ `1b03181` |
 | ⭐⭐ | **SG-033** | 测试调度 API | SG-030, SG-032 | ✅ `a88d2df` |
 
-> **Sprint 4 全部完成！** 进度 27/55（49.1%），接近一半。
+> **Sprint 4 全部完成！**
 
-### 4.5 Sprint 5（Beta — 任务队列 + Runner）
+### 已完成（Sprint 5 — 任务队列 + Runner）
 
-| 优先级 | Ticket | 说明 | 依赖 |
-|---|---|---|---|
-| ⭐⭐⭐ | **SG-034** | BullMQ vs Inngest 调研（Spike） | — |
-| ⭐⭐⭐ | **SG-035** | BullMQ 任务队列基础设施 ⚠️ | SG-034 |
-| ⭐⭐⭐ | **SG-036** | Playwright Runner 容器 ⚠️ | SG-035 |
-| ⭐⭐ | SG-037 | 测试报告持久化 | SG-036 |
-| ⭐⭐ | SG-038 | 测试报告 UI | SG-037 |
+| Ticket | 说明 |
+|---|---|
+| SG-034 | BullMQ vs Inngest 调研（Spike） |
+| SG-035 | BullMQ 任务队列基础设施 |
+| SG-036 | Playwright Runner 容器 |
+| SG-037 | 测试报告持久化 |
+| SG-038 | 测试报告 UI |
 
-> **推荐下一个做 SG-034**（BullMQ 调研 Spike），为后续任务队列奠定基础。
+### 已完成（Sprint 6 — 通知与集成）
+
+| Ticket | 说明 |
+|---|---|
+| SG-039 | 告警与通知 API |
+| SG-040 | 通知中心（多通道适配器） |
+| SG-041 | Webhook 适配器（飞书/钉钉/Slack/通用） |
+| SG-042 | 邮件通知（Nodemailer） |
+| SG-043 | GitHub Actions 集成 |
+
+### 已完成（Sprint 7 — Beta 完善）
+
+| Ticket | 说明 |
+|---|---|
+| SG-044 | 告警中心 UI |
+| SG-045 | 设置页面（通知 + 通用） |
+| SG-046 | 选择器采集助手 |
+
+### 已完成（Sprint 8-9 — GA 收尾）
+
+| Ticket | 说明 |
+|---|---|
+| SG-047 | 关键流程 E2E 自动化 |
+| SG-048 | 性能优化（Bundle 与首屏） |
+| SG-049 | 跨浏览器兼容性测试 |
+| SG-050 | 文档站（v1.0） |
+| SG-051 | Chrome Web Store 上架 |
+| SG-052 | 服务端生产部署 |
+| SG-053 | 营销官网 |
+| SG-054 | 4 类补充规则执行器（v1.0 收口） |
+| SG-055 | Tampermonkey 协同与导入 |
 
 ---
 
@@ -166,31 +196,52 @@ ScriptGuard/
 ├── apps/
 │   ├── extension/              SG-002 ✅ Plasmo 浏览器插件
 │   │   ├── background/        SG-011 ✅ SW 架构（router, registry, alarms）
-│   │   ├── content/           SG-012 ✅ 注入框架（error-capture, injector）
+│   │   ├── content/           SG-012 ✅ 注入框架 + SG-046 选择器采集
 │   │   ├── matcher/           SG-013 ✅ URL 匹配引擎
 │   │   ├── store/             SG-014 ✅ Zustand scripts store
-│   │   ├── content/           SG-015 ✅ ScriptRunner + rule engine
-│   │   ├── rules/             SG-016+017 ✅ 6 个执行器 + BaseExecutor
+│   │   ├── rules/             SG-016+017+054 ✅ 10 个执行器 + BaseExecutor
 │   │   ├── popup/             SG-018 ✅ Popup MVP (Tailwind/shadcn)
-│   │   ├── content/           SG-019 ✅ 页面内失效浮层 (overlay)
-│   │   ├── options/           SG-022 ✅ Options 页 + 日志 Tab
+│   │   ├── options/           SG-024 ✅ Options 页骨架
+│   │   │   ├── views/         SG-025~027+038+044+045 ✅ 7 个视图组件
+│   │   │   ├── index.tsx      路由 + React.lazy 按需加载
+│   │   │   ├── logs.tsx       SG-022 运行日志
+│   │   │   └── import-tab.tsx SG-055 Tampermonkey 导入
 │   │   ├── components/ui/     SG-007 ✅ 17 个 shadcn/ui 组件
 │   │   ├── storage/           SG-010 ✅ 客户端存储封装层
-│   │   ├── lib/               工具函数（tokens.ts, utils.ts）
+│   │   ├── lib/               工具函数（tokens.ts, utils.ts, tampermonkey.ts）
+│   │   ├── assets/            SG-008 ✅ Logo SVG + 品牌规范
 │   │   ├── styles/            globals.css（设计 Token CSS 变量）
 │   │   ├── tailwind.config.ts SG-006 ✅ 完整 Tailwind 主题
 │   │   └── components.json    SG-007 ✅ shadcn/ui 配置
-│   └── server/                SG-003 ✅ Fastify 云端
+│   ├── server/                SG-003 ✅ Fastify 云端
+│   │   ├── src/lib/           queue.ts + metrics.ts + notify/ 通知适配器
+│   │   ├── src/plugins/       bull-board.ts + metrics.ts + auth.ts
+│   │   ├── src/routes/v1/     9 个 API 路由模块
+│   │   ├── src/workers/       SG-037 测试报告持久化处理器
+│   │   └── src/spike/         SG-034 BullMQ POC
+│   ├── runner/                SG-036 ✅ Playwright Runner 容器
+│   │   ├── src/worker.ts      BullMQ Worker + Playwright 执行
+│   │   ├── src/browser-pool.ts 浏览器池管理（max 3）
+│   │   └── Dockerfile         基于 Playwright 官方镜像
+│   ├── marketing/             SG-053 ✅ 营销官网（Next.js 14）
+│   └── docs/                  SG-050 ✅ Fumadocs 文档站
 ├── packages/
 │   ├── db/                    SG-009 ✅ Drizzle Schema（9 表 + 索引）
-│   ├── shared/                最小占位
+│   ├── shared/                共享类型
 │   ├── sdk/                   预留
 │   └── ui/                    预留
+├── e2e/                       SG-047 ✅ Playwright E2E 测试
+├── docker/                    SG-052 ✅ 生产部署
+│   ├── server.Dockerfile
+│   ├── runner.Dockerfile
+│   ├── docker-compose.prod.yml
+│   └── nginx/nginx.conf
+├── chrome-store/              SG-051 ✅ Chrome Web Store 上架
 ├── .github/workflows/
-│   └── ci.yml                 SG-004 ✅ CI 工作流
+│   └── ci.yml                 SG-004 ✅ CI 工作流（含 E2E + 跨浏览器）
 ├── docker-compose.yml         SG-005 ✅ PostgreSQL 16 + Redis 7
 ├── tickets/                   55 张 ticket .md + INDEX + CSV + JSON
-├── scripts/                   generate-tickets.js
+├── scripts/                   generate-tickets.js + deploy.sh
 ├── .github-project/           看板自动化脚本 + 本文档
 ├── PRD.md / TDD.md / Wireframes.md / tickets.md
 ├── package.json               根 workspaces + turbo
@@ -387,10 +438,10 @@ Schema 位于 `packages/db/src/schema.ts`。9 张表 + 4 个 enum + 完整索引
 位于 `.github/workflows/ci.yml`。
 
 - PR 触发：typecheck + lint + test:unit + build
-- push main：额外 e2e
+- push main：额外 e2e + 跨浏览器测试
 - PostgreSQL 16 service container 用于 server 测试
 - Codecov 覆盖率上传
-- Docker build 暂时跳过（无 Dockerfile）
+- Docker build 已启用（server + runner 镜像）
 
 ### 9.10 客户端存储（SG-010）
 
@@ -405,29 +456,29 @@ Schema 位于 `packages/db/src/schema.ts`。9 张表 + 4 个 enum + 完整索引
 
 ---
 
-## 10. 你的下一个任务
+## 10. 项目已完成 🎉
 
-**推荐做 SG-019（页面内失效浮层）。⚠️ 有风险。**
+**55/55 tickets 全部完成 (100%)。** 所有 9 个 Sprint（Foundation → Alpha → Beta → GA）均已交付。
 
-### SG-019 简介
+### 已交付的关键模块
 
-- **位置**：`apps/extension/content/overlay.tsx`
-- **AC**（完整版见 `tickets/SG-019.md`）：
-  - [ ] 脚本检测失败时在页面内显示浮层
-  - [ ] 显示失败原因 + 脚本名称
-  - [ ] 支持手动关闭
-  - [ ] 不影响页面布局
-  - [ ] 支持暗色模式
+| 模块 | 位置 | 说明 |
+|------|------|------|
+| 浏览器插件 | `apps/extension/` | Plasmo + React 18，含 7 个 Options 视图 |
+| 云端服务 | `apps/server/` | Fastify + BullMQ + Prometheus |
+| Runner | `apps/runner/` | Playwright 容器化测试执行 |
+| 文档站 | `apps/docs/` | Fumadocs MDX 文档 |
+| 营销官网 | `apps/marketing/` | Next.js 14 + Tailwind |
+| E2E 测试 | `e2e/` | 6 个 Playwright 测试用例 |
+| 生产部署 | `docker/` | Docker Compose + Nginx + Dockerfile |
+| Chrome 上架 | `chrome-store/` | 商店文案 + 隐私政策 + 提交脚本 |
 
-- **技术参考**：`Wireframes.md` §W11
-- **Owner Role**：FE + DS
-- **依赖**：SG-012（已完成）
+### 下一步（GA 后）
 
-### 完成后
-
-1. commit 信息：`feat(extension): implement client storage layer (SG-010)`
-2. 关闭对应 issue
-3. 更新 Project Status 为 Done
+- 发布到 Chrome Web Store
+- 部署生产环境（`docker-compose.prod.yml`）
+- 收集用户反馈
+- 迭代 v1.1+
 
 ---
 
@@ -440,6 +491,9 @@ pnpm install
 # 开发
 pnpm --filter @scriptguard/extension dev
 pnpm --filter @scriptguard/server dev
+pnpm --filter @scriptguard/runner dev
+pnpm --filter @scriptguard/docs dev
+pnpm --filter @scriptguard/marketing dev
 
 # 构建
 pnpm build
@@ -505,10 +559,10 @@ gh project item-list 1 --owner zhanglei1995
 
 ## 14. 一句话总结
 
-> **ScriptGuard 是 18 周 MVP 浏览器插件 + 云端，Sprint 1 已完成 8/10。**
-> **下一步做 SG-011（Background Service Worker），开启 Sprint 2。**
-> **写完代码 → commit + push → 关闭 issue → 更新看板状态。**
+> **ScriptGuard 是 18 周 MVP 浏览器插件 + 云端，55/55 tickets 全部完成 (100%)。**
+> **已交付：插件核心 + 云端服务 + Playwright Runner + 通知系统 + 文档 + 营销 + 部署。**
+> **下一步：发布到 Chrome Web Store，部署生产环境。**
 
 ---
 
-*Updated 2026-06-18 · Project Owner: zhanglei1995*
+*Updated 2026-06-19 · Project Owner: zhanglei1995 · Status: COMPLETE ✅*
