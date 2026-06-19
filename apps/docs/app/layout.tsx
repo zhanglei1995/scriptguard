@@ -1,7 +1,12 @@
 import './global.css'
-import { RootLayout } from 'fumadocs-ui/layouts/root'
-import { baseOptions } from '@/layouts/layout.config'
+import { RootProvider } from 'fumadocs-ui/provider'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <RootLayout {...baseOptions}>{children}</RootLayout>
+  return (
+    <html lang="zh-CN" suppressHydrationWarning>
+      <body className="flex flex-col min-h-screen">
+        <RootProvider>{children}</RootProvider>
+      </body>
+    </html>
+  )
 }
