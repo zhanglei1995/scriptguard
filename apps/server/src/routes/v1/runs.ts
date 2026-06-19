@@ -10,7 +10,7 @@ import {
   RunListQuerySchema,
 } from '../../lib/schemas.js'
 import { zodToJsonSchema } from 'zod-to-json-schema'
-import { addTestJob } from '../../lib/queue.js'
+import { addTestRunJob } from '../../lib/queue.js'
 
 const IdParams = z.object({ id: z.string().uuid() })
 
@@ -53,7 +53,7 @@ export const runsRoutes: FastifyPluginAsync = async (fastify) => {
       result: {},
     }).returning()
 
-    await addTestJob(id, '')
+    await addTestRunJob({ scriptId: id, url: '', rules: [] })
     return run
   })
 
