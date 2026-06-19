@@ -61,6 +61,10 @@ desktop.ini
 # Generated docs
 apps/docs/.next/
 apps/docs/out/
+apps/docs/.source/
+
+# Next.js auto-generated
+**/next-env.d.ts
 
 # Project board automation cache
 .github-project/.cache/
