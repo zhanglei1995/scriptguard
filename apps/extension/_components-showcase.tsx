@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Empty } from '@/components/ui/empty'
+import { Button } from '~components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~components/ui/card'
+import { Badge } from '~components/ui/badge'
+import { Input } from '~components/ui/input'
+import { Textarea } from '~components/ui/textarea'
+import { Switch } from '~components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~components/ui/tabs'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~components/ui/table'
+import { Skeleton } from '~components/ui/skeleton'
+import { Empty } from '~components/ui/empty'
 import {
   Dialog,
   DialogContent,
@@ -17,18 +17,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '~components/ui/dialog'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { ToastProvider, Toaster, useToast } from '@/components/ui/toast'
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
-import { ThemeProvider, ThemeToggle } from '@/components/ui/theme-provider'
+} from '~components/ui/select'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~components/ui/tooltip'
+import { ToastProvider, Toaster, useToast } from '~components/ui/toast'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '~components/ui/command'
+import { ThemeProvider, ThemeToggle } from '~components/ui/theme-provider'
 
 function ComponentsShowcaseInner() {
   const [switchOn, setSwitchOn] = useState(false)
