@@ -30,9 +30,9 @@ scriptguard/
 │   ├── docs/               # Fumadocs 文档站 (Next.js)
 │   └── marketing/          # 营销官网 (Next.js + Tailwind)
 ├── packages/
-│   ├── shared/             # 共享 TS 类型 + Zod schema
-│   ├── sdk/                # 用户嵌入的 SDK
-│   ├── ui/                 # 共享 React 组件 (shadcn/ui)
+│   ├── shared/             # 共享 TS 类型、Zod schema、队列契约
+│   ├── sdk/                # 用户嵌入 SDK（规划中 / 占位）
+│   ├── ui/                 # 共享 React 组件（规划中 / 占位）
 │   └── db/                 # Drizzle ORM schema
 ├── e2e/                    # Playwright E2E 测试
 ├── docker/                 # 生产部署 (Compose + Nginx + Dockerfile)
@@ -94,8 +94,10 @@ pnpm --filter @scriptguard/server dev
 | `pnpm dev`       | 启动 dev 模式（并行） |
 | `pnpm lint`      | 运行所有 ESLint 检查  |
 | `pnpm typecheck` | 运行所有 TS 类型检查  |
-| `pnpm test`      | 运行所有单元测试      |
+| `pnpm test`      | 运行单元测试          |
+| `pnpm test:unit` | 运行单元测试          |
 | `pnpm test:e2e`  | 运行 E2E 测试         |
+| `pnpm test:all`  | 运行所有 test 任务    |
 | `pnpm format`    | 格式化所有文件        |
 | `pnpm clean`     | 清理所有 build 产物   |
 
@@ -121,15 +123,9 @@ pnpm --filter @scriptguard/server dev
 
 ## 📊 项目状态
 
-| 阶段                  | 进度         | 状态      |
-| --------------------- | ------------ | --------- |
-| 18 周 MVP v1.0        | 0/55 tickets | 🚧 进行中 |
-| Sprint 1 (Foundation) | 0/9          | 📋 规划中 |
-| Alpha (Sprint 2-3)    | 0/18         | ⏳ 待开始 |
-| Beta (Sprint 4-7)     | 0/19         | ⏳ 待开始 |
-| GA (Sprint 8-9)       | 0/9          | ⏳ 待开始 |
+当前仓库处于 MVP 工程化与核心链路建设阶段，已包含浏览器插件、Fastify 服务端、独立 Playwright Runner、共享契约包、Drizzle schema、Docker/CI 基础设施与 E2E 骨架。
 
-查看完整进度：[Project Board](https://github.com/users/zhanglei1995/projects/1)
+计划类文档（PRD/TDD/tickets）仍保留完整产品蓝图，实际进度以 [Project Board](https://github.com/users/zhanglei1995/projects/1) 和仓库代码为准。
 
 ---
 

@@ -6,7 +6,7 @@ packages:
   - '!**/tickets'
   - '!**/scripts'
 
-# pnpm 11.7 批准 build scripts
+# pnpm 10+/11 批准 build scripts
 allowBuilds:
   '@parcel/watcher': true
   '@parcel/core': true
@@ -18,3 +18,4 @@ allowBuilds:
   msgpackr-extract: true
   better-sqlite3: true
   playwright: true
+  sharp: true

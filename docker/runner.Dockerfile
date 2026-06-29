@@ -1,37 +1,37 @@
 # ============================================
 # ScriptGuard Runner - Playwright Worker
 # ============================================
-# Placeholder until runner implementation is ready
 
-FROM mcr.microsoft.com/playwright:v1.45.0-jammy AS base
+FROM mcr.microsoft.com/playwright:v1.45.0-jammy AS builder
+
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
 
 WORKDIR /app
 
-# Create placeholder package
-COPY <<EOF package.json
-{
-  "name": "@scriptguard/runner",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "worker": "node worker.js"
-  }
-}
-EOF
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY tsconfig.base.json ./
+COPY packages/shared/package.json ./packages/shared/package.json
+COPY apps/runner/package.json ./apps/runner/package.json
 
-# Create placeholder worker
-COPY <<EOF worker.js
-import { setTimeout } from 'node:timers/promises';
+RUN pnpm install --frozen-lockfile
 
-console.log('ScriptGuard Runner started (placeholder)');
+COPY packages/shared ./packages/shared
+COPY apps/runner ./apps/runner
 
-while (true) {
-  console.log('[runner] heartbeat - waiting for tasks...');
-  await setTimeout(30_000);
-}
-EOF
+RUN pnpm --filter @scriptguard/shared build \
+  && pnpm --filter @scriptguard/runner build
+
+FROM mcr.microsoft.com/playwright:v1.45.0-jammy AS runner
+
+WORKDIR /app
+
+COPY --from=builder --chown=pwuser:pwuser /app/package.json ./package.json
+COPY --from=builder --chown=pwuser:pwuser /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=builder --chown=pwuser:pwuser /app/node_modules ./node_modules
+COPY --from=builder --chown=pwuser:pwuser /app/packages ./packages
+COPY --from=builder --chown=pwuser:pwuser /app/apps/runner ./apps/runner
 
 USER pwuser
+WORKDIR /app/apps/runner
 
-CMD ["node", "worker.js"]
+CMD ["node", "dist/worker.js"]

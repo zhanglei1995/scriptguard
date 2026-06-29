@@ -8,155 +8,154 @@
  * Priority chain: data-testid > data-test > aria-label > role+text > name > id > class > CSS path
  */
 
-import type { PlasmoCSConfig } from 'plasmo'
+import type { PlasmoCSConfig } from 'plasmo';
 
 export const config: PlasmoCSConfig = {
   matches: ['<all_urls>'],
   run_at: 'document_idle',
   world: 'ISOLATED',
-}
+};
 
-let active = false
-let highlightOverlay: HTMLDivElement | null = null
-let previewTooltip: HTMLDivElement | null = null
-let panelContainer: HTMLDivElement | null = null
-let currentElement: Element | null = null
+let active = false;
+let highlightOverlay: HTMLDivElement | null = null;
+let previewTooltip: HTMLDivElement | null = null;
+let panelContainer: HTMLDivElement | null = null;
 
 // ====== Selector Generation ======
 
 function generateSelector(el: Element): string {
   if (el.id) {
-    return `#${el.id}`
+    return `#${el.id}`;
   }
 
-  const testId = el.getAttribute('data-testid')
+  const testId = el.getAttribute('data-testid');
   if (testId) {
-    return `[data-testid="${testId}"]`
+    return `[data-testid="${testId}"]`;
   }
 
-  const dataTest = el.getAttribute('data-test')
+  const dataTest = el.getAttribute('data-test');
   if (dataTest) {
-    return `[data-test="${dataTest}"]`
+    return `[data-test="${dataTest}"]`;
   }
 
-  const ariaLabel = el.getAttribute('aria-label')
+  const ariaLabel = el.getAttribute('aria-label');
   if (ariaLabel) {
-    const tag = el.tagName.toLowerCase()
-    return `${tag}[aria-label="${ariaLabel}"]`
+    const tag = el.tagName.toLowerCase();
+    return `${tag}[aria-label="${ariaLabel}"]`;
   }
 
-  const role = el.getAttribute('role')
+  const role = el.getAttribute('role');
   if (role) {
-    const text = (el.textContent ?? '').trim().slice(0, 30)
-    const tag = el.tagName.toLowerCase()
+    const text = (el.textContent ?? '').trim().slice(0, 30);
+    const tag = el.tagName.toLowerCase();
     if (text) {
-      return `${tag}[role="${role}"] >> text="${text}"`
+      return `${tag}[role="${role}"] >> text="${text}"`;
     }
-    return `${tag}[role="${role}"]`
+    return `${tag}[role="${role}"]`;
   }
 
-  const name = el.getAttribute('name')
+  const name = el.getAttribute('name');
   if (name) {
-    return `[name="${name}"]`
+    return `[name="${name}"]`;
   }
 
-  const className = el.getAttribute('class')
+  const className = el.getAttribute('class');
   if (className) {
-    const classes = className.split(/\s+/).filter(Boolean)
+    const classes = className.split(/\s+/).filter(Boolean);
     if (classes.length > 0) {
-      const tag = el.tagName.toLowerCase()
-      const classSelector = classes.map((c) => `.${CSS.escape(c)}`).join('')
-      return `${tag}${classSelector}`
+      const tag = el.tagName.toLowerCase();
+      const classSelector = classes.map((c) => `.${CSS.escape(c)}`).join('');
+      return `${tag}${classSelector}`;
     }
   }
 
-  return buildCssPath(el)
+  return buildCssPath(el);
 }
 
 function buildCssPath(el: Element): string {
-  const parts: string[] = []
-  let current: Element | null = el
+  const parts: string[] = [];
+  let current: Element | null = el;
 
   while (current && current !== document.body && current !== document.documentElement) {
-    let selector = current.tagName.toLowerCase()
+    let selector = current.tagName.toLowerCase();
 
     if (current.id) {
-      selector = `#${CSS.escape(current.id)}`
-      parts.unshift(selector)
-      break
+      selector = `#${CSS.escape(current.id)}`;
+      parts.unshift(selector);
+      break;
     }
 
-    const parent = current.parentElement
+    const parent = current.parentElement;
     if (parent) {
       const siblings = Array.from(parent.children).filter(
-        (child) => child.tagName === current!.tagName
-      )
+        (child) => child.tagName === current!.tagName,
+      );
       if (siblings.length > 1) {
-        const index = siblings.indexOf(current) + 1
-        selector += `:nth-of-type(${index})`
+        const index = siblings.indexOf(current) + 1;
+        selector += `:nth-of-type(${index})`;
       }
     }
 
-    parts.unshift(selector)
-    current = current.parentElement
+    parts.unshift(selector);
+    current = current.parentElement;
   }
 
-  return parts.join(' > ')
+  return parts.join(' > ');
 }
 
 function generateAlternativeSelectors(el: Element): string[] {
-  const alternatives: string[] = []
-  const tag = el.tagName.toLowerCase()
+  const alternatives: string[] = [];
+  const tag = el.tagName.toLowerCase();
 
   if (el.id) {
-    alternatives.push(`#${el.id}`)
+    alternatives.push(`#${el.id}`);
   }
 
-  const testId = el.getAttribute('data-testid')
+  const testId = el.getAttribute('data-testid');
   if (testId) {
-    alternatives.push(`[data-testid="${testId}"]`)
+    alternatives.push(`[data-testid="${testId}"]`);
   }
 
-  const className = el.getAttribute('class')
+  const className = el.getAttribute('class');
   if (className) {
-    const classes = className.split(/\s+/).filter(Boolean)
+    const classes = className.split(/\s+/).filter(Boolean);
     if (classes.length > 0) {
-      alternatives.push(`${tag}${classes.map((c) => `.${CSS.escape(c)}`).join('')}`)
+      alternatives.push(`${tag}${classes.map((c) => `.${CSS.escape(c)}`).join('')}`);
     }
   }
 
-  const text = (el.textContent ?? '').trim()
+  const text = (el.textContent ?? '').trim();
   if (text && text.length < 50) {
-    alternatives.push(`${tag}:has-text("${text.slice(0, 30)}")`)
+    alternatives.push(`${tag}:has-text("${text.slice(0, 30)}")`);
   }
 
-  return [...new Set(alternatives)]
+  return [...new Set(alternatives)];
 }
 
 function calculateStabilityScore(el: Element): number {
-  let score = 50
+  let score = 50;
 
-  if (el.id) score += 30
-  if (el.getAttribute('data-testid')) score += 25
-  if (el.getAttribute('data-test')) score += 20
-  if (el.getAttribute('aria-label')) score += 15
-  if (el.getAttribute('role')) score += 10
-  if (el.getAttribute('name')) score += 15
+  if (el.id) score += 30;
+  if (el.getAttribute('data-testid')) score += 25;
+  if (el.getAttribute('data-test')) score += 20;
+  if (el.getAttribute('aria-label')) score += 15;
+  if (el.getAttribute('role')) score += 10;
+  if (el.getAttribute('name')) score += 15;
 
-  const className = el.getAttribute('class')
+  const className = el.getAttribute('class');
   if (className) {
-    const autoGenerated = /\b(col-|row-|css-|sc-|styled-|tw-)/.test(className)
-    if (autoGenerated) score -= 10
-    else score += 5
+    const autoGenerated = /\b(col-|row-|css-|sc-|styled-|tw-)/.test(className);
+    if (autoGenerated) score -= 10;
+    else score += 5;
   }
 
-  return Math.max(0, Math.min(100, score))
+  return Math.max(0, Math.min(100, score));
 }
 
 // ====== UI ======
 
 function createHighlightOverlay(): HTMLDivElement {
-  const overlay = document.createElement('div')
+  const overlay = document.createElement('div');
   overlay.style.cssText = `
     position: absolute;
     pointer-events: none;
@@ -165,13 +164,13 @@ function createHighlightOverlay(): HTMLDivElement {
     background: rgba(59, 130, 246, 0.1);
     transition: all 0.1s ease;
     border-radius: 2px;
-  `
-  document.body.appendChild(overlay)
-  return overlay
+  `;
+  document.body.appendChild(overlay);
+  return overlay;
 }
 
 function createPreviewTooltip(): HTMLDivElement {
-  const tooltip = document.createElement('div')
+  const tooltip = document.createElement('div');
   tooltip.style.cssText = `
     position: absolute;
     z-index: 2147483647;
@@ -188,46 +187,46 @@ function createPreviewTooltip(): HTMLDivElement {
     pointer-events: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     transition: opacity 0.15s ease;
-  `
-  document.body.appendChild(tooltip)
-  return tooltip
+  `;
+  document.body.appendChild(tooltip);
+  return tooltip;
 }
 
 function showHighlight(el: Element): void {
-  const rect = el.getBoundingClientRect()
-  const scrollX = window.scrollX
-  const scrollY = window.scrollY
+  const rect = el.getBoundingClientRect();
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
 
-  highlightOverlay!.style.display = 'block'
-  highlightOverlay!.style.left = `${rect.left + scrollX}px`
-  highlightOverlay!.style.top = `${rect.top + scrollY}px`
-  highlightOverlay!.style.width = `${rect.width}px`
-  highlightOverlay!.style.height = `${rect.height}px`
+  highlightOverlay!.style.display = 'block';
+  highlightOverlay!.style.left = `${rect.left + scrollX}px`;
+  highlightOverlay!.style.top = `${rect.top + scrollY}px`;
+  highlightOverlay!.style.width = `${rect.width}px`;
+  highlightOverlay!.style.height = `${rect.height}px`;
 
-  const selector = generateSelector(el)
-  previewTooltip!.textContent = selector
-  previewTooltip!.style.display = 'block'
+  const selector = generateSelector(el);
+  previewTooltip!.textContent = selector;
+  previewTooltip!.style.display = 'block';
 
-  const tooltipX = rect.left + scrollX
-  const tooltipY = rect.top + scrollY - 32
-  previewTooltip!.style.left = `${Math.max(0, tooltipX)}px`
-  previewTooltip!.style.top = `${Math.max(0, tooltipY)}px`
+  const tooltipX = rect.left + scrollX;
+  const tooltipY = rect.top + scrollY - 32;
+  previewTooltip!.style.left = `${Math.max(0, tooltipX)}px`;
+  previewTooltip!.style.top = `${Math.max(0, tooltipY)}px`;
 }
 
 function hideHighlight(): void {
-  if (highlightOverlay) highlightOverlay.style.display = 'none'
-  if (previewTooltip) previewTooltip.style.display = 'none'
+  if (highlightOverlay) highlightOverlay.style.display = 'none';
+  if (previewTooltip) previewTooltip.style.display = 'none';
 }
 
 function showPanel(el: Element): void {
-  removePanel()
+  removePanel();
 
-  const selector = generateSelector(el)
-  const alternatives = generateAlternativeSelectors(el)
-  const stability = calculateStabilityScore(el)
-  const matchCount = document.querySelectorAll(selector).length
+  const selector = generateSelector(el);
+  const alternatives = generateAlternativeSelectors(el);
+  const stability = calculateStabilityScore(el);
+  const matchCount = document.querySelectorAll(selector).length;
 
-  panelContainer = document.createElement('div')
+  panelContainer = document.createElement('div');
   panelContainer.style.cssText = `
     position: fixed;
     bottom: 20px;
@@ -244,9 +243,9 @@ function showPanel(el: Element): void {
     max-height: 500px;
     overflow-y: auto;
     line-height: 1.5;
-  `
+  `;
 
-  const stabilityColor = stability >= 80 ? '#22c55e' : stability >= 50 ? '#f59e0b' : '#ef4444'
+  const stabilityColor = stability >= 80 ? '#22c55e' : stability >= 50 ? '#f59e0b' : '#ef4444';
 
   panelContainer.innerHTML = `
     <div style="padding: 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
@@ -272,66 +271,75 @@ function showPanel(el: Element): void {
           <div style="font-size: 20px; font-weight: 700; color: ${matchCount === 1 ? '#22c55e' : '#f59e0b'};">${matchCount}</div>
         </div>
       </div>
-      ${alternatives.length > 1 ? `
+      ${
+        alternatives.length > 1
+          ? `
         <div style="margin-bottom: 12px;">
           <div style="font-size: 12px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">候选选择器</div>
-          ${alternatives.slice(0, 5).map((alt) => `
+          ${alternatives
+            .slice(0, 5)
+            .map(
+              (alt) => `
             <div class="sg-sc-alt" data-selector="${alt}" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; word-break: break-all; cursor: pointer;">${alt}</div>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </div>
-      ` : ''}
+      `
+          : ''
+      }
       <div style="display: flex; gap: 8px;">
         <button id="sg-sc-copy" style="flex: 1; background: #3b82f6; color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer;">复制选择器</button>
         <button id="sg-sc-cancel" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer;">取消</button>
       </div>
     </div>
-  `
+  `;
 
-  document.body.appendChild(panelContainer)
+  document.body.appendChild(panelContainer);
 
   // Event listeners
-  const closeBtn = panelContainer.querySelector('#sg-sc-close')!
-  closeBtn.addEventListener('click', deactivate)
+  const closeBtn = panelContainer.querySelector('#sg-sc-close')!;
+  closeBtn.addEventListener('click', deactivate);
 
-  const copyBtn = panelContainer.querySelector('#sg-sc-copy')! as HTMLElement
+  const copyBtn = panelContainer.querySelector('#sg-sc-copy')! as HTMLElement;
   copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(selector).then(() => {
-      copyBtn.textContent = '已复制 ✓'
-      copyBtn.style.background = '#22c55e'
+      copyBtn.textContent = '已复制 ✓';
+      copyBtn.style.background = '#22c55e';
       setTimeout(() => {
-        copyBtn.textContent = '复制选择器'
-        copyBtn.style.background = '#3b82f6'
-      }, 1500)
-    })
-    sendSelectorToBackground(selector, el)
-  })
+        copyBtn.textContent = '复制选择器';
+        copyBtn.style.background = '#3b82f6';
+      }, 1500);
+    });
+    sendSelectorToBackground(selector, el);
+  });
 
-  const selectorBox = panelContainer.querySelector('#sg-sc-selector')! as HTMLElement
+  const selectorBox = panelContainer.querySelector('#sg-sc-selector')! as HTMLElement;
   selectorBox.addEventListener('click', () => {
-    navigator.clipboard.writeText(selector)
-    selectorBox.style.background = '#dcfce7'
+    navigator.clipboard.writeText(selector);
+    selectorBox.style.background = '#dcfce7';
     setTimeout(() => {
-      selectorBox.style.background = '#f8fafc'
-    }, 500)
-  })
+      selectorBox.style.background = '#f8fafc';
+    }, 500);
+  });
 
-  const cancelBtn = panelContainer.querySelector('#sg-sc-cancel')!
-  cancelBtn.addEventListener('click', deactivate)
+  const cancelBtn = panelContainer.querySelector('#sg-sc-cancel')!;
+  cancelBtn.addEventListener('click', deactivate);
 
-  const altSelectors = panelContainer.querySelectorAll('.sg-sc-alt')
+  const altSelectors = panelContainer.querySelectorAll('.sg-sc-alt');
   altSelectors.forEach((altEl) => {
     altEl.addEventListener('click', () => {
-      const altSelector = altEl.getAttribute('data-selector')!
-      navigator.clipboard.writeText(altSelector)
-      sendSelectorToBackground(altSelector, el)
-      deactivate()
-    })
-  })
+      const altSelector = altEl.getAttribute('data-selector')!;
+      navigator.clipboard.writeText(altSelector);
+      sendSelectorToBackground(altSelector, el);
+      deactivate();
+    });
+  });
 }
 
 function removePanel(): void {
-  panelContainer?.remove()
-  panelContainer = null
+  panelContainer?.remove();
+  panelContainer = null;
 }
 
 function sendSelectorToBackground(selector: string, el: Element): void {
@@ -348,7 +356,7 @@ function sendSelectorToBackground(selector: string, el: Element): void {
         stabilityScore: calculateStabilityScore(el),
         matchCount: document.querySelectorAll(selector).length,
       },
-    })
+    });
   } catch {
     // Background not available
   }
@@ -357,104 +365,101 @@ function sendSelectorToBackground(selector: string, el: Element): void {
 // ====== Event Handlers ======
 
 function onMouseOver(e: MouseEvent): void {
-  if (!active) return
-  const target = e.target as Element
-  if (!target || target === document.body || target === document.documentElement) return
-  if (panelContainer?.contains(target)) return
+  if (!active) return;
+  const target = e.target as Element;
+  if (!target || target === document.body || target === document.documentElement) return;
+  if (panelContainer?.contains(target)) return;
 
-  currentElement = target
-  showHighlight(target)
+  showHighlight(target);
 }
 
 function onMouseOut(e: MouseEvent): void {
-  if (!active) return
-  const related = e.relatedTarget as Element | null
-  if (related && panelContainer?.contains(related)) return
-  hideHighlight()
-  currentElement = null
+  if (!active) return;
+  const related = e.relatedTarget as Element | null;
+  if (related && panelContainer?.contains(related)) return;
+  hideHighlight();
 }
 
 function onClick(e: MouseEvent): void {
-  if (!active) return
-  e.preventDefault()
-  e.stopPropagation()
+  if (!active) return;
+  e.preventDefault();
+  e.stopPropagation();
 
-  const target = e.target as Element
-  if (!target || target === document.body || target === document.documentElement) return
-  if (panelContainer?.contains(target)) return
+  const target = e.target as Element;
+  if (!target || target === document.body || target === document.documentElement) return;
+  if (panelContainer?.contains(target)) return;
 
-  hideHighlight()
-  showPanel(target)
-  deactivate()
+  hideHighlight();
+  showPanel(target);
+  deactivate();
 }
 
 function onKeyDown(e: KeyboardEvent): void {
   if (e.key === 'Escape' && active) {
-    deactivate()
+    deactivate();
   }
 }
 
 function onContextMenu(e: MouseEvent): void {
   if (active) {
-    e.preventDefault()
-    deactivate()
+    e.preventDefault();
+    deactivate();
   }
 }
 
 // ====== Activation ======
 
 function activate(): void {
-  if (active) return
-  active = true
+  if (active) return;
+  active = true;
 
-  highlightOverlay = createHighlightOverlay()
-  previewTooltip = createPreviewTooltip()
+  highlightOverlay = createHighlightOverlay();
+  previewTooltip = createPreviewTooltip();
 
-  document.addEventListener('mouseover', onMouseOver, true)
-  document.addEventListener('mouseout', onMouseOut, true)
-  document.addEventListener('click', onClick, true)
-  document.addEventListener('keydown', onKeyDown, true)
-  document.addEventListener('contextmenu', onContextMenu, true)
+  document.addEventListener('mouseover', onMouseOver, true);
+  document.addEventListener('mouseout', onMouseOut, true);
+  document.addEventListener('click', onClick, true);
+  document.addEventListener('keydown', onKeyDown, true);
+  document.addEventListener('contextmenu', onContextMenu, true);
 
-  document.body.style.cursor = 'crosshair'
+  document.body.style.cursor = 'crosshair';
 }
 
 function deactivate(): void {
-  if (!active) return
-  active = false
+  if (!active) return;
+  active = false;
 
-  hideHighlight()
-  removePanel()
+  hideHighlight();
+  removePanel();
 
-  highlightOverlay?.remove()
-  highlightOverlay = null
-  previewTooltip?.remove()
-  previewTooltip = null
+  highlightOverlay?.remove();
+  highlightOverlay = null;
+  previewTooltip?.remove();
+  previewTooltip = null;
 
-  document.removeEventListener('mouseover', onMouseOver, true)
-  document.removeEventListener('mouseout', onMouseOut, true)
-  document.removeEventListener('click', onClick, true)
-  document.removeEventListener('keydown', onKeyDown, true)
-  document.removeEventListener('contextmenu', onContextMenu, true)
+  document.removeEventListener('mouseover', onMouseOver, true);
+  document.removeEventListener('mouseout', onMouseOut, true);
+  document.removeEventListener('click', onClick, true);
+  document.removeEventListener('keydown', onKeyDown, true);
+  document.removeEventListener('contextmenu', onContextMenu, true);
 
-  document.body.style.cursor = ''
-  currentElement = null
+  document.body.style.cursor = '';
 }
 
 // ====== Message Listener ======
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'ACTIVATE_SELECTOR_COLLECTOR') {
-    activate()
-    sendResponse({ ok: true })
-    return true
+    activate();
+    sendResponse({ ok: true });
+    return true;
   }
   if (message.type === 'DEACTIVATE_SELECTOR_COLLECTOR') {
-    deactivate()
-    sendResponse({ ok: true })
-    return true
+    deactivate();
+    sendResponse({ ok: true });
+    return true;
   }
-  return false
-})
+  return false;
+});
 
-export {}
+export {};

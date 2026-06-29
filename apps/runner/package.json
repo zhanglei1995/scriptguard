@@ -18,7 +18,8 @@
     "bullmq": "^5.30.0",
     "ioredis": "^5.4.1",
     "playwright": "^1.45.0",
-    "pino": "^9.5.0"
+    "pino": "^9.5.0",
+    "@scriptguard/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

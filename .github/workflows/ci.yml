@@ -21,14 +21,11 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --no-frozen-lockfile
-      # TODO: 修复 extension 测试文件 TS 错误后移除 continue-on-error
-      - name: Typecheck (警告模式)
-        run: pnpm typecheck || echo "⚠️ Typecheck warnings (not blocking)"
-        continue-on-error: true
-      - name: Lint (警告模式)
-        run: pnpm lint || echo "⚠️ Lint warnings (not blocking)"
-        continue-on-error: true
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Lint
+        run: pnpm lint
 
   test:
     name: Test
@@ -57,7 +54,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - run: pnpm test:unit
       - uses: codecov/codecov-action@v4
         with:
@@ -75,7 +72,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - uses: actions/upload-artifact@v4
         with:
@@ -91,7 +88,7 @@ jobs:
     # these tests in CI requires Xvfb or a custom runner image — not
     # worth the infra cost for an MVP project. Keep the job running so
     # future debugging still has CI logs to read, but don't gate the
-    # branch on it. Run them locally with `pnpm e2e` for real coverage.
+    # branch on it. Run them locally with `pnpm test:e2e` for real coverage.
     name: E2E Tests
     continue-on-error: true
     runs-on: ubuntu-latest
@@ -120,13 +117,13 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium firefox msedge
+        run: pnpm exec playwright install --with-deps chromium
       - name: Build extension
         run: pnpm --filter @scriptguard/extension build
       - name: Run E2E tests
-        run: pnpm --filter @scriptguard/e2e test
+        run: pnpm test:e2e
 
   e2e-cross-browser:
     # See e2e job above: extension testing in CI is best-effort only.
@@ -159,7 +156,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium firefox msedge
       - name: Build extension (Chrome)

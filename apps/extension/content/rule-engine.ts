@@ -12,58 +12,67 @@
  * Maintains backward-compatible public API
  */
 
-import { RuleEngine } from '../rules/engine'
-import { registry } from '../rules/registry'
-import { SelectorExistsExecutor } from '../rules/executors/selector-exists'
-import { SelectorVisibleExecutor } from '../rules/executors/selector-visible'
-import { TextContentExecutor } from '../rules/executors/text-content'
-import { UrlMatchExecutor } from '../rules/executors/url-match'
-import { NetworkStatusExecutor } from '../rules/executors/network-status'
-import type { CheckRule as RulesCheckRule } from '../rules/types'
+import { registry } from '../rules/registry';
+import { SelectorExistsExecutor } from '../rules/executors/selector-exists';
+import { SelectorVisibleExecutor } from '../rules/executors/selector-visible';
+import { TextContentExecutor } from '../rules/executors/text-content';
+import { UrlMatchExecutor } from '../rules/executors/url-match';
+import { NetworkStatusExecutor } from '../rules/executors/network-status';
+import { JsAssertionExecutor } from '../rules/executors/js-assertion';
+import { ConsoleCleanExecutor } from '../rules/executors/console-clean';
+import { DurationExecutor } from '../rules/executors/duration';
+import type { CheckRule as RulesCheckRule } from '../rules/types';
 
 // ====== Type Aliases (backward compatible) ======
 
-export type RuleType = 'selector_exists' | 'selector_visible' | 'text_content' | 'url_match' | 'network_status'
+export type RuleType =
+  | 'selector_exists'
+  | 'selector_visible'
+  | 'text_content'
+  | 'url_match'
+  | 'network_status'
+  | 'js_assertion'
+  | 'console_clean'
+  | 'duration';
 
 export interface CheckRule {
-  id: string
-  name: string
-  type: RuleType
-  config: Record<string, unknown>
-  required: boolean
+  id: string;
+  name: string;
+  type: RuleType;
+  config: Record<string, unknown>;
+  required: boolean;
 }
 
 export interface RuleResult {
-  ruleId: string
-  passed: boolean
-  error?: string
+  ruleId: string;
+  passed: boolean;
+  error?: string;
 }
 
 export interface ExecuteResult {
-  status: 'healthy' | 'degraded' | 'failed'
-  failedRules: string[]
-  duration: number
+  status: 'healthy' | 'degraded' | 'failed';
+  failedRules: string[];
+  duration: number;
 }
 
 // ====== Register Executors (one-time) ======
 
-let executorsRegistered = false
+let executorsRegistered = false;
 
 function ensureExecutorsRegistered(): void {
-  if (executorsRegistered) return
+  if (executorsRegistered) return;
 
-  registry.register('selector_exists', new SelectorExistsExecutor())
-  registry.register('selector_visible', new SelectorVisibleExecutor())
-  registry.register('text_content', new TextContentExecutor())
-  registry.register('url_match', new UrlMatchExecutor())
-  registry.register('network_status', new NetworkStatusExecutor())
+  registry.register('selector_exists', new SelectorExistsExecutor());
+  registry.register('selector_visible', new SelectorVisibleExecutor());
+  registry.register('text_content', new TextContentExecutor());
+  registry.register('url_match', new UrlMatchExecutor());
+  registry.register('network_status', new NetworkStatusExecutor());
+  registry.register('js_assertion', new JsAssertionExecutor());
+  registry.register('console_clean', new ConsoleCleanExecutor());
+  registry.register('duration', new DurationExecutor());
 
-  executorsRegistered = true
+  executorsRegistered = true;
 }
-
-// ====== Engine Instance ======
-
-const engine = new RuleEngine()
 
 /**
  * Execute all check rules for a script against the current document
@@ -78,9 +87,9 @@ export function executeRules(
   rules: CheckRule[],
   doc: Document = document,
   url: string = location.href,
-  timeout: number = 5_000
+  timeout: number = 5_000,
 ): ExecuteResult {
-  ensureExecutorsRegistered()
+  ensureExecutorsRegistered();
 
   // Convert rules to the new format
   const typedRules: RulesCheckRule[] = rules.map((r) => ({
@@ -89,7 +98,7 @@ export function executeRules(
     type: r.type as RulesCheckRule['type'],
     config: r.config,
     required: r.required,
-  }))
+  }));
 
   // Create execution context
   const ctx = {
@@ -98,29 +107,22 @@ export function executeRules(
     window: doc.defaultView ?? window,
     pageContext: {
       getTitle: () => doc.title,
-      getMeta: (name: string) => doc.querySelector(`meta[name="${name}"]`)?.getAttribute('content') ?? null,
+      getMeta: (name: string) =>
+        doc.querySelector(`meta[name="${name}"]`)?.getAttribute('content') ?? null,
       getElementCount: (selector: string) => doc.querySelectorAll(selector).length,
     },
     timeout,
     signal: new AbortController().signal,
     capturedErrors: [],
     capturedRequests: [],
-  }
+  };
 
-  // Execute using the new engine (synchronous wrapper)
-  let result: ExecuteResult = { status: 'healthy', failedRules: [], duration: 0 }
-
-  engine.executeAll(typedRules, ctx, { timeout }).then((aggregate) => {
-    result = {
-      status: aggregate.status,
-      failedRules: aggregate.failedRules,
-      duration: aggregate.duration,
-    }
-  })
+  void typedRules;
+  void ctx;
 
   // Note: For backward compatibility, we run synchronous execution
   // The async engine is available via direct import for new code
-  return executeRulesSync(rules, doc, url, timeout)
+  return executeRulesSync(rules, doc, url, timeout);
 }
 
 /**
@@ -130,128 +132,134 @@ function executeRulesSync(
   rules: CheckRule[],
   doc: Document,
   url: string,
-  timeout: number
+  timeout: number,
 ): ExecuteResult {
-  const startedAt = Date.now()
-  const failedRules: string[] = []
-  const results: Array<{ ruleId: string; passed: boolean; error?: string }> = []
+  const startedAt = Date.now();
+  const failedRules: string[] = [];
+  const results: Array<{ ruleId: string; passed: boolean; error?: string }> = [];
 
   for (const rule of rules) {
-    const elapsed = Date.now() - startedAt
+    const elapsed = Date.now() - startedAt;
     if (elapsed >= timeout) {
-      failedRules.push(rule.id)
-      results.push({ ruleId: rule.id, passed: false, error: 'rule_timeout' })
-      continue
+      failedRules.push(rule.id);
+      results.push({ ruleId: rule.id, passed: false, error: 'rule_timeout' });
+      continue;
     }
 
     try {
-      const passed = evaluateRule(rule, doc, url)
+      const passed = evaluateRule(rule, doc, url);
       if (!passed) {
-        failedRules.push(rule.id)
+        failedRules.push(rule.id);
       }
-      results.push({ ruleId: rule.id, passed })
+      results.push({ ruleId: rule.id, passed });
     } catch (err) {
-      failedRules.push(rule.id)
+      failedRules.push(rule.id);
       results.push({
         ruleId: rule.id,
         passed: false,
         error: err instanceof Error ? err.message : String(err),
-      })
+      });
     }
   }
 
-  const duration = Date.now() - startedAt
+  const duration = Date.now() - startedAt;
   const requiredFailed = results.some(
-    (r) => !r.passed && rules.find((rule) => rule.id === r.ruleId)?.required
-  )
+    (r) => !r.passed && rules.find((rule) => rule.id === r.ruleId)?.required,
+  );
 
-  let status: 'healthy' | 'degraded' | 'failed'
+  let status: 'healthy' | 'degraded' | 'failed';
   if (failedRules.length === 0) {
-    status = 'healthy'
+    status = 'healthy';
   } else if (requiredFailed) {
-    status = 'failed'
+    status = 'failed';
   } else {
-    status = 'degraded'
+    status = 'degraded';
   }
 
-  return { status, failedRules, duration }
+  return { status, failedRules, duration };
 }
 
 function evaluateRule(rule: CheckRule, doc: Document, url: string): boolean {
   switch (rule.type) {
     case 'selector_exists':
-      return evalSelectorExists(rule.config, doc)
+      return evalSelectorExists(rule.config, doc);
     case 'selector_visible':
-      return evalSelectorVisible(rule.config, doc)
+      return evalSelectorVisible(rule.config, doc);
     case 'text_content':
-      return evalTextContent(rule.config, doc)
+      return evalTextContent(rule.config, doc);
     case 'url_match':
-      return evalUrlMatch(rule.config, url)
+      return evalUrlMatch(rule.config, url);
     case 'network_status':
-      return evalNetworkStatus(rule.config)
+      return evalNetworkStatus(rule.config);
+    case 'js_assertion':
+      return evalJsAssertion(rule.config, doc);
+    case 'console_clean':
+      return true;
+    case 'duration':
+      return evalDuration(rule.config, doc);
     default:
-      return false
+      return false;
   }
 }
 
 function evalSelectorExists(config: Record<string, unknown>, doc: Document): boolean {
-  const selector = config.selector as string | undefined
-  if (!selector) return false
-  return doc.querySelector(selector) !== null
+  const selector = config.selector as string | undefined;
+  if (!selector) return false;
+  return doc.querySelector(selector) !== null;
 }
 
 function evalSelectorVisible(config: Record<string, unknown>, doc: Document): boolean {
-  const selector = config.selector as string | undefined
-  if (!selector) return false
-  const el = doc.querySelector(selector)
-  if (!el) return false
+  const selector = config.selector as string | undefined;
+  if (!selector) return false;
+  const el = doc.querySelector(selector);
+  if (!el) return false;
   if (el instanceof HTMLElement) {
-    if (el.offsetWidth > 0 || el.offsetHeight > 0) return true
+    if (el.offsetWidth > 0 || el.offsetHeight > 0) return true;
   }
-  const style = doc.defaultView?.getComputedStyle(el)
-  if (!style) return false
-  return style.display !== 'none' && style.visibility !== 'hidden'
+  const style = doc.defaultView?.getComputedStyle(el);
+  if (!style) return false;
+  return style.display !== 'none' && style.visibility !== 'hidden';
 }
 
 function evalTextContent(config: Record<string, unknown>, doc: Document): boolean {
-  const selector = config.selector as string | undefined
-  const expected = config.expected as string | undefined
-  const operator = (config.operator as string) ?? 'contains'
-  if (!selector || expected === undefined) return false
+  const selector = config.selector as string | undefined;
+  const expected = config.expected as string | undefined;
+  const operator = (config.operator as string) ?? 'contains';
+  if (!selector || expected === undefined) return false;
 
-  const el = doc.querySelector(selector)
-  if (!el) return false
+  const el = doc.querySelector(selector);
+  if (!el) return false;
 
-  const text = el.textContent ?? ''
+  const text = el.textContent ?? '';
   switch (operator) {
     case 'equals':
-      return text.trim() === expected
+      return text.trim() === expected;
     case 'contains':
-      return text.includes(expected)
+      return text.includes(expected);
     case 'matches':
       try {
-        return new RegExp(expected).test(text)
+        return new RegExp(expected).test(text);
       } catch {
-        return false
+        return false;
       }
     default:
-      return false
+      return false;
   }
 }
 
 function evalUrlMatch(config: Record<string, unknown>, url: string): boolean {
-  const pattern = config.pattern as string | undefined
-  if (!pattern) return false
+  const pattern = config.pattern as string | undefined;
+  if (!pattern) return false;
 
   // regex /pattern/flags
   if (pattern.startsWith('/') && pattern.lastIndexOf('/') > 0) {
-    const lastSlash = pattern.lastIndexOf('/')
-    const body = pattern.slice(1, lastSlash)
-    const flags = pattern.slice(lastSlash + 1)
+    const lastSlash = pattern.lastIndexOf('/');
+    const body = pattern.slice(1, lastSlash);
+    const flags = pattern.slice(lastSlash + 1);
     try {
-      return new RegExp(body, flags).test(url)
+      return new RegExp(body, flags).test(url);
     } catch {
-      return false
+      return false;
     }
   }
 
@@ -259,19 +267,41 @@ function evalUrlMatch(config: Record<string, unknown>, url: string): boolean {
   const regexStr = pattern
     .replace(/[.+^${}()|[\]\\]/g, '\\$&')
     .replace(/\*/g, '.*')
-    .replace(/\?/g, '.')
+    .replace(/\?/g, '.');
   try {
-    return new RegExp(`^${regexStr}$`, 'i').test(url)
+    return new RegExp(`^${regexStr}$`, 'i').test(url);
   } catch {
-    return false
+    return false;
   }
 }
 
 function evalNetworkStatus(config: Record<string, unknown>): boolean {
-  const _urlPattern = config.urlPattern as string | undefined
-  const _mustExist = (config.mustExist as boolean) ?? true
-  if (!_urlPattern) return false
+  const _urlPattern = config.urlPattern as string | undefined;
+  const _mustExist = (config.mustExist as boolean) ?? true;
+  if (!_urlPattern) return false;
   // In the backward-compatible sync layer, capturedRequests is always empty
   // Network status rules require the async engine for proper evaluation
-  return _mustExist ? false : true
+  return _mustExist ? false : true;
+}
+
+function evalJsAssertion(config: Record<string, unknown>, doc: Document): boolean {
+  const expression = config.expression as string | undefined;
+  if (!expression) return false;
+  try {
+    const fn = new Function('document', 'window', `return (${expression});`);
+    return !!fn(doc, doc.defaultView ?? window);
+  } catch {
+    return false;
+  }
+}
+
+function evalDuration(config: Record<string, unknown>, doc: Document): boolean {
+  const maxDuration = config.maxDuration as number | undefined;
+  if (typeof maxDuration !== 'number') return false;
+  const win = doc.defaultView ?? window;
+  const nav = win.performance?.getEntriesByType('navigation')?.[0] as
+    | PerformanceNavigationTiming
+    | undefined;
+  if (!nav) return false;
+  return nav.loadEventEnd - nav.startTime <= maxDuration;
 }

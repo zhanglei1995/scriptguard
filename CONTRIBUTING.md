@@ -109,8 +109,10 @@ git push origin feat/your-feature
 
 - `apps/<name>/` — 可独立部署的应用
 - `packages/<name>/` — 可被多个 app 引用的库
-- `packages/shared/` — 共享类型（前后端通用）
-- `packages/sdk/` — 嵌入用户脚本的 SDK
+- `packages/shared/` — 共享类型、Zod schema、队列/消息契约（前后端与 Runner 通用）
+- `packages/db/` — Drizzle schema 与数据库工具
+- `packages/sdk/` — 嵌入用户脚本的 SDK（规划中 / 占位）
+- `packages/ui/` — 共享 UI 组件（规划中 / 占位）
 
 ---
 
@@ -118,10 +120,13 @@ git push origin feat/your-feature
 
 ```bash
 # 单元测试
-pnpm test:unit
+pnpm test
 
 # E2E 测试
 pnpm test:e2e
+
+# 包含 E2E 在内的所有 test 任务
+pnpm test:all
 
 # 覆盖率
 pnpm --filter <package> test:coverage

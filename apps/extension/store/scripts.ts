@@ -1,30 +1,50 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware'
-import { z } from 'zod'
-import { ScriptCurrent, type Script } from '../storage/schemas'
-import { scheduler } from '../background/scheduler'
+import { create } from 'zustand';
+import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
+import { z } from 'zod';
+import { ScriptCurrent, type Script } from '../storage/schemas';
+import { scheduler } from '../background/scheduler';
 
 // ====== Chrome Storage Adapter ======
 const chromeStorageAdapter: StateStorage = {
   getItem: async (name: string) => {
-    const result = await chrome.storage.local.get(name)
-    return result[name] as string | null
+    const result = await chrome.storage.local.get([name, 'scripts']);
+    const value = result[name];
+    if (typeof value === 'string') return value;
+
+    // Migration fallback from the legacy `scripts` array key.
+    if (name === 'sg-scripts' && Array.isArray(result.scripts)) {
+      return JSON.stringify({ state: { scripts: result.scripts, filter: {} }, version: 0 });
+    }
+
+    return null;
   },
   setItem: async (name: string, value: string) => {
-    await chrome.storage.local.set({ [name]: value })
+    await chrome.storage.local.set({ [name]: value });
+
+    // Keep legacy readers in sync during the migration to a single repository.
+    if (name === 'sg-scripts') {
+      try {
+        const parsed = JSON.parse(value) as { state?: { scripts?: Script[] } };
+        if (Array.isArray(parsed.state?.scripts)) {
+          await chrome.storage.local.set({ scripts: parsed.state.scripts });
+        }
+      } catch {
+        // Ignore malformed persisted state; zustand will recover with defaults.
+      }
+    }
   },
   removeItem: async (name: string) => {
-    await chrome.storage.local.remove(name)
+    await chrome.storage.local.remove(name === 'sg-scripts' ? [name, 'scripts'] : name);
   },
-}
+};
 
 // ====== Filter Schema ======
 export const ScriptFilter = z.object({
   tags: z.array(z.string()).optional(),
   groupId: z.string().nullable().optional(),
   enabled: z.boolean().optional(),
-})
-export type ScriptFilter = z.infer<typeof ScriptFilter>
+});
+export type ScriptFilter = z.infer<typeof ScriptFilter>;
 
 // ====== Input Schema for Create ======
 export const CreateScriptInput = ScriptCurrent.omit({
@@ -42,28 +62,28 @@ export const CreateScriptInput = ScriptCurrent.omit({
   config: true,
   alertLevel: true,
   version: true,
-})
-export type CreateScriptInput = z.infer<typeof CreateScriptInput>
+});
+export type CreateScriptInput = z.infer<typeof CreateScriptInput>;
 
 // ====== Input Schema for Update ======
 export const UpdateScriptInput = ScriptCurrent.omit({
   id: true,
   createdAt: true,
-}).partial()
-export type UpdateScriptInput = z.infer<typeof UpdateScriptInput>
+}).partial();
+export type UpdateScriptInput = z.infer<typeof UpdateScriptInput>;
 
 // ====== Store State ======
 export interface ScriptsState {
-  scripts: Script[]
-  filter: ScriptFilter
-  createScript: (input: CreateScriptInput) => Script
-  updateScript: (id: string, patch: UpdateScriptInput) => Script | null
-  deleteScript: (id: string) => boolean
-  enableScript: (id: string) => Script | null
-  disableScript: (id: string) => Script | null
-  getScript: (id: string) => Script | undefined
-  getFilteredScripts: () => Script[]
-  setFilter: (filter: ScriptFilter) => void
+  scripts: Script[];
+  filter: ScriptFilter;
+  createScript: (input: CreateScriptInput) => Script;
+  updateScript: (id: string, patch: UpdateScriptInput) => Script | null;
+  deleteScript: (id: string) => boolean;
+  enableScript: (id: string) => Script | null;
+  disableScript: (id: string) => Script | null;
+  getScript: (id: string) => Script | undefined;
+  getFilteredScripts: () => Script[];
+  setFilter: (filter: ScriptFilter) => void;
 }
 
 export const useScriptsStore = create<ScriptsState>()(
@@ -73,7 +93,7 @@ export const useScriptsStore = create<ScriptsState>()(
       filter: {},
 
       createScript: (input) => {
-        const now = Date.now()
+        const now = Date.now();
         const script = ScriptCurrent.parse({
           id: crypto.randomUUID(),
           name: input.name,
@@ -89,93 +109,91 @@ export const useScriptsStore = create<ScriptsState>()(
           config: input.config ?? {},
           createdAt: now,
           updatedAt: now,
-        })
-        set((state) => ({ scripts: [...state.scripts, script] }))
+        });
+        set((state) => ({ scripts: [...state.scripts, script] }));
         if (script.enabled) {
-          const interval = (script.config as Record<string, unknown>)?.checkInterval
-          scheduler.scheduleScript(script.id, typeof interval === 'number' ? interval : 1800)
+          const interval = (script.config as Record<string, unknown>)?.checkInterval;
+          scheduler.scheduleScript(script.id, typeof interval === 'number' ? interval : 1800);
         }
-        return script
+        return script;
       },
 
       updateScript: (id, patch) => {
-        const { scripts } = get()
-        const index = scripts.findIndex((s) => s.id === id)
-        if (index === -1) return null
+        const { scripts } = get();
+        const index = scripts.findIndex((s) => s.id === id);
+        if (index === -1) return null;
         const updated = ScriptCurrent.parse({
           ...scripts[index],
           ...patch,
           updatedAt: Date.now(),
-        })
-        const newScripts = [...scripts]
-        newScripts[index] = updated
-        set({ scripts: newScripts })
+        });
+        const newScripts = [...scripts];
+        newScripts[index] = updated;
+        set({ scripts: newScripts });
         if (patch.enabled !== undefined) {
           if (patch.enabled) {
-            const interval = (updated.config as Record<string, unknown>)?.checkInterval
-            scheduler.scheduleScript(id, typeof interval === 'number' ? interval : 1800)
+            const interval = (updated.config as Record<string, unknown>)?.checkInterval;
+            scheduler.scheduleScript(id, typeof interval === 'number' ? interval : 1800);
           } else {
-            scheduler.unscheduleScript(id)
+            scheduler.unscheduleScript(id);
           }
         } else if (patch.config !== undefined) {
           if (updated.enabled) {
-            const interval = (updated.config as Record<string, unknown>)?.checkInterval
-            scheduler.scheduleScript(id, typeof interval === 'number' ? interval : 1800)
+            const interval = (updated.config as Record<string, unknown>)?.checkInterval;
+            scheduler.scheduleScript(id, typeof interval === 'number' ? interval : 1800);
           }
         }
-        return updated
+        return updated;
       },
 
       deleteScript: (id) => {
-        const { scripts } = get()
-        const index = scripts.findIndex((s) => s.id === id)
-        if (index === -1) return false
-        set({ scripts: scripts.filter((s) => s.id !== id) })
-        scheduler.unscheduleScript(id)
-        return true
+        const { scripts } = get();
+        const index = scripts.findIndex((s) => s.id === id);
+        if (index === -1) return false;
+        set({ scripts: scripts.filter((s) => s.id !== id) });
+        scheduler.unscheduleScript(id);
+        return true;
       },
 
       enableScript: (id) => {
-        return get().updateScript(id, { enabled: true })
+        return get().updateScript(id, { enabled: true });
       },
 
       disableScript: (id) => {
-        return get().updateScript(id, { enabled: false })
+        return get().updateScript(id, { enabled: false });
       },
 
       getScript: (id) => {
-        return get().scripts.find((s) => s.id === id)
+        return get().scripts.find((s) => s.id === id);
       },
 
       getFilteredScripts: () => {
-        const { scripts, filter } = get()
-        let result = [...scripts]
+        const { scripts, filter } = get();
+        let result = [...scripts];
 
         if (filter.tags && filter.tags.length > 0) {
-          result = result.filter((s) =>
-            filter.tags!.some((tag) => s.tags.includes(tag))
-          )
+          result = result.filter((s) => filter.tags!.some((tag) => s.tags.includes(tag)));
         }
 
         if (filter.groupId !== undefined) {
-          result = result.filter((s) => s.groupId === filter.groupId)
+          result = result.filter((s) => s.groupId === filter.groupId);
         }
 
         if (filter.enabled !== undefined) {
-          result = result.filter((s) => s.enabled === filter.enabled)
+          result = result.filter((s) => s.enabled === filter.enabled);
         }
 
-        result.sort((a, b) => b.updatedAt - a.updatedAt)
-        return result
+        result.sort((a, b) => b.updatedAt - a.updatedAt);
+        return result;
       },
 
       setFilter: (filter) => {
-        set({ filter })
+        set({ filter });
       },
     }),
     {
       name: 'sg-scripts',
       storage: createJSONStorage(() => chromeStorageAdapter),
-    }
-  )
-)
+    },
+  ),
+);

@@ -3,17 +3,12 @@
  * SG-044: 告警中心 UI
  */
 
-import { useEffect, useState, useCallback } from 'react'
-import {
-  getDB,
-  getUnacknowledgedAlerts,
-  acknowledgeAlert,
-  deleteAlert,
-} from '../../storage/db'
-import type { AlertRecord } from '../../storage/schemas'
-import type { AlertLevel } from '../../storage/schemas'
-import { Badge } from '../../components/ui/badge'
-import { Button } from '../../components/ui/button'
+import { useEffect, useState, useCallback } from 'react';
+import { getDB, acknowledgeAlert, deleteAlert } from '../../storage/db';
+import type { AlertRecord } from '../../storage/schemas';
+import type { AlertLevel } from '../../storage/schemas';
+import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
 import {
   Table,
   TableBody,
@@ -21,90 +16,103 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table'
+} from '../../components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select'
+} from '../../components/ui/select';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '../../components/ui/dialog'
-import { Empty } from '../../components/ui/empty'
-import { useScriptsStore } from '../../store'
+} from '../../components/ui/dialog';
+import { Empty } from '../../components/ui/empty';
+import { useScriptsStore } from '../../store';
 
-const AUTO_REFRESH_INTERVAL = 30_000
+const AUTO_REFRESH_INTERVAL = 30_000;
 
 const severityConfig: Record<AlertLevel, { label: string; className: string }> = {
-  critical: { label: '严重', className: 'border-transparent bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' },
-  high: { label: '高', className: 'border-transparent bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300' },
-  medium: { label: '中', className: 'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' },
-  low: { label: '低', className: 'border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
-}
+  critical: {
+    label: '严重',
+    className: 'border-transparent bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+  },
+  high: {
+    label: '高',
+    className:
+      'border-transparent bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
+  },
+  medium: {
+    label: '中',
+    className:
+      'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+  },
+  low: {
+    label: '低',
+    className: 'border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+  },
+};
 
 export function AlertsTab() {
-  const [alerts, setAlerts] = useState<AlertRecord[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'unacknowledged' | 'acknowledged'>('unacknowledged')
-  const [levelFilter, setLevelFilter] = useState<string>('all')
-  const [selectedAlert, setSelectedAlert] = useState<AlertRecord | null>(null)
+  const [alerts, setAlerts] = useState<AlertRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'unacknowledged' | 'acknowledged'>('unacknowledged');
+  const [levelFilter, setLevelFilter] = useState<string>('all');
+  const [selectedAlert, setSelectedAlert] = useState<AlertRecord | null>(null);
 
-  const getScript = useScriptsStore((s) => s.getScript)
+  const getScript = useScriptsStore((s) => s.getScript);
 
   const loadAlerts = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const db = getDB()
-      let query = db.alerts.orderBy('timestamp').reverse()
+      const db = getDB();
+      const query = db.alerts.orderBy('timestamp').reverse();
 
       if (filter === 'unacknowledged') {
-        const all = await query.toArray()
-        setAlerts(all.filter((a) => !a.acknowledged))
-        return
+        const all = await query.toArray();
+        setAlerts(all.filter((a) => !a.acknowledged));
+        return;
       }
       if (filter === 'acknowledged') {
-        const all = await query.toArray()
-        setAlerts(all.filter((a) => a.acknowledged))
-        return
+        const all = await query.toArray();
+        setAlerts(all.filter((a) => a.acknowledged));
+        return;
       }
 
-      const all = await query.toArray()
-      setAlerts(all)
+      const all = await query.toArray();
+      setAlerts(all);
     } catch (err) {
-      console.error('[SG Alerts] Failed to load alerts:', err)
+      console.error('[SG Alerts] Failed to load alerts:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [filter])
+  }, [filter]);
 
   useEffect(() => {
-    loadAlerts()
-  }, [loadAlerts])
+    loadAlerts();
+  }, [loadAlerts]);
 
   useEffect(() => {
-    const interval = setInterval(loadAlerts, AUTO_REFRESH_INTERVAL)
-    return () => clearInterval(interval)
-  }, [loadAlerts])
+    const interval = setInterval(loadAlerts, AUTO_REFRESH_INTERVAL);
+    return () => clearInterval(interval);
+  }, [loadAlerts]);
 
   const handleAcknowledge = async (id: number) => {
-    await acknowledgeAlert(id)
-    loadAlerts()
-  }
+    await acknowledgeAlert(id);
+    loadAlerts();
+  };
 
   const handleDelete = async (id: number) => {
-    await deleteAlert(id)
-    loadAlerts()
-  }
+    await deleteAlert(id);
+    loadAlerts();
+  };
 
-  const filteredAlerts = levelFilter === 'all'
-    ? alerts
-    : alerts.filter((a) => a.level === levelFilter)
+  const filteredAlerts =
+    levelFilter === 'all' ? alerts : alerts.filter((a) => a.level === levelFilter);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('zh-CN', {
@@ -113,8 +121,8 @@ export function AlertsTab() {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   return (
     <div className="space-y-4">
@@ -177,16 +185,16 @@ export function AlertsTab() {
                 onClick={() => setSelectedAlert(alert)}
               >
                 <TableCell>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${severityConfig[alert.level]?.className}`}>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${severityConfig[alert.level]?.className}`}
+                  >
                     {severityConfig[alert.level]?.label}
                   </span>
                 </TableCell>
                 <TableCell className="font-mono text-xs truncate max-w-[140px]">
                   {getScript(alert.scriptId)?.name ?? alert.scriptId.slice(0, 8)}
                 </TableCell>
-                <TableCell className="text-xs truncate max-w-[250px]">
-                  {alert.message}
-                </TableCell>
+                <TableCell className="text-xs truncate max-w-[250px]">{alert.message}</TableCell>
                 <TableCell className="text-xs">{formatDate(alert.timestamp)}</TableCell>
                 <TableCell>
                   <Badge variant={alert.acknowledged ? 'muted' : 'warning'}>
@@ -205,11 +213,7 @@ export function AlertsTab() {
                       </Button>
                     )}
                     {alert.id && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(alert.id!)}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(alert.id!)}>
                         删除
                       </Button>
                     )}
@@ -228,7 +232,7 @@ export function AlertsTab() {
         formatDate={formatDate}
       />
     </div>
-  )
+  );
 }
 
 function AlertDetailDialog({
@@ -237,14 +241,14 @@ function AlertDetailDialog({
   getScript,
   formatDate,
 }: {
-  alert: AlertRecord | null
-  onClose: () => void
-  getScript: (id: string) => import('../../storage/schemas').Script | undefined
-  formatDate: (d: Date) => string
+  alert: AlertRecord | null;
+  onClose: () => void;
+  getScript: (id: string) => import('../../storage/schemas').Script | undefined;
+  formatDate: (d: Date) => string;
 }) {
-  if (!alert) return null
+  if (!alert) return null;
 
-  const script = getScript(alert.scriptId)
+  const script = getScript(alert.scriptId);
 
   return (
     <Dialog open={!!alert} onOpenChange={(open) => !open && onClose()}>
@@ -259,7 +263,9 @@ function AlertDetailDialog({
             <div>
               <span className="text-muted-foreground">级别</span>
               <div className="mt-1">
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${severityConfig[alert.level]?.className}`}>
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${severityConfig[alert.level]?.className}`}
+                >
                   {severityConfig[alert.level]?.label}
                 </span>
               </div>
@@ -288,5 +294,5 @@ function AlertDetailDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

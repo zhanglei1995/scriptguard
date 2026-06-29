@@ -5,9 +5,14 @@ build
 .turbo
 coverage
 *.lock
+pnpm-lock.yaml
 *.log
 .DS_Store
+.github-project
 .turbo
 .plasmo
+apps/docs/.source
 apps/extension/build
 apps/extension/.plasmo
+e2e/playwright-report
+e2e/test-results

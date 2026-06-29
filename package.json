@@ -13,12 +13,14 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
-    "test:unit": "turbo run test:unit",
-    "test:e2e": "turbo run test:e2e",
+    "test": "pnpm test:unit",
+    "test:unit": "turbo run test --filter=!@scriptguard/e2e",
+    "test:e2e": "pnpm --filter @scriptguard/e2e test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .prettierignore",
-    "clean": "turbo run clean && rm -rf node_modules .turbo"
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "test:all": "turbo run test",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
@@ -28,5 +30,5 @@
     "turbo": "^2.3.0",
     "typescript": "^5.4.0"
   },
-  "engines-comment": "Engines: Node >= 20, pnpm >= 9 (packageManager: pnpm@11.7.0)"
+  "engines-comment": "Engines: Node >= 20, pnpm >= 9 (packageManager: pnpm@10.11.0; tested with pnpm 11.x)"
 }

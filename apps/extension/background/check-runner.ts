@@ -3,25 +3,26 @@
  * SG-021: 手动测试功能
  */
 
-import { addCheck, getChecksByScript } from '../storage/db'
-import { notifier } from './notifier'
-import type { HealthStatus } from '../storage/schemas'
+import { addCheck, getChecksByScript } from '../storage/db';
+import { getCheckRulesForScript } from '../storage/scripts-repository';
+import { notifier } from './notifier';
+import type { HealthStatus, Script } from '../storage/schemas';
 
 // ====== Types ======
 export interface CheckResult {
-  scriptId: string
-  scriptName: string
-  status: HealthStatus
-  url: string
-  duration: number
-  failedRules: string[]
-  errorMessage?: string
+  scriptId: string;
+  scriptName: string;
+  status: HealthStatus;
+  url: string;
+  duration: number;
+  failedRules: string[];
+  errorMessage?: string;
 }
 
 export interface ManualCheckResponse {
-  ok: boolean
-  results?: CheckResult[]
-  error?: string
+  ok: boolean;
+  results?: CheckResult[];
+  error?: string;
 }
 
 // ====== CheckRunner ======
@@ -33,64 +34,70 @@ export class CheckRunner {
   async runManualCheck(): Promise<ManualCheckResponse> {
     try {
       // 1. Get active tab
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab?.id || !tab?.url) {
-        return { ok: false, error: 'No active tab found' }
+        return { ok: false, error: 'No active tab found' };
       }
 
       // 2. Get matched scripts for this URL
       const scriptsResponse = await chrome.runtime.sendMessage({
         type: 'GET_SCRIPTS_FOR_URL',
         payload: { url: tab.url },
-      })
+      });
 
-      if (!scriptsResponse?.type === 'SCRIPTS_RESULT' || !Array.isArray(scriptsResponse.scripts)) {
-        return { ok: false, error: 'Failed to get matched scripts' }
+      if (scriptsResponse?.type !== 'SCRIPTS_RESULT' || !Array.isArray(scriptsResponse.scripts)) {
+        return { ok: false, error: 'Failed to get matched scripts' };
       }
 
-      const scripts = scriptsResponse.scripts
+      const matchedScripts = scriptsResponse.scripts as Script[];
+      const scripts = await Promise.all(
+        matchedScripts.map(async (script) => ({
+          ...script,
+          rules: await getCheckRulesForScript(script.id),
+        })),
+      );
       if (scripts.length === 0) {
-        return { ok: false, error: 'No matched scripts for this URL' }
+        return { ok: false, error: 'No matched scripts for this URL' };
       }
 
       // 3. Send RUN_CHECK to content script
-      let contentResponse
+      let contentResponse;
       try {
         contentResponse = await chrome.tabs.sendMessage(tab.id, {
           type: 'RUN_CHECK',
           payload: { scripts },
-        })
+        });
       } catch {
         // Content script may not be injected yet; inject and retry
         try {
           await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             files: ['content.js'],
-          })
+          });
           contentResponse = await chrome.tabs.sendMessage(tab.id, {
             type: 'RUN_CHECK',
             payload: { scripts },
-          })
+          });
         } catch {
-          return { ok: false, error: 'Cannot reach content script. Try refreshing the page.' }
+          return { ok: false, error: 'Cannot reach content script. Try refreshing the page.' };
         }
       }
 
       if (!contentResponse?.ok) {
-        return { ok: false, error: contentResponse?.error || 'Content script check failed' }
+        return { ok: false, error: contentResponse?.error || 'Content script check failed' };
       }
 
       // 4. Process results, send notifications, write to IndexedDB
-      const results: CheckResult[] = contentResponse.results || []
+      const results: CheckResult[] = contentResponse.results || [];
       for (const result of results) {
         if (result.status === 'failed') {
-          const reason = result.errorMessage || `检查规则未通过: ${result.failedRules.join(', ')}`
-          await notifier.notifyFailure(result.scriptName, reason, result.scriptId)
+          const reason = result.errorMessage || `检查规则未通过: ${result.failedRules.join(', ')}`;
+          await notifier.notifyFailure(result.scriptName, reason, result.scriptId);
         } else {
-          const prevChecks = await getChecksByScript(result.scriptId)
-          const lastCheck = prevChecks[0]
+          const prevChecks = await getChecksByScript(result.scriptId);
+          const lastCheck = prevChecks[0];
           if (lastCheck && lastCheck.status === 'failed') {
-            await notifier.notifyRecovered(result.scriptName, result.scriptId)
+            await notifier.notifyRecovered(result.scriptName, result.scriptId);
           }
         }
 
@@ -102,17 +109,17 @@ export class CheckRunner {
           duration: result.duration,
           failedRules: result.failedRules,
           errorMessage: result.errorMessage,
-        })
+        });
       }
 
-      return { ok: true, results }
+      return { ok: true, results };
     } catch (err) {
       return {
         ok: false,
         error: err instanceof Error ? err.message : String(err),
-      }
+      };
     }
   }
 }
 
-export const checkRunner = new CheckRunner()
+export const checkRunner = new CheckRunner();

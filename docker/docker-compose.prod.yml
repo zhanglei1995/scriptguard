@@ -55,7 +55,12 @@ services:
     restart: unless-stopped
     env_file:
       - ../.env
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
     depends_on:
+      redis:
+        condition: service_healthy
       server:
         condition: service_healthy
     deploy:

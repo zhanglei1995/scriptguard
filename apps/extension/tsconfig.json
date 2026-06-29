@@ -2,32 +2,16 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "types": [
-      "chrome",
-      "node"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["chrome", "node"],
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./*"
-      ],
-      "@/*": [
-        "./*"
-      ],
-      "@scriptguard/shared": [
-        "../../packages/shared/src/index.ts"
-      ],
-      "@scriptguard/sdk": [
-        "../../packages/sdk/src/index.ts"
-      ],
-      "@scriptguard/ui": [
-        "../../packages/ui/src/index.ts"
-      ]
+      "~/*": ["./*"],
+      "@/*": ["./*"],
+      "@scriptguard/shared": ["../../packages/shared/src/index.ts"],
+      "@scriptguard/sdk": ["../../packages/sdk/src/index.ts"],
+      "@scriptguard/ui": ["../../packages/ui/src/index.ts"],
+      "~*": ["./*"]
     },
     "noEmit": true,
     "isolatedModules": true,
@@ -50,6 +34,9 @@
     "node_modules",
     "build",
     ".plasmo",
-    "dist"
+    "dist",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

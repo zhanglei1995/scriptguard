@@ -3,11 +3,11 @@
  * SG-038: 测试报告 UI
  */
 
-import { useEffect, useState, useCallback } from 'react'
-import { getDB } from '../../storage/db'
-import type { CheckRecord, HealthStatus } from '../../storage/schemas'
-import { Badge } from '../../components/ui/badge'
-import { Button } from '../../components/ui/button'
+import { useEffect, useState, useCallback } from 'react';
+import { getDB } from '../../storage/db';
+import type { CheckRecord, HealthStatus } from '../../storage/schemas';
+import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
 import {
   Table,
   TableBody,
@@ -15,70 +15,77 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table'
+} from '../../components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select'
+} from '../../components/ui/select';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '../../components/ui/dialog'
-import { Empty } from '../../components/ui/empty'
+} from '../../components/ui/dialog';
+import { Empty } from '../../components/ui/empty';
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 20;
 
-const statusConfig: Record<HealthStatus, { label: string; variant: 'success' | 'warning' | 'destructive' | 'muted' }> = {
+const statusConfig: Record<
+  HealthStatus,
+  { label: string; variant: 'success' | 'warning' | 'destructive' | 'muted' }
+> = {
   healthy: { label: '通过', variant: 'success' },
   degraded: { label: '降级', variant: 'warning' },
   failed: { label: '失败', variant: 'destructive' },
   unknown: { label: '未知', variant: 'muted' },
-}
+};
 
 export function TestReportsTab() {
-  const [runs, setRuns] = useState<CheckRecord[]>([])
-  const [loading, setLoading] = useState(true)
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [cursor, setCursor] = useState<number>(0)
-  const [hasMore, setHasMore] = useState(true)
-  const [selectedRun, setSelectedRun] = useState<CheckRecord | null>(null)
+  const [runs, setRuns] = useState<CheckRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [cursor, setCursor] = useState<number>(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [selectedRun, setSelectedRun] = useState<CheckRecord | null>(null);
 
-  const loadRuns = useCallback(async (reset = false) => {
-    setLoading(true)
-    try {
-      const db = getDB()
-      const offset = reset ? 0 : cursor
-      let query = db.checks.orderBy('timestamp').reverse()
+  const loadRuns = useCallback(
+    async (reset = false) => {
+      setLoading(true);
+      try {
+        const db = getDB();
+        const offset = reset ? 0 : cursor;
+        let query = db.checks.orderBy('timestamp').reverse();
 
-      if (statusFilter !== 'all') {
-        query = db.checks.where('status').equals(statusFilter).reverse() as typeof query
+        if (statusFilter !== 'all') {
+          query = db.checks.where('status').equals(statusFilter).reverse() as typeof query;
+        }
+
+        const results = await query.offset(offset).limit(PAGE_SIZE).toArray();
+        if (reset) {
+          setRuns(results);
+          setCursor(PAGE_SIZE);
+        } else {
+          setRuns((prev) => [...prev, ...results]);
+          setCursor((prev) => prev + PAGE_SIZE);
+        }
+        setHasMore(results.length === PAGE_SIZE);
+      } catch (err) {
+        console.error('[SG TestReports] Failed to load runs:', err);
+      } finally {
+        setLoading(false);
       }
-
-      const results = await query.offset(offset).limit(PAGE_SIZE).toArray()
-      if (reset) {
-        setRuns(results)
-        setCursor(PAGE_SIZE)
-      } else {
-        setRuns((prev) => [...prev, ...results])
-        setCursor((prev) => prev + PAGE_SIZE)
-      }
-      setHasMore(results.length === PAGE_SIZE)
-    } catch (err) {
-      console.error('[SG TestReports] Failed to load runs:', err)
-    } finally {
-      setLoading(false)
-    }
-  }, [cursor, statusFilter])
+    },
+    [cursor, statusFilter],
+  );
 
   useEffect(() => {
-    loadRuns(true)
-  }, [statusFilter])
+    loadRuns(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter]);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('zh-CN', {
@@ -87,13 +94,13 @@ export function TestReportsTab() {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   const formatDuration = (ms: number) => {
-    if (ms < 1000) return `${ms}ms`
-    return `${(ms / 1000).toFixed(2)}s`
-  }
+    if (ms < 1000) return `${ms}ms`;
+    return `${(ms / 1000).toFixed(2)}s`;
+  };
 
   return (
     <div className="space-y-4">
@@ -120,10 +127,7 @@ export function TestReportsTab() {
       {loading && runs.length === 0 ? (
         <div className="text-center py-8 text-sm text-muted-foreground">加载中...</div>
       ) : runs.length === 0 ? (
-        <Empty
-          title="暂无测试报告"
-          description="运行脚本检查后，测试报告将显示在这里"
-        />
+        <Empty title="暂无测试报告" description="运行脚本检查后，测试报告将显示在这里" />
       ) : (
         <>
           <Table>
@@ -173,17 +177,11 @@ export function TestReportsTab() {
 
       <RunDetailDialog run={selectedRun} onClose={() => setSelectedRun(null)} />
     </div>
-  )
+  );
 }
 
-function RunDetailDialog({
-  run,
-  onClose,
-}: {
-  run: CheckRecord | null
-  onClose: () => void
-}) {
-  if (!run) return null
+function RunDetailDialog({ run, onClose }: { run: CheckRecord | null; onClose: () => void }) {
+  if (!run) return null;
 
   return (
     <Dialog open={!!run} onOpenChange={(open) => !open && onClose()}>
@@ -254,5 +252,5 @@ function RunDetailDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

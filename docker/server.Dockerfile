@@ -13,21 +13,22 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY tsconfig.base.json ./
 
-# Copy package sources
-COPY packages/shared/package.json ./packages/shared/
-COPY packages/db/package.json ./packages/db/
-COPY apps/server/package.json ./apps/server/
+# Copy package manifests first for better layer caching
+COPY packages/shared/package.json ./packages/shared/package.json
+COPY packages/db/package.json ./packages/db/package.json
+COPY apps/server/package.json ./apps/server/package.json
 
-# Install dependencies (including devDependencies for build)
 RUN pnpm install --frozen-lockfile
 
-# Copy package source code
-COPY packages/shared/ ./packages/shared/
-COPY packages/db/ ./packages/db/
-COPY apps/server/ ./apps/server/
+# Copy sources
+COPY packages/shared ./packages/shared
+COPY packages/db ./packages/db
+COPY apps/server ./apps/server
 
-# Build server
-RUN pnpm --filter @scriptguard/server build
+# Build workspace dependencies explicitly; pnpm --filter does not implicitly build deps.
+RUN pnpm --filter @scriptguard/shared build \
+  && pnpm --filter @scriptguard/db build \
+  && pnpm --filter @scriptguard/server build
 
 # Stage 2: Runner
 FROM node:20-alpine AS runner
@@ -37,12 +38,15 @@ RUN addgroup -g 1001 -S nodejs && \
 
 WORKDIR /app
 
-# Copy built output and dependencies
-COPY --from=builder /app/apps/server/dist ./dist
-COPY --from=builder /app/apps/server/package.json ./package.json
-COPY --from=builder --chown=nodejs:nodejs /app/apps/server/node_modules ./node_modules
+# Preserve workspace layout so pnpm's isolated node_modules symlinks remain valid.
+COPY --from=builder --chown=nodejs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nodejs:nodejs /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/packages ./packages
+COPY --from=builder --chown=nodejs:nodejs /app/apps/server ./apps/server
 
 USER nodejs
+WORKDIR /app/apps/server
 
 EXPOSE 3000
 

@@ -1,7 +1,9 @@
-import { defineConfig } from 'vitest/config'
-import { fileURLToPath } from 'node:url'
+import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
 
-const root = fileURLToPath(new URL('.', import.meta.url))
+const root = fileURLToPath(new URL('.', import.meta.url));
+const sharedEntry = fileURLToPath(new URL('../../packages/shared/src/index.ts', import.meta.url));
+const sdkEntry = fileURLToPath(new URL('../../packages/sdk/src/index.ts', import.meta.url));
 
 export default defineConfig({
   test: {
@@ -19,8 +21,8 @@ export default defineConfig({
       { find: /^~\/(.*)/, replacement: `${root}$1` },
       { find: /^~([^/])/, replacement: `${root}$1` },
       { find: /^@\//, replacement: `${root}` },
-      { find: '@scriptguard/shared', replacement: '../../packages/shared/src/index.ts' },
-      { find: '@scriptguard/sdk', replacement: '../../packages/sdk/src/index.ts' },
+      { find: '@scriptguard/shared', replacement: sharedEntry },
+      { find: '@scriptguard/sdk', replacement: sdkEntry },
     ],
   },
-})
+});

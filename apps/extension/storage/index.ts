@@ -10,7 +10,7 @@ export {
   defaultPreferences,
   defaultSyncMeta,
   type StorageKeys,
-} from './chrome'
+} from './chrome';
 
 // ====== IndexedDB (Dexie) ======
 export {
@@ -31,7 +31,7 @@ export {
   deleteAlert,
   cleanupOldRecords,
   resetDB,
-} from './db'
+} from './db';
 
 // ====== Session Storage (chrome.storage.session) ======
 export {
@@ -45,7 +45,7 @@ export {
   getTabCheckStatus,
   clearTabCheckStatus,
   cleanupSessionForTab,
-} from './session'
+} from './session';
 
 // ====== Schemas ======
 export {
@@ -72,4 +72,15 @@ export {
   type SyncMeta as SyncMetaType,
   type HealthStatus as HealthStatusType,
   type AlertLevel as AlertLevelType,
-} from './schemas'
+} from './schemas';
+
+// ====== Repository helpers (single source of truth for scripts/rules) ======
+export {
+  getStoredScripts,
+  setStoredScripts,
+  getEnabledScripts,
+  findMatchingScriptsForUrl,
+  getStoredCheckRules,
+  setStoredCheckRules,
+  getCheckRulesForScript,
+} from './scripts-repository';

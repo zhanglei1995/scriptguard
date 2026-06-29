@@ -5,6 +5,9 @@ description: 用户脚本作者 SDK 使用教程
 
 ## 概述
 
+> 当前 SDK 仍处于规划 / 占位阶段，`@scriptguard/sdk` 尚未作为可安装包发布。
+> 本页记录的是目标使用方式，实际可用性请以仓库中的 `packages/sdk` 实现和发布说明为准。
+
 ScriptGuard SDK 为用户脚本作者提供与 ScriptGuard 平台交互的工具，用于：
 
 - 注册和管理脚本
@@ -13,7 +16,7 @@ ScriptGuard SDK 为用户脚本作者提供与 ScriptGuard 平台交互的工具
 
 ## 安装
 
-在用户脚本头部通过 `@require` 引入 SDK：
+发布后可在用户脚本头部通过 `@require` 引入 SDK：
 
 ```javascript
 // ==UserScript==
@@ -27,11 +30,12 @@ ScriptGuard SDK 为用户脚本作者提供与 ScriptGuard 平台交互的工具
 或者通过 npm 安装（适用于打包工具）：
 
 ```bash
+# 尚未发布；以下命令是目标形态
 pnpm add @scriptguard/sdk
 ```
 
 ```typescript
-import { ScriptGuardClient } from '@scriptguard/sdk'
+import { ScriptGuardClient } from '@scriptguard/sdk';
 ```
 
 ## 初始化
@@ -40,7 +44,7 @@ import { ScriptGuardClient } from '@scriptguard/sdk'
 const client = new ScriptGuardClient({
   apiUrl: 'https://api.scriptguard.dev',
   apiKey: 'your-api-key',
-})
+});
 ```
 
 ## 注册脚本
@@ -50,7 +54,7 @@ await client.scripts.register({
   name: '我的脚本',
   url: window.location.href,
   version: '1.0.0',
-})
+});
 ```
 
 ## 上报健康数据
@@ -64,21 +68,21 @@ await client.health.report({
     memoryUsage: 1024 * 1024,
     networkRequests: 3,
   },
-})
+});
 ```
 
 ## 监听变更通知
 
 ```typescript
 client.events.on('version-changed', (event) => {
-  console.log('脚本版本已变更:', event)
+  console.log('脚本版本已变更:', event);
   // 显示用户警告
   ScriptGuard.notify({
     title: '脚本变更检测',
     message: `${event.scriptName} 的代码已发生变更`,
     severity: 'warning',
-  })
-})
+  });
+});
 ```
 
 ## API 参考
@@ -91,11 +95,11 @@ client.events.on('version-changed', (event) => {
 new ScriptGuardClient(options: ClientOptions)
 ```
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `apiUrl` | string | 是 | API 服务地址 |
-| `apiKey` | string | 是 | API 密钥 |
-| `timeout` | number | 否 | 请求超时时间 (ms)，默认 5000 |
+| 参数      | 类型   | 必填 | 说明                         |
+| --------- | ------ | ---- | ---------------------------- |
+| `apiUrl`  | string | 是   | API 服务地址                 |
+| `apiKey`  | string | 是   | API 密钥                     |
+| `timeout` | number | 否   | 请求超时时间 (ms)，默认 5000 |
 
 #### client.scripts
 
@@ -117,12 +121,12 @@ new ScriptGuardClient(options: ClientOptions)
 
 ### 事件类型
 
-| 事件 | 说明 |
-|------|------|
-| `version-changed` | 脚本版本发生变更 |
-| `behavior-anomaly` | 检测到异常行为 |
-| `health-degraded` | 健康状态下降 |
-| `alert` | 收到新告警 |
+| 事件               | 说明             |
+| ------------------ | ---------------- |
+| `version-changed`  | 脚本版本发生变更 |
+| `behavior-anomaly` | 检测到异常行为   |
+| `health-degraded`  | 健康状态下降     |
+| `alert`            | 收到新告警       |
 
 ## 最佳实践
 

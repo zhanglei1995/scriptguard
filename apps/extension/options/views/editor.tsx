@@ -3,26 +3,37 @@
  * SG-026: 脚本编辑器 MVP
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { EditorView as CodeMirrorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter } from '@codemirror/view'
-import { EditorState } from '@codemirror/state'
-import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
-import { javascript } from '@codemirror/lang-javascript'
-import { syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldGutter } from '@codemirror/language'
-import { autocompletion, closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
-import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
-import { lintGutter } from '@codemirror/lint'
-import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
-import { Badge } from '../../components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
+import { useEffect, useRef, useState, useCallback } from 'react';
+import {
+  EditorView as CodeMirrorView,
+  keymap,
+  lineNumbers,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+} from '@codemirror/view';
+import { EditorState } from '@codemirror/state';
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+import { javascript } from '@codemirror/lang-javascript';
+import {
+  syntaxHighlighting,
+  defaultHighlightStyle,
+  bracketMatching,
+  foldGutter,
+} from '@codemirror/language';
+import { autocompletion, closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
+import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
+import { lintGutter } from '@codemirror/lint';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Badge } from '../../components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select'
+} from '../../components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -30,47 +41,47 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '../../components/ui/dialog'
-import { Textarea } from '../../components/ui/textarea'
-import { Card, CardContent } from '../../components/ui/card'
-import { scriptsStore, rulesStore } from '../../storage/chrome'
-import type { Script, CheckRule as StorageCheckRule } from '../../storage/schemas'
-import { X, Plus } from 'lucide-react'
+} from '../../components/ui/dialog';
+import { Textarea } from '../../components/ui/textarea';
+import { Card, CardContent } from '../../components/ui/card';
+import { scriptsStore, rulesStore } from '../../storage/chrome';
+import type { Script, CheckRule as StorageCheckRule } from '../../storage/schemas';
+import { X, Plus } from 'lucide-react';
 
-const DRAFT_KEY = 'sg-editor-draft'
+const DRAFT_KEY = 'sg-editor-draft';
 
 interface EditorDraft {
-  scriptId: string
-  name: string
-  version: string
-  code: string
-  matchRules: string[]
-  runAt: string
-  timeout: number
-  savedAt: number
+  scriptId: string;
+  name: string;
+  version: string;
+  code: string;
+  matchRules: string[];
+  runAt: string;
+  timeout: number;
+  savedAt: number;
 }
 
 export function EditorView({ scriptId }: { scriptId?: string }) {
-  const [script, setScript] = useState<Script | null>(null)
-  const [name, setName] = useState('')
-  const [version, setVersion] = useState('1.0.0')
-  const [matchRules, setMatchRules] = useState<string[]>([])
-  const [runAt, setRunAt] = useState<string>('document_idle')
-  const [timeout, setTimeout] = useState(5000)
-  const [changelog, setChangelog] = useState('')
-  const [checklistOpen, setChecklistOpen] = useState(false)
-  const [rules, setRules] = useState<StorageCheckRule[]>([])
-  const [isDirty, setIsDirty] = useState(false)
-  const [fontSize, setFontSize] = useState(14)
-  const [activeTab, setActiveTab] = useState('rules')
+  const [script, setScript] = useState<Script | null>(null);
+  const [name, setName] = useState('');
+  const [version, setVersion] = useState('1.0.0');
+  const [matchRules, setMatchRules] = useState<string[]>([]);
+  const [runAt, setRunAt] = useState<string>('document_idle');
+  const [timeout, setTimeout] = useState(5000);
+  const [changelog, setChangelog] = useState('');
+  const [checklistOpen, setChecklistOpen] = useState(false);
+  const [rules, setRules] = useState<StorageCheckRule[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
+  const [fontSize, setFontSize] = useState(14);
+  const [activeTab, setActiveTab] = useState('rules');
 
-  const editorRef = useRef<HTMLDivElement>(null)
-  const editorViewRef = useRef<CodeMirrorView | null>(null)
-  const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const editorRef = useRef<HTMLDivElement>(null);
+  const editorViewRef = useRef<CodeMirrorView | null>(null);
+  const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Initialize CodeMirror editor
   useEffect(() => {
-    if (!editorRef.current) return
+    if (!editorRef.current) return;
 
     const state = EditorState.create({
       doc: script?.code ?? '// 在此编写脚本代码\n',
@@ -87,58 +98,56 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
         lintGutter(),
         javascript(),
         syntaxHighlighting(defaultHighlightStyle),
-        keymap.of([
-          ...defaultKeymap,
-          ...historyKeymap,
-          ...closeBracketsKeymap,
-          ...searchKeymap,
-        ]),
+        keymap.of([...defaultKeymap, ...historyKeymap, ...closeBracketsKeymap, ...searchKeymap]),
         CodeMirrorView.theme({
           '&': { fontSize: `${fontSize}px` },
-          '.cm-gutters': { backgroundColor: 'var(--background)', borderRight: '1px solid var(--border)' },
+          '.cm-gutters': {
+            backgroundColor: 'var(--background)',
+            borderRight: '1px solid var(--border)',
+          },
           '.cm-activeLineGutter': { backgroundColor: 'var(--accent)' },
           '.cm-activeLine': { backgroundColor: 'var(--accent)/0.5' },
         }),
         CodeMirrorView.updateListener.of((update) => {
           if (update.docChanged) {
-            setIsDirty(true)
+            setIsDirty(true);
           }
         }),
       ],
-    })
+    });
 
     const view = new CodeMirrorView({
       state,
       parent: editorRef.current,
-    })
+    });
 
-    editorViewRef.current = view
+    editorViewRef.current = view;
 
     return () => {
-      view.destroy()
-    }
-  }, [script?.code, fontSize])
+      view.destroy();
+    };
+  }, [script?.code, fontSize]);
 
   // Load script data
   useEffect(() => {
     async function load() {
-      const scripts = await scriptsStore.get() ?? []
-      const found = scriptId ? scripts.find((s) => s.id === scriptId) : scripts[0]
+      const scripts = (await scriptsStore.get()) ?? [];
+      const found = scriptId ? scripts.find((s) => s.id === scriptId) : scripts[0];
       if (found) {
-        setScript(found)
-        setName(found.name)
-        setVersion(found.version)
-        setMatchRules(found.matchRules)
-        setRunAt(found.runAt)
+        setScript(found);
+        setName(found.name);
+        setVersion(found.version);
+        setMatchRules(found.matchRules);
+        setRunAt(found.runAt);
       }
 
-      const allRules = await rulesStore.get() ?? []
+      const allRules = (await rulesStore.get()) ?? [];
       if (found) {
-        setRules(allRules.filter((r) => r.scriptId === found.id))
+        setRules(allRules.filter((r) => r.scriptId === found.id));
       }
     }
-    load()
-  }, [scriptId])
+    load();
+  }, [scriptId]);
 
   // Auto-save draft every 5 seconds
   useEffect(() => {
@@ -153,20 +162,20 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
           runAt,
           timeout,
           savedAt: Date.now(),
-        }
-        chrome.storage.session.set({ [DRAFT_KEY]: draft })
+        };
+        chrome.storage.session.set({ [DRAFT_KEY]: draft });
       }
-    }, 5000)
+    }, 5000);
 
     return () => {
-      if (draftTimerRef.current) clearInterval(draftTimerRef.current)
-    }
-  }, [isDirty, name, version, matchRules, runAt, timeout, script?.id])
+      if (draftTimerRef.current) clearInterval(draftTimerRef.current);
+    };
+  }, [isDirty, name, version, matchRules, runAt, timeout, script?.id]);
 
   // Load draft on mount
   useEffect(() => {
     chrome.storage.session.get(DRAFT_KEY).then((result) => {
-      const draft = result[DRAFT_KEY] as EditorDraft | undefined
+      const draft = result[DRAFT_KEY] as EditorDraft | undefined;
       if (draft && draft.scriptId === scriptId && editorViewRef.current) {
         editorViewRef.current.dispatch({
           changes: {
@@ -174,36 +183,36 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
             to: editorViewRef.current.state.doc.length,
             insert: draft.code,
           },
-        })
-        setName(draft.name)
-        setVersion(draft.version)
-        setMatchRules(draft.matchRules)
-        setRunAt(draft.runAt)
-        setTimeout(draft.timeout)
+        });
+        setName(draft.name);
+        setVersion(draft.version);
+        setMatchRules(draft.matchRules);
+        setRunAt(draft.runAt);
+        setTimeout(draft.timeout);
       }
-    })
-  }, [scriptId])
+    });
+  }, [scriptId]);
 
   const handleSaveClick = useCallback(() => {
-    setChecklistOpen(true)
-  }, [])
+    setChecklistOpen(true);
+  }, []);
 
   // Keyboard shortcut: Cmd+S / Ctrl+S
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        e.preventDefault()
-        handleSaveClick()
+        e.preventDefault();
+        handleSaveClick();
       }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [handleSaveClick])
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [handleSaveClick]);
 
   const performSave = useCallback(async () => {
-    if (!script || !editorViewRef.current) return
+    if (!script || !editorViewRef.current) return;
 
-    const code = editorViewRef.current.state.doc.toString()
+    const code = editorViewRef.current.state.doc.toString();
     const updatedScript: Script = {
       ...script,
       name,
@@ -213,43 +222,42 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
       runAt: runAt as Script['runAt'],
       config: { ...script.config, timeout },
       updatedAt: Date.now(),
-    }
+    };
 
-    const scripts = await scriptsStore.get() ?? []
-    const idx = scripts.findIndex((s) => s.id === script.id)
+    const scripts = (await scriptsStore.get()) ?? [];
+    const idx = scripts.findIndex((s) => s.id === script.id);
     if (idx >= 0) {
-      scripts[idx] = updatedScript
+      scripts[idx] = updatedScript;
     } else {
-      scripts.push(updatedScript)
+      scripts.push(updatedScript);
     }
-    await scriptsStore.set(scripts)
+    await scriptsStore.set(scripts);
 
     // Clear draft
-    await chrome.storage.session.remove(DRAFT_KEY)
+    await chrome.storage.session.remove(DRAFT_KEY);
 
-    setIsDirty(false)
-    setSaveDialogOpen(false)
-    setChecklistOpen(false)
-    setChangelog('')
-  }, [script, name, version, matchRules, runAt, timeout])
+    setIsDirty(false);
+    setChecklistOpen(false);
+    setChangelog('');
+  }, [script, name, version, matchRules, runAt, timeout]);
 
   const addMatchRule = () => {
-    setMatchRules([...matchRules, ''])
-  }
+    setMatchRules([...matchRules, '']);
+  };
 
   const updateMatchRule = (index: number, value: string) => {
-    const updated = [...matchRules]
-    updated[index] = value
-    setMatchRules(updated)
-  }
+    const updated = [...matchRules];
+    updated[index] = value;
+    setMatchRules(updated);
+  };
 
   const removeMatchRule = (index: number) => {
-    setMatchRules(matchRules.filter((_, i) => i !== index))
-  }
+    setMatchRules(matchRules.filter((_, i) => i !== index));
+  };
 
-  const hasRulesConfigured = rules.length > 0
-  const lintPassed = true // TODO: actual lint check
-  const testPassed = true // TODO: actual test check
+  const hasRulesConfigured = rules.length > 0;
+  const lintPassed = true; // TODO: actual lint check
+  const testPassed = true; // TODO: actual test check
 
   return (
     <div className="flex flex-col h-full">
@@ -258,7 +266,10 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
         <div className="flex items-center gap-3">
           <Input
             value={name}
-            onChange={(e) => { setName(e.target.value); setIsDirty(true) }}
+            onChange={(e) => {
+              setName(e.target.value);
+              setIsDirty(true);
+            }}
             className="w-[200px] font-medium"
             placeholder="脚本名称"
           />
@@ -266,7 +277,14 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
           {isDirty && <Badge variant="warning">未保存</Badge>}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => { setIsDirty(false); window.history.back() }}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsDirty(false);
+              window.history.back();
+            }}
+          >
             取消
           </Button>
           <Button size="sm" onClick={handleSaveClick}>
@@ -283,7 +301,10 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
             <label className="text-sm font-medium">名称</label>
             <Input
               value={name}
-              onChange={(e) => { setName(e.target.value); setIsDirty(true) }}
+              onChange={(e) => {
+                setName(e.target.value);
+                setIsDirty(true);
+              }}
               className="mt-1"
             />
           </div>
@@ -292,7 +313,10 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
             <label className="text-sm font-medium">版本</label>
             <Input
               value={version}
-              onChange={(e) => { setVersion(e.target.value); setIsDirty(true) }}
+              onChange={(e) => {
+                setVersion(e.target.value);
+                setIsDirty(true);
+              }}
               className="mt-1"
               placeholder="1.0.0"
             />
@@ -327,7 +351,13 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
 
           <div>
             <label className="text-sm font-medium">运行时机</label>
-            <Select value={runAt} onValueChange={(v) => { setRunAt(v); setIsDirty(true) }}>
+            <Select
+              value={runAt}
+              onValueChange={(v) => {
+                setRunAt(v);
+                setIsDirty(true);
+              }}
+            >
               <SelectTrigger className="mt-1">
                 <SelectValue />
               </SelectTrigger>
@@ -346,7 +376,10 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
               min={1000}
               max={60000}
               value={timeout}
-              onChange={(e) => { setTimeout(Number(e.target.value)); setIsDirty(true) }}
+              onChange={(e) => {
+                setTimeout(Number(e.target.value));
+                setIsDirty(true);
+              }}
               className="mt-1"
             />
           </div>
@@ -404,10 +437,10 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
                           <Badge variant={rule.enabled ? 'success' : 'muted'} className="text-xs">
                             {rule.type}
                           </Badge>
-                          <span>{rule.target}</span>
+                          <span>{rule.name}</span>
                         </div>
                         <Badge variant="outline" className="text-xs">
-                          {rule.operator}
+                          {rule.type}
                         </Badge>
                       </div>
                     ))}
@@ -457,7 +490,9 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
               </span>
               <span>已配置健康检查规则</span>
               {!hasRulesConfigured && (
-                <Badge variant="warning" className="text-xs">未配置</Badge>
+                <Badge variant="warning" className="text-xs">
+                  未配置
+                </Badge>
               )}
             </div>
             <div className="flex items-center gap-2 text-sm">
@@ -496,5 +531,5 @@ export function EditorView({ scriptId }: { scriptId?: string }) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

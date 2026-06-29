@@ -1,30 +1,32 @@
-import type { NotifyChannelAdapter, NotifyPayload } from './types.js'
-import { config } from '../../config.js'
+import type { NotifyChannelAdapter, NotifyPayload } from './types.js';
 
 interface EmailConfig {
-  to: string
-  SMTP_HOST?: string
-  SMTP_PORT?: number
-  SMTP_USER?: string
-  SMTP_PASS?: string
-  SMTP_FROM?: string
+  to: string;
+  SMTP_HOST?: string;
+  SMTP_PORT?: number;
+  SMTP_USER?: string;
+  SMTP_PASS?: string;
+  SMTP_FROM?: string;
 }
 
-async function sendWithRetry(fn: () => Promise<void>, maxAttempts = 3): Promise<{ success: boolean; error?: string }> {
-  let attempt = 0
+async function sendWithRetry(
+  fn: () => Promise<void>,
+  maxAttempts = 3,
+): Promise<{ success: boolean; error?: string }> {
+  let attempt = 0;
   while (attempt < maxAttempts) {
     try {
-      await fn()
-      return { success: true }
+      await fn();
+      return { success: true };
     } catch (err) {
-      attempt++
+      attempt++;
       if (attempt >= maxAttempts) {
-        return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+        return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
       }
-      await new Promise((r) => setTimeout(r, Math.pow(2, attempt) * 1000))
+      await new Promise((r) => setTimeout(r, Math.pow(2, attempt) * 1000));
     }
   }
-  return { success: false, error: 'Exhausted retries' }
+  return { success: false, error: 'Exhausted retries' };
 }
 
 function buildHtml(payload: NotifyPayload): string {
@@ -33,8 +35,8 @@ function buildHtml(payload: NotifyPayload): string {
     medium: '#f59e0b',
     high: '#f97316',
     critical: '#ef4444',
-  }
-  const color = levelColors[payload.level] ?? '#6b7280'
+  };
+  const color = levelColors[payload.level] ?? '#6b7280';
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -52,29 +54,37 @@ function buildHtml(payload: NotifyPayload): string {
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 }
 
 export class EmailChannel implements NotifyChannelAdapter {
-  async send(config: Record<string, unknown>, payload: NotifyPayload): Promise<{ success: boolean; error?: string }> {
-    const channelConfig = config as unknown as EmailConfig
-    if (!channelConfig.to) return { success: false, error: 'Missing email address' }
+  async send(
+    config: Record<string, unknown>,
+    payload: NotifyPayload,
+  ): Promise<{ success: boolean; error?: string }> {
+    const channelConfig = config as unknown as EmailConfig;
+    if (!channelConfig.to) return { success: false, error: 'Missing email address' };
 
-    const smtpHost = channelConfig.SMTP_HOST ?? config.SMTP_HOST as string ?? config.SMTP_HOST as string
-    const smtpPort = channelConfig.SMTP_PORT ?? config.SMTP_PORT as number ?? config.SMTP_PORT as number
-    const smtpUser = channelConfig.SMTP_USER ?? config.SMTP_USER as string ?? config.SMTP_USER as string
-    const smtpPass = channelConfig.SMTP_PASS ?? config.SMTP_PASS as string ?? config.SMTP_PASS as string
-    const smtpFrom = channelConfig.SMTP_FROM ?? config.SMTP_FROM as string ?? config.SMTP_FROM as string
+    const smtpHost =
+      channelConfig.SMTP_HOST ?? (config.SMTP_HOST as string) ?? (config.SMTP_HOST as string);
+    const smtpPort =
+      channelConfig.SMTP_PORT ?? (config.SMTP_PORT as number) ?? (config.SMTP_PORT as number);
+    const smtpUser =
+      channelConfig.SMTP_USER ?? (config.SMTP_USER as string) ?? (config.SMTP_USER as string);
+    const smtpPass =
+      channelConfig.SMTP_PASS ?? (config.SMTP_PASS as string) ?? (config.SMTP_PASS as string);
+    const smtpFrom =
+      channelConfig.SMTP_FROM ?? (config.SMTP_FROM as string) ?? (config.SMTP_FROM as string);
 
-    if (!smtpHost) return { success: false, error: 'SMTP_HOST not configured' }
+    if (!smtpHost) return { success: false, error: 'SMTP_HOST not configured' };
 
-    const nodemailer = await import('nodemailer')
+    const nodemailer = await import('nodemailer');
     const transporter = nodemailer.default.createTransport({
       host: String(smtpHost),
       port: Number(smtpPort),
       secure: Number(smtpPort) === 465,
       auth: smtpUser ? { user: String(smtpUser), pass: String(smtpPass) } : undefined,
-    })
+    });
 
     return sendWithRetry(async () => {
       await transporter.sendMail({
@@ -82,7 +92,7 @@ export class EmailChannel implements NotifyChannelAdapter {
         to: String(channelConfig.to),
         subject: payload.title,
         html: buildHtml(payload),
-      })
-    })
+      });
+    });
   }
 }

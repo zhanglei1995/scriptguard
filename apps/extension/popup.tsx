@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Button } from '~components/ui/button'
-import { Badge } from '~components/ui/badge'
-import { Card } from '~components/ui/card'
+import { useState } from 'react';
+import { Button } from '~components/ui/button';
+import { Badge } from '~components/ui/badge';
+import { Card } from '~components/ui/card';
 import {
   useCurrentTab,
   useMatchedScripts,
@@ -9,29 +9,34 @@ import {
   formatRelativeTime,
   type TestResult,
   type ScriptCheckResult,
-} from './popup/hooks'
-import type { Script } from '~storage/schemas'
+} from './popup/hooks';
+import type { Script } from '~storage/schemas';
 
-const statusConfig: Record<
-  string,
-  { label: string; icon: string; variant: 'success' | 'warning' | 'destructive' | 'muted' }
-> = {
+type StatusConfig = {
+  label: string;
+  icon: string;
+  variant: 'success' | 'warning' | 'destructive' | 'muted';
+};
+
+const unknownStatusConfig: StatusConfig = { label: '未检测', icon: '🔘', variant: 'muted' };
+
+const statusConfig: Record<string, StatusConfig> = {
   healthy: { label: '通过', icon: '✅', variant: 'success' },
   degraded: { label: '降级', icon: '⚠️', variant: 'warning' },
   failed: { label: '失效', icon: '❌', variant: 'destructive' },
-  unknown: { label: '未检测', icon: '🔘', variant: 'muted' },
-}
+  unknown: unknownStatusConfig,
+};
 
 function ScriptCard({
   script,
   lastStatus,
   lastCheckTime,
 }: {
-  script: Script
-  lastStatus: string
-  lastCheckTime: number | null
+  script: Script;
+  lastStatus: string;
+  lastCheckTime: number | null;
 }) {
-  const cfg = statusConfig[lastStatus] ?? statusConfig.unknown
+  const cfg = statusConfig[lastStatus] ?? unknownStatusConfig;
 
   return (
     <Card className="p-3">
@@ -48,7 +53,7 @@ function ScriptCard({
         </span>
       </div>
     </Card>
-  )
+  );
 }
 
 function EmptyState() {
@@ -58,7 +63,7 @@ function EmptyState() {
       <div>当前页面没有匹配的脚本</div>
       <div className="mt-1 text-xs">点击右上角 [＋] 为此页面创建脚本</div>
     </div>
-  )
+  );
 }
 
 function TestResultSummary({ result }: { result: TestResult }) {
@@ -66,9 +71,19 @@ function TestResultSummary({ result }: { result: TestResult }) {
     <Card className="p-3">
       <div className="text-xs text-muted-foreground mb-2">测试结果</div>
       <div className="flex items-center gap-3 mb-2">
-        <Badge variant="success" className="text-xs">✅ {result.passed} 通过</Badge>
-        {result.failed > 0 && <Badge variant="destructive" className="text-xs">❌ {result.failed} 失败</Badge>}
-        {result.degraded > 0 && <Badge variant="warning" className="text-xs">⚠️ {result.degraded} 降级</Badge>}
+        <Badge variant="success" className="text-xs">
+          ✅ {result.passed} 通过
+        </Badge>
+        {result.failed > 0 && (
+          <Badge variant="destructive" className="text-xs">
+            ❌ {result.failed} 失败
+          </Badge>
+        )}
+        {result.degraded > 0 && (
+          <Badge variant="warning" className="text-xs">
+            ⚠️ {result.degraded} 降级
+          </Badge>
+        )}
       </div>
       <div className="space-y-1">
         {result.details.map((d) => (
@@ -76,11 +91,11 @@ function TestResultSummary({ result }: { result: TestResult }) {
         ))}
       </div>
     </Card>
-  )
+  );
 }
 
 function ResultDetail({ detail }: { detail: ScriptCheckResult }) {
-  const cfg = statusConfig[detail.status] ?? statusConfig.unknown
+  const cfg = statusConfig[detail.status] ?? unknownStatusConfig;
 
   return (
     <div className="flex items-center justify-between text-xs py-1 border-b border-border last:border-0">
@@ -92,7 +107,7 @@ function ResultDetail({ detail }: { detail: ScriptCheckResult }) {
         </Badge>
       </div>
     </div>
-  )
+  );
 }
 
 function ErrorOverlay({ error, onClose }: { error: string; onClose: () => void }) {
@@ -106,43 +121,43 @@ function ErrorOverlay({ error, onClose }: { error: string; onClose: () => void }
         </Button>
       </Card>
     </div>
-  )
+  );
 }
 
 function PopupApp() {
-  performance.mark('popup-render-start')
-  const { tab, loading, displayUrl } = useCurrentTab()
-  const matchedScripts = useMatchedScripts(tab?.url ?? null)
-  const { status, result, runTest, reset } = useTestRunner()
-  const [showError, setShowError] = useState(false)
+  performance.mark('popup-render-start');
+  const { tab, loading, displayUrl } = useCurrentTab();
+  const matchedScripts = useMatchedScripts(tab?.url ?? null);
+  const { status, result, runTest, reset } = useTestRunner();
+  const [showError, setShowError] = useState(false);
 
-  performance.mark('popup-render-end')
-  performance.measure('popup-render', 'popup-render-start', 'popup-render-end')
+  performance.mark('popup-render-end');
+  performance.measure('popup-render', 'popup-render-start', 'popup-render-end');
 
   const handleOpenOptions = () => {
-    chrome.runtime.openOptionsPage()
-  }
+    chrome.runtime.openOptionsPage();
+  };
 
   const handleCopyUrl = () => {
-    if (tab?.url) navigator.clipboard.writeText(tab.url)
-  }
+    if (tab?.url) navigator.clipboard.writeText(tab.url);
+  };
 
   const handleRunTest = async () => {
-    setShowError(false)
-    await runTest()
-  }
+    setShowError(false);
+    await runTest();
+  };
 
   if (loading) {
     return (
       <div className="w-[380px] h-[500px] flex items-center justify-center text-sm text-muted-foreground">
         加载中...
       </div>
-    )
+    );
   }
 
-  const isRunning = status === 'running'
-  const hasResult = status === 'completed' && result
-  const hasFailed = status === 'failed'
+  const isRunning = status === 'running';
+  const hasResult = status === 'completed' && result;
+  const hasFailed = status === 'failed';
 
   return (
     <div className="w-[380px] h-[500px] flex flex-col bg-background text-foreground">
@@ -251,7 +266,7 @@ function PopupApp() {
         <ErrorOverlay error="测试执行失败，请稍后重试" onClose={() => setShowError(false)} />
       )}
     </div>
-  )
+  );
 }
 
-export default PopupApp
+export default PopupApp;

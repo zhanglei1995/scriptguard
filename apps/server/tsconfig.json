@@ -7,8 +7,7 @@
     "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"],
-      "@scriptguard/shared": ["../../packages/shared/src/index.ts"]
+      "~/*": ["./src/*"]
     },
     "noEmit": false,
     "declaration": true,

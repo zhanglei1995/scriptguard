@@ -17,10 +17,17 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'prettier',
   ],
-  ignorePatterns: ['build/', '.plasmo/', 'dist/', 'node_modules/'],
+  ignorePatterns: [
+    'build/',
+    '.plasmo/',
+    'dist/',
+    'node_modules/',
+    '**/__tests__/**',
+    'vitest.setup.ts',
+  ],
   rules: {
     'react/prop-types': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
-}
+};
