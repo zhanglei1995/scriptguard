@@ -5,7 +5,7 @@
  * Creates a default ExecutionContext from current browser environment
  */
 
-import type { ExecutionContext, PageContextProxy } from './types'
+import type { ExecutionContext, PageContextProxy } from './types';
 
 /**
  * Create a minimal PageContextProxy from current window
@@ -14,13 +14,13 @@ function createPageContextProxy(doc: Document): PageContextProxy {
   return {
     getTitle: () => doc.title,
     getMeta: (name: string) => {
-      const meta = doc.querySelector(`meta[name="${name}"]`)
-      return meta?.getAttribute('content') ?? null
+      const meta = doc.querySelector(`meta[name="${name}"]`);
+      return meta?.getAttribute('content') ?? null;
     },
     getElementCount: (selector: string) => {
-      return doc.querySelectorAll(selector).length
+      return doc.querySelectorAll(selector).length;
     },
-  }
+  };
 }
 
 /**
@@ -30,10 +30,10 @@ function createPageContextProxy(doc: Document): PageContextProxy {
  * @returns ExecutionContext for current page
  */
 export function createDefaultExecutionContext(
-  options: Partial<Pick<ExecutionContext, 'timeout' | 'signal'>> = {}
+  options: Partial<Pick<ExecutionContext, 'timeout' | 'signal'>> = {},
 ): ExecutionContext {
-  const doc = document
-  const win = window
+  const doc = document;
+  const win = window;
 
   return {
     url: location.href,
@@ -44,5 +44,5 @@ export function createDefaultExecutionContext(
     signal: options.signal ?? new AbortController().signal,
     capturedErrors: [],
     capturedRequests: [],
-  }
+  };
 }

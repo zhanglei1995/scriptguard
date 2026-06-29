@@ -5,13 +5,13 @@
  * 关联: TDD §9.4 Content Script 错误隔离
  */
 
-export const INJECT_RESULT_SOURCE = 'scriptguard-inject-result'
+export const INJECT_RESULT_SOURCE = 'scriptguard-inject-result';
 
-export const DEFAULT_TIMEOUT = 10_000
+export const DEFAULT_TIMEOUT = 10_000;
 
 export interface InjectResult {
-  status: 'success' | 'error' | 'timeout'
-  error?: string
+  status: 'success' | 'error' | 'timeout';
+  error?: string;
 }
 
 /**
@@ -21,38 +21,38 @@ export interface InjectResult {
 export function injectScript(
   scriptId: string,
   code: string,
-  options: { timeout?: number; doc?: Document } = {}
+  options: { timeout?: number; doc?: Document } = {},
 ): Promise<InjectResult> {
-  const timeout = options.timeout ?? DEFAULT_TIMEOUT
-  const doc = options.doc ?? document
+  const timeout = options.timeout ?? DEFAULT_TIMEOUT;
+  const doc = options.doc ?? document;
 
   return new Promise((resolve) => {
-    let resolved = false
+    let resolved = false;
 
     const handler = (e: MessageEvent) => {
-      if (resolved) return
-      const data = e.data
+      if (resolved) return;
+      const data = e.data;
       if (
         typeof data === 'object' &&
         data !== null &&
         data.source === INJECT_RESULT_SOURCE &&
         data.scriptId === scriptId
       ) {
-        resolved = true
-        window.removeEventListener('message', handler)
-        resolve({ status: data.status, error: data.error })
+        resolved = true;
+        window.removeEventListener('message', handler);
+        resolve({ status: data.status, error: data.error });
       }
-    }
+    };
 
-    window.addEventListener('message', handler)
+    window.addEventListener('message', handler);
 
     const timer = setTimeout(() => {
       if (!resolved) {
-        resolved = true
-        window.removeEventListener('message', handler)
-        resolve({ status: 'timeout', error: `Script timed out after ${timeout}ms` })
+        resolved = true;
+        window.removeEventListener('message', handler);
+        resolve({ status: 'timeout', error: `Script timed out after ${timeout}ms` });
       }
-    }, timeout)
+    }, timeout);
 
     const wrappedCode = `(function(){
 var S="${INJECT_RESULT_SOURCE}",ID="${scriptId}";
@@ -62,13 +62,13 @@ window.postMessage({source:S,scriptId:ID,status:"success"},'*');
 }catch(e){
 window.postMessage({source:S,scriptId:ID,status:"error",error:e.message||String(e)},'*');
 }
-})();`
+})();`;
 
-    const el = doc.createElement('script')
-    el.textContent = wrappedCode
-    ;(doc.documentElement || doc.head || doc.body)?.appendChild(el)
-    el.remove()
+    const el = doc.createElement('script');
+    el.textContent = wrappedCode;
+    (doc.documentElement || doc.head || doc.body)?.appendChild(el);
+    el.remove();
 
-    void timer
-  })
+    void timer;
+  });
 }

@@ -6,11 +6,11 @@
  * SG-027: 健康检查规则配置 UI
  */
 
-import { lazy, Suspense, useState } from 'react'
-import type { PlasmoGetStyle } from 'plasmo'
-import { cn } from '../lib/utils'
-import { ThemeProvider, ThemeToggle } from '../components/ui/theme-provider'
-import { Button } from '../components/ui/button'
+import { lazy, Suspense, useState } from 'react';
+import type { PlasmoGetStyle } from 'plasmo';
+import { cn } from '../lib/utils';
+import { ThemeProvider, ThemeToggle } from '../components/ui/theme-provider';
+import { Button } from '../components/ui/button';
 import {
   LayoutDashboard,
   FileCode,
@@ -25,63 +25,57 @@ import {
   X,
   ArrowLeft,
   Plus,
-} from 'lucide-react'
+} from 'lucide-react';
 
 const DashboardTab = lazy(() =>
-  import('./views/dashboard').then((mod) => ({ default: mod.DashboardTab }))
-)
+  import('./views/dashboard').then((mod) => ({ default: mod.DashboardTab })),
+);
 
 const ScriptsTab = lazy(() =>
-  import('./views/scripts').then((mod) => ({ default: mod.ScriptsTab }))
-)
+  import('./views/scripts').then((mod) => ({ default: mod.ScriptsTab })),
+);
 
 const TestReportsTab = lazy(() =>
-  import('./views/test-reports').then((mod) => ({ default: mod.TestReportsTab }))
-)
+  import('./views/test-reports').then((mod) => ({ default: mod.TestReportsTab })),
+);
 
-const AlertsTab = lazy(() =>
-  import('./views/alerts').then((mod) => ({ default: mod.AlertsTab }))
-)
+const AlertsTab = lazy(() => import('./views/alerts').then((mod) => ({ default: mod.AlertsTab })));
 
 const LogsTab = lazy(() =>
   import('./logs').then((mod) => {
-    performance.mark('logs-tab-loaded')
-    return { default: mod.LogsTab }
-  })
-)
+    performance.mark('logs-tab-loaded');
+    return { default: mod.LogsTab };
+  }),
+);
 
 const SettingsTab = lazy(() =>
-  import('./views/settings').then((mod) => ({ default: mod.SettingsTab }))
-)
+  import('./views/settings').then((mod) => ({ default: mod.SettingsTab })),
+);
 
-const ImportTab = lazy(() =>
-  import('./import-tab').then((mod) => ({ default: mod.ImportTab }))
-)
+const ImportTab = lazy(() => import('./import-tab').then((mod) => ({ default: mod.ImportTab })));
 
 const EditorView = lazy(() =>
-  import('./views/editor').then((mod) => ({ default: mod.EditorView }))
-)
+  import('./views/editor').then((mod) => ({ default: mod.EditorView })),
+);
 
-const RulesView = lazy(() =>
-  import('./views/rules').then((mod) => ({ default: mod.RulesView }))
-)
+const RulesView = lazy(() => import('./views/rules').then((mod) => ({ default: mod.RulesView })));
 
 export const getStyle: PlasmoGetStyle = () => {
-  const style = document.createElement('style')
+  const style = document.createElement('style');
   style.textContent = `
     body { width: 960px; min-height: 640px; margin: 0; }
-  `
-  return style
-}
+  `;
+  return style;
+};
 
-type TabId = 'overview' | 'scripts' | 'tests' | 'alerts' | 'logs' | 'settings' | 'import' | 'about'
+type TabId = 'overview' | 'scripts' | 'tests' | 'alerts' | 'logs' | 'settings' | 'import' | 'about';
 
-type SubView = { type: 'editor'; scriptId?: string } | { type: 'rules'; scriptId?: string } | null
+type SubView = { type: 'editor'; scriptId?: string } | { type: 'rules'; scriptId?: string } | null;
 
 interface NavItem {
-  id: TabId
-  label: string
-  icon: React.ReactNode
+  id: TabId;
+  label: string;
+  icon: React.ReactNode;
 }
 
 const navItems: NavItem[] = [
@@ -93,14 +87,14 @@ const navItems: NavItem[] = [
   { id: 'import', label: '导入', icon: <Plus className="h-4 w-4" /> },
   { id: 'settings', label: '设置', icon: <Settings className="h-4 w-4" /> },
   { id: 'about', label: '关于', icon: <Info className="h-4 w-4" /> },
-]
+];
 
 function TabLoadingFallback() {
   return (
     <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
       加载中...
     </div>
-  )
+  );
 }
 
 function AboutView() {
@@ -120,14 +114,14 @@ function AboutView() {
         <p>支持 Tampermonkey/Greasemonkey 脚本导入、定时检测、告警通知等功能。</p>
       </div>
     </div>
-  )
+  );
 }
 
 function OptionsPageInner() {
-  const [activeTab, setActiveTab] = useState<TabId>('overview')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [subView, setSubView] = useState<SubView>(null)
+  const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [subView, setSubView] = useState<SubView>(null);
 
   if (subView?.type === 'editor') {
     return (
@@ -136,7 +130,7 @@ function OptionsPageInner() {
           <EditorView scriptId={subView.scriptId} />
         </Suspense>
       </div>
-    )
+    );
   }
 
   if (subView?.type === 'rules') {
@@ -154,29 +148,29 @@ function OptionsPageInner() {
           </Suspense>
         </main>
       </div>
-    )
+    );
   }
 
   const renderContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <DashboardTab />
+        return <DashboardTab />;
       case 'scripts':
-        return <ScriptsTab />
+        return <ScriptsTab />;
       case 'tests':
-        return <TestReportsTab />
+        return <TestReportsTab />;
       case 'alerts':
-        return <AlertsTab />
+        return <AlertsTab />;
       case 'logs':
-        return <LogsTab />
+        return <LogsTab />;
       case 'import':
-        return <ImportTab />
+        return <ImportTab />;
       case 'settings':
-        return <SettingsTab />
+        return <SettingsTab />;
       case 'about':
-        return <AboutView />
+        return <AboutView />;
     }
-  }
+  };
 
   return (
     <div className="flex h-screen bg-background text-foreground">
@@ -184,7 +178,7 @@ function OptionsPageInner() {
         className={cn(
           'flex flex-col border-r bg-card transition-all duration-base',
           sidebarOpen ? 'w-48' : 'w-0 overflow-hidden',
-          'max-md:hidden'
+          'max-md:hidden',
         )}
       >
         <div className="flex h-12 items-center gap-2 border-b px-4">
@@ -200,7 +194,7 @@ function OptionsPageInner() {
                 'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                 activeTab === item.id
                   ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
               )}
             >
               {item.icon}
@@ -226,14 +220,14 @@ function OptionsPageInner() {
               <button
                 key={item.id}
                 onClick={() => {
-                  setActiveTab(item.id)
-                  setMobileMenuOpen(false)
+                  setActiveTab(item.id);
+                  setMobileMenuOpen(false);
                 }}
                 className={cn(
                   'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                   activeTab === item.id
                     ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 )}
               >
                 {item.icon}
@@ -246,10 +240,7 @@ function OptionsPageInner() {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-12 items-center gap-3 border-b px-4">
-          <button
-            className="max-md:hidden"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
+          <button className="max-md:hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <Menu className="h-4 w-4 text-muted-foreground" />
           </button>
           <button className="md:hidden" onClick={() => setMobileMenuOpen(true)}>
@@ -279,13 +270,11 @@ function OptionsPageInner() {
         </header>
 
         <main className="flex-1 overflow-auto p-6">
-          <Suspense fallback={<TabLoadingFallback />}>
-            {renderContent()}
-          </Suspense>
+          <Suspense fallback={<TabLoadingFallback />}>{renderContent()}</Suspense>
         </main>
       </div>
     </div>
-  )
+  );
 }
 
 function OptionsPage() {
@@ -293,7 +282,7 @@ function OptionsPage() {
     <ThemeProvider>
       <OptionsPageInner />
     </ThemeProvider>
-  )
+  );
 }
 
-export default OptionsPage
+export default OptionsPage;

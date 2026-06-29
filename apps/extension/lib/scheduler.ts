@@ -1,1 +1,1 @@
-export { createCheckAlarm, clearCheckAlarm, clearAllCheckAlarms } from '../background/alarms'
+export { createCheckAlarm, clearCheckAlarm, clearAllCheckAlarms } from '../background/alarms';

@@ -3,9 +3,9 @@
  * SG-022: 本地运行日志
  */
 
-import { useEffect, useState, useCallback } from 'react'
-import { getLogStore, type LogFilters } from '../lib/log-store'
-import { StatusBadge, type Status } from '../components/StatusBadge'
+import { useEffect, useState, useCallback } from 'react';
+import { getLogStore, type LogFilters } from '../lib/log-store';
+import { StatusBadge, type Status } from '../components/StatusBadge';
 import {
   Table,
   TableBody,
@@ -13,59 +13,59 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table'
+} from '../components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select'
-import { Input } from '../components/ui/input'
-import { Button } from '../components/ui/button'
-import { Empty } from '../components/ui/empty'
-import type { CheckRecord } from '../storage/schemas'
+} from '../components/ui/select';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { Empty } from '../components/ui/empty';
+import type { CheckRecord } from '../storage/schemas';
 
 // ====== Component ======
 export function LogsTab() {
-  const [logs, setLogs] = useState<CheckRecord[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filters, setFilters] = useState<LogFilters>({})
-  const [expandedId, setExpandedId] = useState<number | null>(null)
+  const [logs, setLogs] = useState<CheckRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<LogFilters>({});
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   const loadLogs = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const store = getLogStore()
-      const results = await store.getChecks(filters)
-      setLogs(results)
+      const store = getLogStore();
+      const results = await store.getChecks(filters);
+      setLogs(results);
     } catch (err) {
-      console.error('[SG Logs] Failed to load logs:', err)
+      console.error('[SG Logs] Failed to load logs:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [filters])
+  }, [filters]);
 
   useEffect(() => {
-    loadLogs()
-  }, [loadLogs])
+    loadLogs();
+  }, [loadLogs]);
 
   const handleExportCSV = () => {
-    const store = getLogStore()
-    store.exportCSV(filters)
-  }
+    const store = getLogStore();
+    store.exportCSV(filters);
+  };
 
   const handleFilterChange = (key: keyof LogFilters, value: string | Date | undefined) => {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-  }
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const clearFilters = () => {
-    setFilters({})
-  }
+    setFilters({});
+  };
 
   const toggleExpand = (id: number) => {
-    setExpandedId(expandedId === id ? null : id)
-  }
+    setExpandedId(expandedId === id ? null : id);
+  };
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('zh-CN', {
@@ -75,13 +75,13 @@ export function LogsTab() {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   const formatDuration = (ms: number) => {
-    if (ms < 1000) return `${ms}ms`
-    return `${(ms / 1000).toFixed(2)}s`
-  }
+    if (ms < 1000) return `${ms}ms`;
+    return `${(ms / 1000).toFixed(2)}s`;
+  };
 
   return (
     <div className="space-y-4">
@@ -148,10 +148,7 @@ export function LogsTab() {
       {loading ? (
         <div className="text-center py-8 text-sm text-muted-foreground">加载中...</div>
       ) : logs.length === 0 ? (
-        <Empty
-          title="暂无日志"
-          description="运行脚本检查后，日志将显示在这里"
-        />
+        <Empty title="暂无日志" description="运行脚本检查后，日志将显示在这里" />
       ) : (
         <Table>
           <TableHeader>
@@ -178,7 +175,7 @@ export function LogsTab() {
         </Table>
       )}
     </div>
-  )
+  );
 }
 
 // ====== LogRow ======
@@ -189,18 +186,15 @@ function LogRow({
   formatDate,
   formatDuration,
 }: {
-  log: CheckRecord
-  expanded: boolean
-  onToggle: () => void
-  formatDate: (d: Date) => string
-  formatDuration: (ms: number) => string
+  log: CheckRecord;
+  expanded: boolean;
+  onToggle: () => void;
+  formatDate: (d: Date) => string;
+  formatDuration: (ms: number) => string;
 }) {
   return (
     <>
-      <TableRow
-        className="cursor-pointer"
-        onClick={onToggle}
-      >
+      <TableRow className="cursor-pointer" onClick={onToggle}>
         <TableCell className="font-mono text-xs">{formatDate(log.timestamp)}</TableCell>
         <TableCell className="font-mono text-xs truncate max-w-[140px]">{log.scriptId}</TableCell>
         <TableCell>
@@ -218,7 +212,10 @@ function LogRow({
                   <span className="font-medium text-muted-foreground">失败规则：</span>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {log.failedRules.map((rule, i) => (
-                      <span key={i} className="inline-block px-2 py-0.5 rounded bg-destructive/10 text-destructive text-xs">
+                      <span
+                        key={i}
+                        className="inline-block px-2 py-0.5 rounded bg-destructive/10 text-destructive text-xs"
+                      >
                         {rule}
                       </span>
                     ))}
@@ -241,5 +238,5 @@ function LogRow({
         </TableRow>
       )}
     </>
-  )
+  );
 }

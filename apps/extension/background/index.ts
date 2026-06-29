@@ -5,65 +5,65 @@
  * 关联: TDD §3.1.1 + §6.2
  */
 
-import { routeMessage } from './router'
-import { tabRegistry } from './registry'
-import { parseAlarmScriptId } from './alarms'
-import { scheduler } from './scheduler'
+import { routeMessage } from './router';
+import { tabRegistry } from './registry';
+import { parseAlarmScriptId } from './alarms';
+import { scheduler } from './scheduler';
 
 // ====== 生命周期 ======
 chrome.runtime.onInstalled.addListener(async (details) => {
-  console.log('[BG] Installed:', details.reason)
-  await tabRegistry.init()
-  await scheduler.init()
+  console.log('[BG] Installed:', details.reason);
+  await tabRegistry.init();
+  await scheduler.init();
   if (details.reason === 'install') {
-    chrome.runtime.openOptionsPage?.()
+    chrome.runtime.openOptionsPage?.();
   }
-})
+});
 
 chrome.runtime.onStartup.addListener(async () => {
-  console.log('[BG] Starting up...')
-  await tabRegistry.init()
-  await scheduler.init()
-})
+  console.log('[BG] Starting up...');
+  await tabRegistry.init();
+  await scheduler.init();
+});
 
 // ====== 消息路由 ======
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   routeMessage(message, sender)
     .then(sendResponse)
     .catch((err) => {
-      console.error('[BG] Message error:', err)
-      sendResponse({ ok: false, error: String(err) })
-    })
-  return true
-})
+      console.error('[BG] Message error:', err);
+      sendResponse({ ok: false, error: String(err) });
+    });
+  return true;
+});
 
 // ====== Tab 管理 ======
 chrome.tabs.onRemoved.addListener((tabId) => {
-  tabRegistry.cleanup(tabId)
-})
+  tabRegistry.cleanup(tabId);
+});
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status === 'loading') {
-    tabRegistry.reset(tabId)
+    tabRegistry.reset(tabId);
   }
-})
+});
 
 // ====== 定时任务 ======
 chrome.alarms.onAlarm.addListener(async (alarm) => {
-  const scriptId = parseAlarmScriptId(alarm.name)
+  const scriptId = parseAlarmScriptId(alarm.name);
   if (scriptId) {
-    console.log('[BG] Alarm triggered for script:', scriptId)
-    await scheduler.handleAlarm(scriptId)
+    console.log('[BG] Alarm triggered for script:', scriptId);
+    await scheduler.handleAlarm(scriptId);
   }
-})
+});
 
 // ====== 通知点击 ======
 chrome.notifications?.onClicked.addListener((notificationId) => {
-  console.log('[BG] Notification clicked:', notificationId)
-  chrome.runtime.openOptionsPage()
-})
+  console.log('[BG] Notification clicked:', notificationId);
+  chrome.runtime.openOptionsPage();
+});
 
-console.log('[BG] Background service worker loaded')
+console.log('[BG] Background service worker loaded');
 
 export default function Background() {
   // Plasmo requires default export

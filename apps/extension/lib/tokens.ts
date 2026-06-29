@@ -23,12 +23,12 @@ export const COLORS = {
   'alert-medium': '#F59E0B',
   'alert-high': '#F97316',
   'alert-critical': '#DC2626',
-} as const
+} as const;
 
 export const FONT_FAMILY = {
   sans: ['Inter', 'PingFang SC', '-apple-system', 'system-ui', 'sans-serif'],
   mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-} as const
+} as const;
 
 export const FONT_SIZE = {
   xs: '12px',
@@ -38,14 +38,14 @@ export const FONT_SIZE = {
   xl: '20px',
   '2xl': '24px',
   '3xl': '30px',
-} as const
+} as const;
 
 export const FONT_WEIGHT = {
   normal: '400',
   medium: '500',
   semibold: '600',
   bold: '700',
-} as const
+} as const;
 
 export const SPACING = {
   1: '4px',
@@ -61,27 +61,27 @@ export const SPACING = {
   11: '80px',
   12: '96px',
   13: '128px',
-} as const
+} as const;
 
 export const BORDER_RADIUS = {
   sm: '4px',
   md: '6px',
   lg: '8px',
   xl: '12px',
-} as const
+} as const;
 
 export const BOX_SHADOW = {
   sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
   md: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
   lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-} as const
+} as const;
 
 export const TRANSITION = {
   'ease-out': 'cubic-bezier(0.16, 1, 0.3, 1)',
   'duration-fast': '150ms',
   'duration-base': '250ms',
   'duration-slow': '400ms',
-} as const
+} as const;
 
 /**
  * 从 CSS 变量读取 token 值
@@ -89,17 +89,15 @@ export const TRANSITION = {
  * @returns token 值，未定义则返回 undefined
  */
 export function getToken(name: string): string | undefined {
-  if (typeof document === 'undefined') return undefined
-  const value = getComputedStyle(document.documentElement)
-    .getPropertyValue(`--${name}`)
-    .trim()
-  return value || undefined
+  if (typeof document === 'undefined') return undefined;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim();
+  return value || undefined;
 }
 
 /**
  * 获取当前是否为暗色模式
  */
 export function isDarkMode(): boolean {
-  if (typeof document === 'undefined') return false
-  return document.documentElement.classList.contains('dark')
+  if (typeof document === 'undefined') return false;
+  return document.documentElement.classList.contains('dark');
 }

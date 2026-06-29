@@ -1,32 +1,35 @@
-import { useEffect, useState, useCallback, useMemo } from 'react'
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card'
-import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
-import { Badge } from '../../components/ui/badge'
-import { Empty } from '../../components/ui/empty'
-import { useScriptsStore } from '../../store'
-import { getChecksByScript } from '../../storage/db'
-import type { CheckRecord } from '../../storage/schemas'
-import { Search, Pencil, Play, Trash2, ArrowLeft, Plus, CheckSquare, Square } from 'lucide-react'
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Badge } from '../../components/ui/badge';
+import { Empty } from '../../components/ui/empty';
+import { useScriptsStore } from '../../store';
+import { getChecksByScript } from '../../storage/db';
+import type { CheckRecord } from '../../storage/schemas';
+import { Search, Pencil, Play, Trash2, ArrowLeft, Plus, CheckSquare, Square } from 'lucide-react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select'
+} from '../../components/ui/select';
 
-type HealthFilter = 'all' | 'healthy' | 'degraded' | 'failed'
+type HealthFilter = 'all' | 'healthy' | 'degraded' | 'failed';
 
-const statusMap: Record<string, { label: string; variant: 'success' | 'warning' | 'destructive' | 'default' }> = {
+const statusMap: Record<
+  string,
+  { label: string; variant: 'success' | 'warning' | 'destructive' | 'default' }
+> = {
   healthy: { label: '正常', variant: 'success' },
   degraded: { label: '降级', variant: 'warning' },
   failed: { label: '失败', variant: 'destructive' },
   unknown: { label: '未知', variant: 'default' },
-}
+};
 
 function getStatus(enabled: boolean): 'healthy' | 'failed' {
-  return enabled ? 'healthy' : 'failed'
+  return enabled ? 'healthy' : 'failed';
 }
 
 function formatDate(ts: number) {
@@ -36,7 +39,7 @@ function formatDate(ts: number) {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-  }).format(new Date(ts))
+  }).format(new Date(ts));
 }
 
 function formatCheckDate(d: Date) {
@@ -46,75 +49,74 @@ function formatCheckDate(d: Date) {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-  }).format(d)
+  }).format(d);
 }
 
 export function ScriptsTab() {
-  const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [healthFilter, setHealthFilter] = useState<HealthFilter>('all')
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [healthFilter, setHealthFilter] = useState<HealthFilter>('all');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const getFilteredScripts = useScriptsStore((s) => s.getFilteredScripts)
-  const deleteScript = useScriptsStore((s) => s.deleteScript)
-  const enableScript = useScriptsStore((s) => s.enableScript)
-  const disableScript = useScriptsStore((s) => s.disableScript)
-  const storeScripts = useScriptsStore((s) => s.scripts) // eslint-disable-line @typescript-eslint/no-unused-vars
+  const getFilteredScripts = useScriptsStore((s) => s.getFilteredScripts);
+  const deleteScript = useScriptsStore((s) => s.deleteScript);
+  const enableScript = useScriptsStore((s) => s.enableScript);
+  const disableScript = useScriptsStore((s) => s.disableScript);
+  const storeScripts = useScriptsStore((s) => s.scripts); // eslint-disable-line @typescript-eslint/no-unused-vars
 
   const filteredScripts = (() => {
-    let result = getFilteredScripts()
+    let result = getFilteredScripts();
     if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter((s) => s.name.toLowerCase().includes(q))
+      const q = searchQuery.toLowerCase();
+      result = result.filter((s) => s.name.toLowerCase().includes(q));
     }
     if (healthFilter !== 'all') {
-      result = result.filter((s) => getStatus(s.enabled) === healthFilter)
+      result = result.filter((s) => getStatus(s.enabled) === healthFilter);
     }
-    return result
-  })()
+    return result;
+  })();
 
   const toggleSelect = useCallback((id: string) => {
     setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }, [])
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
 
   const toggleSelectAll = useCallback(() => {
     if (selectedIds.size === filteredScripts.length && filteredScripts.length > 0) {
-      setSelectedIds(new Set())
+      setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(filteredScripts.map((s) => s.id)))
+      setSelectedIds(new Set(filteredScripts.map((s) => s.id)));
     }
-  }, [filteredScripts, selectedIds.size])
+  }, [filteredScripts, selectedIds.size]);
 
   const handleBulkEnable = useCallback(() => {
-    selectedIds.forEach((id) => enableScript(id))
-    setSelectedIds(new Set())
-  }, [selectedIds, enableScript])
+    selectedIds.forEach((id) => enableScript(id));
+    setSelectedIds(new Set());
+  }, [selectedIds, enableScript]);
 
   const handleBulkDisable = useCallback(() => {
-    selectedIds.forEach((id) => disableScript(id))
-    setSelectedIds(new Set())
-  }, [selectedIds, disableScript])
+    selectedIds.forEach((id) => disableScript(id));
+    setSelectedIds(new Set());
+  }, [selectedIds, disableScript]);
 
   const handleBulkDelete = useCallback(() => {
-    selectedIds.forEach((id) => deleteScript(id))
-    setSelectedIds(new Set())
-  }, [selectedIds, deleteScript])
+    selectedIds.forEach((id) => deleteScript(id));
+    setSelectedIds(new Set());
+  }, [selectedIds, deleteScript]);
 
   const handleDelete = useCallback(
     (id: string) => {
-      deleteScript(id)
-      if (selectedScriptId === id) setSelectedScriptId(null)
+      deleteScript(id);
+      if (selectedScriptId === id) setSelectedScriptId(null);
     },
-    [deleteScript, selectedScriptId]
-  )
+    [deleteScript, selectedScriptId],
+  );
 
-  const handleTest = useCallback((_id: string) => {
-  }, [])
+  const handleTest = useCallback((_id: string) => {}, []);
 
   if (selectedScriptId) {
     return (
@@ -125,7 +127,7 @@ export function ScriptsTab() {
         onTest={handleTest}
         onDelete={handleDelete}
       />
-    )
+    );
   }
 
   return (
@@ -158,9 +160,15 @@ export function ScriptsTab() {
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">已选 {selectedIds.size} 项</span>
-            <Button variant="outline" size="sm" onClick={handleBulkEnable}>启用</Button>
-            <Button variant="outline" size="sm" onClick={handleBulkDisable}>禁用</Button>
-            <Button variant="destructive" size="sm" onClick={handleBulkDelete}>删除</Button>
+            <Button variant="outline" size="sm" onClick={handleBulkEnable}>
+              启用
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleBulkDisable}>
+              禁用
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+              删除
+            </Button>
           </div>
         )}
 
@@ -173,7 +181,11 @@ export function ScriptsTab() {
       {filteredScripts.length === 0 ? (
         <Empty
           title="暂无脚本"
-          description={searchQuery || healthFilter !== 'all' ? '没有匹配的脚本' : '点击上方按钮添加你的第一个监控脚本'}
+          description={
+            searchQuery || healthFilter !== 'all'
+              ? '没有匹配的脚本'
+              : '点击上方按钮添加你的第一个监控脚本'
+          }
         />
       ) : (
         <div className="space-y-2">
@@ -193,8 +205,8 @@ export function ScriptsTab() {
           </div>
 
           {filteredScripts.map((script) => {
-            const st = getStatus(script.enabled)
-            const cfg = statusMap[st] ?? { label: st, variant: 'default' as const }
+            const st = getStatus(script.enabled);
+            const cfg = statusMap[st] ?? { label: st, variant: 'default' as const };
             return (
               <Card
                 key={script.id}
@@ -204,9 +216,15 @@ export function ScriptsTab() {
                 <CardContent className="flex items-center gap-3 py-3 px-3">
                   <div className="w-8 flex justify-center" onClick={(e) => e.stopPropagation()}>
                     {selectedIds.has(script.id) ? (
-                      <CheckSquare className="h-4 w-4 cursor-pointer" onClick={() => toggleSelect(script.id)} />
+                      <CheckSquare
+                        className="h-4 w-4 cursor-pointer"
+                        onClick={() => toggleSelect(script.id)}
+                      />
                     ) : (
-                      <Square className="h-4 w-4 cursor-pointer" onClick={() => toggleSelect(script.id)} />
+                      <Square
+                        className="h-4 w-4 cursor-pointer"
+                        onClick={() => toggleSelect(script.id)}
+                      />
                     )}
                   </div>
 
@@ -216,31 +234,51 @@ export function ScriptsTab() {
 
                   <div className="w-[80px] text-xs text-muted-foreground">{script.version}</div>
 
-                  <div className="w-[120px] text-xs text-muted-foreground">{formatDate(script.updatedAt)}</div>
+                  <div className="w-[120px] text-xs text-muted-foreground">
+                    {formatDate(script.updatedAt)}
+                  </div>
 
                   <div className="w-[80px]">
                     <Badge variant={cfg.variant}>{cfg.label}</Badge>
                   </div>
 
-                  <div className="w-[100px] flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelectedScriptId(script.id)}>
+                  <div
+                    className="w-[100px] flex justify-end gap-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setSelectedScriptId(script.id)}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleTest(script.id)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => handleTest(script.id)}
+                    >
                       <Play className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(script.id)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => handleDelete(script.id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </CardContent>
               </Card>
-            )
+            );
           })}
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function ScriptDetail({
@@ -250,43 +288,43 @@ function ScriptDetail({
   onTest,
   onDelete,
 }: {
-  scriptId: string
-  onBack: () => void
-  onEdit: (id: string) => void
-  onTest: (id: string) => void
-  onDelete: (id: string) => void
+  scriptId: string;
+  onBack: () => void;
+  onEdit: (id: string) => void;
+  onTest: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
-  const getScript = useScriptsStore((s) => s.getScript)
-  const script = getScript(scriptId)
+  const getScript = useScriptsStore((s) => s.getScript);
+  const script = getScript(scriptId);
 
-  const [checks, setChecks] = useState<CheckRecord[]>([])
+  const [checks, setChecks] = useState<CheckRecord[]>([]);
 
   useEffect(() => {
-    if (!scriptId) return
-    getChecksByScript(scriptId).then(setChecks)
-  }, [scriptId])
+    if (!scriptId) return;
+    getChecksByScript(scriptId).then(setChecks);
+  }, [scriptId]);
 
   const healthData = useMemo(() => {
-    const bars: ('green' | 'yellow' | 'red' | 'gray')[] = []
-    const now = Date.now()
+    const bars: ('green' | 'yellow' | 'red' | 'gray')[] = [];
+    const now = Date.now();
     for (let i = 29; i >= 0; i--) {
-      const dayStart = now - (i + 1) * 24 * 60 * 60 * 1000
-      const dayEnd = now - i * 24 * 60 * 60 * 1000
+      const dayStart = now - (i + 1) * 24 * 60 * 60 * 1000;
+      const dayEnd = now - i * 24 * 60 * 60 * 1000;
       const dayChecks = checks.filter(
-        (c) => c.timestamp.getTime() >= dayStart && c.timestamp.getTime() < dayEnd
-      )
+        (c) => c.timestamp.getTime() >= dayStart && c.timestamp.getTime() < dayEnd,
+      );
       if (dayChecks.length === 0) {
-        bars.push('gray')
+        bars.push('gray');
       } else if (dayChecks.every((c) => c.status === 'healthy')) {
-        bars.push('green')
+        bars.push('green');
       } else if (dayChecks.some((c) => c.status === 'failed')) {
-        bars.push('red')
+        bars.push('red');
       } else {
-        bars.push('yellow')
+        bars.push('yellow');
       }
     }
-    return bars
-  }, [checks])
+    return bars;
+  }, [checks]);
 
   if (!script) {
     return (
@@ -297,18 +335,18 @@ function ScriptDetail({
         </Button>
         <Empty title="脚本不存在" description="找不到该脚本信息" />
       </div>
-    )
+    );
   }
 
-  const st = getStatus(script.enabled)
-  const cfg = statusMap[st] ?? { label: st, variant: 'default' as const }
+  const st = getStatus(script.enabled);
+  const cfg = statusMap[st] ?? { label: st, variant: 'default' as const };
 
   const barColors: Record<string, string> = {
     green: 'bg-green-500',
     yellow: 'bg-yellow-500',
     red: 'bg-red-500',
     gray: 'bg-muted',
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -424,8 +462,19 @@ function ScriptDetail({
           ) : (
             <div className="space-y-2">
               {checks.slice(0, 20).map((check) => (
-                <div key={check.id} className="flex items-center gap-3 text-xs py-2 border-b last:border-b-0">
-                  <Badge variant={check.status === 'healthy' ? 'success' : check.status === 'failed' ? 'destructive' : 'warning'}>
+                <div
+                  key={check.id}
+                  className="flex items-center gap-3 text-xs py-2 border-b last:border-b-0"
+                >
+                  <Badge
+                    variant={
+                      check.status === 'healthy'
+                        ? 'success'
+                        : check.status === 'failed'
+                          ? 'destructive'
+                          : 'warning'
+                    }
+                  >
                     {check.status}
                   </Badge>
                   <span className="text-muted-foreground truncate max-w-[200px]">{check.url}</span>
@@ -438,5 +487,5 @@ function ScriptDetail({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

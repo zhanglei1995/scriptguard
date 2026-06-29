@@ -1,5 +1,5 @@
-import './global.css'
-import { RootProvider } from 'fumadocs-ui/provider'
+import './global.css';
+import { RootProvider } from 'fumadocs-ui/provider';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,5 +8,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <RootProvider>{children}</RootProvider>
       </body>
     </html>
-  )
+  );
 }

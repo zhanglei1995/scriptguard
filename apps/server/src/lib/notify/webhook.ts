@@ -1,20 +1,20 @@
-import type { NotifyChannelAdapter, NotifyPayload } from './types.js'
-import { createHmac } from 'node:crypto'
+import type { NotifyChannelAdapter, NotifyPayload } from './types.js';
+import { createHmac } from 'node:crypto';
 
-type WebhookTemplate = 'feishu' | 'dingtalk' | 'slack' | 'generic'
+type WebhookTemplate = 'feishu' | 'dingtalk' | 'slack' | 'generic';
 
 interface WebhookConfig {
-  url: string
-  template?: WebhookTemplate
-  secret?: string
+  url: string;
+  template?: WebhookTemplate;
+  secret?: string;
 }
 
 function hmacSign(secret: string, timestamp: string): string {
-  return createHmac('sha256', secret).update(`${timestamp}\n${secret}`).digest('base64')
+  return createHmac('sha256', secret).update(`${timestamp}\n${secret}`).digest('base64');
 }
 
 function buildFeishuBody(payload: NotifyPayload, secret?: string): Record<string, unknown> {
-  const timestamp = Math.floor(Date.now() / 1000).toString()
+  const timestamp = Math.floor(Date.now() / 1000).toString();
   const card = {
     msg_type: 'interactive',
     card: {
@@ -24,31 +24,45 @@ function buildFeishuBody(payload: NotifyPayload, secret?: string): Record<string
       },
       elements: [
         { tag: 'div', text: { tag: 'plain_text', content: payload.body } },
-        ...(payload.url ? [{ tag: 'action', actions: [{ tag: 'button', text: { tag: 'plain_text', content: 'View Details' }, url: payload.url, type: 'primary' }] }] : []),
+        ...(payload.url
+          ? [
+              {
+                tag: 'action',
+                actions: [
+                  {
+                    tag: 'button',
+                    text: { tag: 'plain_text', content: 'View Details' },
+                    url: payload.url,
+                    type: 'primary',
+                  },
+                ],
+              },
+            ]
+          : []),
       ],
     },
-  }
+  };
   if (secret) {
-    return { ...card, timestamp, sign: hmacSign(secret, timestamp) }
+    return { ...card, timestamp, sign: hmacSign(secret, timestamp) };
   }
-  return card
+  return card;
 }
 
 function buildDingTalkBody(payload: NotifyPayload, secret?: string): Record<string, unknown> {
-  const timestamp = Date.now()
+  const timestamp = Date.now();
   const body: Record<string, unknown> = {
     msgtype: 'markdown',
     markdown: {
       title: payload.title,
       text: `### ${payload.title}\n\n${payload.body}${payload.url ? `\n\n[View Details](${payload.url})` : ''}`,
     },
-  }
+  };
   if (secret) {
-    const sign = hmacSign(secret, timestamp.toString())
-    body.timestamp = timestamp
-    body.sign = sign
+    const sign = hmacSign(secret, timestamp.toString());
+    body.timestamp = timestamp;
+    body.sign = sign;
   }
-  return body
+  return body;
 }
 
 function buildSlackBody(payload: NotifyPayload): Record<string, unknown> {
@@ -56,9 +70,11 @@ function buildSlackBody(payload: NotifyPayload): Record<string, unknown> {
     blocks: [
       { type: 'header', text: { type: 'plain_text', text: payload.title } },
       { type: 'section', text: { type: 'mrkdwn', text: payload.body } },
-      ...(payload.url ? [{ type: 'section', text: { type: 'mrkdwn', text: `<${payload.url}|View Details>` } }] : []),
+      ...(payload.url
+        ? [{ type: 'section', text: { type: 'mrkdwn', text: `<${payload.url}|View Details>` } }]
+        : []),
     ],
-  }
+  };
 }
 
 function buildGenericBody(payload: NotifyPayload): Record<string, unknown> {
@@ -69,30 +85,33 @@ function buildGenericBody(payload: NotifyPayload): Record<string, unknown> {
     message: payload.body,
     url: payload.url,
     timestamp: new Date().toISOString(),
-  }
+  };
 }
 
 export class WebhookChannel implements NotifyChannelAdapter {
-  async send(config: Record<string, unknown>, payload: NotifyPayload): Promise<{ success: boolean; error?: string }> {
-    const webhookConfig = config as unknown as WebhookConfig
-    const url = webhookConfig.url
-    const template: WebhookTemplate = webhookConfig.template ?? 'generic'
-    const secret = webhookConfig.secret
-    if (!url) return { success: false, error: 'Missing webhook URL' }
+  async send(
+    config: Record<string, unknown>,
+    payload: NotifyPayload,
+  ): Promise<{ success: boolean; error?: string }> {
+    const webhookConfig = config as unknown as WebhookConfig;
+    const url = webhookConfig.url;
+    const template: WebhookTemplate = webhookConfig.template ?? 'generic';
+    const secret = webhookConfig.secret;
+    if (!url) return { success: false, error: 'Missing webhook URL' };
 
-    let body: Record<string, unknown>
+    let body: Record<string, unknown>;
     switch (template) {
       case 'feishu':
-        body = buildFeishuBody(payload, secret)
-        break
+        body = buildFeishuBody(payload, secret);
+        break;
       case 'dingtalk':
-        body = buildDingTalkBody(payload, secret)
-        break
+        body = buildDingTalkBody(payload, secret);
+        break;
       case 'slack':
-        body = buildSlackBody(payload)
-        break
+        body = buildSlackBody(payload);
+        break;
       default:
-        body = buildGenericBody(payload)
+        body = buildGenericBody(payload);
     }
 
     try {
@@ -100,13 +119,13 @@ export class WebhookChannel implements NotifyChannelAdapter {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-      })
+      });
       if (!res.ok) {
-        return { success: false, error: `HTTP ${res.status}: ${res.statusText}` }
+        return { success: false, error: `HTTP ${res.status}: ${res.statusText}` };
       }
-      return { success: true }
+      return { success: true };
     } catch (err) {
-      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
     }
   }
 }

@@ -1,8 +1,8 @@
-import fp from 'fastify-plugin'
-import rateLimit from '@fastify/rate-limit'
-import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify'
-import { verifyToken } from '../lib/auth.js'
-import { UnauthorizedError } from '../lib/errors.js'
+import fp from 'fastify-plugin';
+import rateLimit from '@fastify/rate-limit';
+import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
+import { verifyToken } from '../lib/auth.js';
+import { UnauthorizedError } from '../lib/errors.js';
 
 const WHITELIST_PATHS = [
   '/auth/login',
@@ -12,18 +12,18 @@ const WHITELIST_PATHS = [
   '/docs',
   '/webhook',
   '/',
-]
+];
 
 declare module 'fastify' {
   interface FastifyRequest {
-    userId?: string
-    userPlan?: string
+    userId?: string;
+    userPlan?: string;
   }
 }
 
 const authPlugin: FastifyPluginAsync = async (fastify) => {
-  fastify.decorateRequest('userId', undefined)
-  fastify.decorateRequest('userPlan', undefined)
+  fastify.decorateRequest('userId', undefined);
+  fastify.decorateRequest('userPlan', undefined);
 
   // Rate limit: 5 req/min/IP for auth endpoints
   await fastify.register(rateLimit, {
@@ -36,25 +36,25 @@ const authPlugin: FastifyPluginAsync = async (fastify) => {
         message: 'Too many requests, please try again later',
       },
     }),
-  })
+  });
 
   fastify.addHook('onRequest', async (req: FastifyRequest, _reply: FastifyReply) => {
-    const path = req.url.split('?')[0] ?? ''
+    const path = req.url.split('?')[0] ?? '';
 
     if (WHITELIST_PATHS.some((p) => path === p || path.startsWith(p + '/'))) {
-      return
+      return;
     }
 
-    const authHeader = req.headers.authorization
+    const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedError('Missing or invalid Authorization header')
+      throw new UnauthorizedError('Missing or invalid Authorization header');
     }
 
-    const token = authHeader.slice(7)
-    const payload = verifyToken(token)
-    req.userId = payload.userId
-    req.userPlan = payload.plan
-  })
-}
+    const token = authHeader.slice(7);
+    const payload = verifyToken(token);
+    req.userId = payload.userId;
+    req.userPlan = payload.plan;
+  });
+};
 
-export default fp(authPlugin, { name: 'auth' })
+export default fp(authPlugin, { name: 'auth' });

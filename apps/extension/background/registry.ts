@@ -5,61 +5,61 @@
  */
 
 export interface TabState {
-  url: string
-  updatedAt: number
-  scriptsLoaded?: boolean
+  url: string;
+  updatedAt: number;
+  scriptsLoaded?: boolean;
 }
 
 class TabRegistry {
-  private tabs = new Map<number, TabState>()
+  private tabs = new Map<number, TabState>();
 
   async init() {
-    const stored = await chrome.storage.session?.get('tabRegistry')
+    const stored = await chrome.storage.session?.get('tabRegistry');
     if (stored?.tabRegistry) {
-      this.tabs = new Map(stored.tabRegistry)
+      this.tabs = new Map(stored.tabRegistry);
     }
   }
 
   private async persist() {
     await chrome.storage.session?.set({
       tabRegistry: Array.from(this.tabs.entries()),
-    })
+    });
   }
 
   get(tabId: number): TabState | undefined {
-    return this.tabs.get(tabId)
+    return this.tabs.get(tabId);
   }
 
   set(tabId: number, state: { url: string }) {
-    this.tabs.set(tabId, { ...state, updatedAt: Date.now() })
-    this.persist()
+    this.tabs.set(tabId, { ...state, updatedAt: Date.now() });
+    this.persist();
   }
 
   markScriptsLoaded(tabId: number) {
-    const state = this.tabs.get(tabId)
+    const state = this.tabs.get(tabId);
     if (state) {
-      state.scriptsLoaded = true
-      this.persist()
+      state.scriptsLoaded = true;
+      this.persist();
     }
   }
 
   reset(tabId: number) {
-    this.tabs.delete(tabId)
-    this.persist()
+    this.tabs.delete(tabId);
+    this.persist();
   }
 
   cleanup(tabId: number) {
-    this.tabs.delete(tabId)
-    this.persist()
+    this.tabs.delete(tabId);
+    this.persist();
   }
 
   size() {
-    return this.tabs.size
+    return this.tabs.size;
   }
 
   getAll() {
-    return new Map(this.tabs)
+    return new Map(this.tabs);
   }
 }
 
-export const tabRegistry = new TabRegistry()
+export const tabRegistry = new TabRegistry();

@@ -23,25 +23,28 @@ export default function AboutPage() {
             <div>
               <h2 className="text-2xl font-bold text-dark dark:text-white">Our Mission</h2>
               <p className="mt-4 text-gray-600 dark:text-gray-400">
-                ScriptGuard was built to solve a simple problem: userscripts break, and nobody notices until it&apos;s too late.
-                We believe every user deserves to know the health of their browser extensions and userscripts.
+                ScriptGuard was built to solve a simple problem: userscripts break, and nobody
+                notices until it&apos;s too late. We believe every user deserves to know the health
+                of their browser extensions and userscripts.
               </p>
             </div>
 
             <div>
               <h2 className="text-2xl font-bold text-dark dark:text-white">Why ScriptGuard?</h2>
               <p className="mt-4 text-gray-600 dark:text-gray-400">
-                Userscripts power millions of browsing experiences — from ad blockers to productivity tools.
-                But unlike proper software, they have no built-in health monitoring. ScriptGuard fills that gap
-                with real-time monitoring, automatic health checks, and instant alerts.
+                Userscripts power millions of browsing experiences — from ad blockers to
+                productivity tools. But unlike proper software, they have no built-in health
+                monitoring. ScriptGuard fills that gap with real-time monitoring, automatic health
+                checks, and instant alerts.
               </p>
             </div>
 
             <div>
               <h2 className="text-2xl font-bold text-dark dark:text-white">Open Source</h2>
               <p className="mt-4 text-gray-600 dark:text-gray-400">
-                ScriptGuard is open source. We believe in transparency and community-driven development.
-                Check out our code on GitHub and contribute to making userscripts better for everyone.
+                ScriptGuard is open source. We believe in transparency and community-driven
+                development. Check out our code on GitHub and contribute to making userscripts
+                better for everyone.
               </p>
             </div>
 

@@ -16,14 +16,14 @@ npx svg2png-cli icon.svg --output icon.png --width 128 --height 128
 
 ## 品牌色
 
-| 名称 | 色值 | 用途 |
-|------|------|------|
-| Primary Blue | `#2563EB` | 主色、按钮、链接 |
-| Dark | `#0F172A` | 深色背景、文字 |
-| Success Green | `#22C55E` | 健康状态、通过 |
-| Warning Yellow | `#EAB308` | 警告状态 |
-| Error Red | `#EF4444` | 错误状态、告警 |
-| Muted Gray | `#6B7280` | 次要文字、边框 |
+| 名称           | 色值      | 用途             |
+| -------------- | --------- | ---------------- |
+| Primary Blue   | `#2563EB` | 主色、按钮、链接 |
+| Dark           | `#0F172A` | 深色背景、文字   |
+| Success Green  | `#22C55E` | 健康状态、通过   |
+| Warning Yellow | `#EAB308` | 警告状态         |
+| Error Red      | `#EF4444` | 错误状态、告警   |
+| Muted Gray     | `#6B7280` | 次要文字、边框   |
 
 ## 字体
 

@@ -1,11 +1,11 @@
-import { defineConfig, devices } from '@playwright/test'
-import { fileURLToPath } from 'node:url'
+import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 
 const EXTENSION_PATH = fileURLToPath(
   new URL('../apps/extension/build/chrome-mv3-prod', import.meta.url),
-)
+);
 
-const isCI = !!process.env.CI
+const isCI = !!process.env.CI;
 
 export default defineConfig({
   testDir: './tests',
@@ -63,4 +63,4 @@ export default defineConfig({
       },
     },
   ],
-})
+});

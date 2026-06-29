@@ -1,14 +1,28 @@
-import { useState } from 'react'
-import { Button } from '~components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~components/ui/card'
-import { Badge } from '~components/ui/badge'
-import { Input } from '~components/ui/input'
-import { Textarea } from '~components/ui/textarea'
-import { Switch } from '~components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~components/ui/tabs'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~components/ui/table'
-import { Skeleton } from '~components/ui/skeleton'
-import { Empty } from '~components/ui/empty'
+import { useState } from 'react';
+import { Button } from '~components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '~components/ui/card';
+import { Badge } from '~components/ui/badge';
+import { Input } from '~components/ui/input';
+import { Textarea } from '~components/ui/textarea';
+import { Switch } from '~components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~components/ui/tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '~components/ui/table';
+import { Skeleton } from '~components/ui/skeleton';
+import { Empty } from '~components/ui/empty';
 import {
   Dialog,
   DialogContent,
@@ -17,22 +31,29 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '~components/ui/dialog'
+} from '~components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '~components/ui/select'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~components/ui/tooltip'
-import { ToastProvider, Toaster, useToast } from '~components/ui/toast'
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '~components/ui/command'
-import { ThemeProvider, ThemeToggle } from '~components/ui/theme-provider'
+} from '~components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~components/ui/tooltip';
+import { ToastProvider, Toaster, useToast } from '~components/ui/toast';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '~components/ui/command';
+import { ThemeProvider, ThemeToggle } from '~components/ui/theme-provider';
 
 function ComponentsShowcaseInner() {
-  const [switchOn, setSwitchOn] = useState(false)
-  const { addToast } = useToast()
+  const [switchOn, setSwitchOn] = useState(false);
+  const { addToast } = useToast();
 
   return (
     <div className="p-8 space-y-8 max-w-3xl mx-auto">
@@ -150,12 +171,16 @@ function ComponentsShowcaseInner() {
           <TableBody>
             <TableRow>
               <TableCell>userscript.user.js</TableCell>
-              <TableCell><Badge variant="success">Healthy</Badge></TableCell>
+              <TableCell>
+                <Badge variant="success">Healthy</Badge>
+              </TableCell>
               <TableCell>1.2.0</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>adblock.user.js</TableCell>
-              <TableCell><Badge variant="destructive">Failed</Badge></TableCell>
+              <TableCell>
+                <Badge variant="destructive">Failed</Badge>
+              </TableCell>
               <TableCell>2.0.1</TableCell>
             </TableRow>
           </TableBody>
@@ -211,10 +236,34 @@ function ComponentsShowcaseInner() {
       <section>
         <h2 className="text-lg font-semibold mb-3">Toast</h2>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => addToast({ title: 'Success', description: 'Operation completed.', variant: 'success' })}>Success Toast</Button>
-          <Button onClick={() => addToast({ title: 'Warning', description: 'Something to note.', variant: 'warning' })}>Warning Toast</Button>
-          <Button onClick={() => addToast({ title: 'Error', description: 'Something went wrong.', variant: 'error' })}>Error Toast</Button>
-          <Button onClick={() => addToast({ title: 'Info', description: 'FYI.', variant: 'info' })}>Info Toast</Button>
+          <Button
+            onClick={() =>
+              addToast({
+                title: 'Success',
+                description: 'Operation completed.',
+                variant: 'success',
+              })
+            }
+          >
+            Success Toast
+          </Button>
+          <Button
+            onClick={() =>
+              addToast({ title: 'Warning', description: 'Something to note.', variant: 'warning' })
+            }
+          >
+            Warning Toast
+          </Button>
+          <Button
+            onClick={() =>
+              addToast({ title: 'Error', description: 'Something went wrong.', variant: 'error' })
+            }
+          >
+            Error Toast
+          </Button>
+          <Button onClick={() => addToast({ title: 'Info', description: 'FYI.', variant: 'info' })}>
+            Info Toast
+          </Button>
         </div>
       </section>
 
@@ -248,7 +297,7 @@ function ComponentsShowcaseInner() {
 
       <Toaster />
     </div>
-  )
+  );
 }
 
 export default function ComponentsShowcase() {
@@ -258,5 +307,5 @@ export default function ComponentsShowcase() {
         <ComponentsShowcaseInner />
       </ToastProvider>
     </ThemeProvider>
-  )
+  );
 }

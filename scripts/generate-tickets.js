@@ -41,10 +41,16 @@ function getMeta(body) {
   const meta = {};
   let inTable = false;
   for (const line of body.split('\n')) {
-    if (/^\| 字段 \|/.test(line)) { inTable = true; continue; }
+    if (/^\| 字段 \|/.test(line)) {
+      inTable = true;
+      continue;
+    }
     if (inTable && /^\|---/.test(line)) continue;
     if (inTable && line.startsWith('|')) {
-      const cells = line.split('|').map(s => s.trim()).filter(Boolean);
+      const cells = line
+        .split('|')
+        .map((s) => s.trim())
+        .filter(Boolean);
       if (cells.length >= 2) meta[cells[0].replace(/\*\*/g, '')] = cells[1];
     } else if (inTable && line.trim() === '') {
       inTable = false;
@@ -54,7 +60,9 @@ function getMeta(body) {
 }
 
 function getSection(body, name) {
-  const re = new RegExp('\\*\\*' + name + '\\*\\*[：:]\\s*([\\s\\S]*?)(?=\\n\\n\\*\\*|\\n---|\\n## |\\n### |\\Z)');
+  const re = new RegExp(
+    '\\*\\*' + name + '\\*\\*[：:]\\s*([\\s\\S]*?)(?=\\n\\n\\*\\*|\\n---|\\n## |\\n### |\\Z)',
+  );
   const m = body.match(re);
   return m ? m[1].trim() : '';
 }
@@ -70,14 +78,17 @@ function escapeCsv(s) {
 function toLabels(meta) {
   return (meta['Labels'] || '')
     .split(',')
-    .map(s => s.trim().replace(/^`+|`+$/g, ''))
+    .map((s) => s.trim().replace(/^`+|`+$/g, ''))
     .filter(Boolean);
 }
 
 function toDeps(meta) {
   const raw = (meta['Dependencies'] || '').trim();
   if (!raw || raw === '无' || raw === '—' || raw === '-') return [];
-  return raw.split(',').map(s => s.trim()).filter(Boolean);
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 function parseEstimate(meta) {
@@ -135,18 +146,16 @@ for (const t of tickets) {
     'owner: ' + (meta['Owner'] || ''),
     'epic: ' + epic,
     'milestone: "' + milestone + '"',
-    'dependencies: [' + deps.map(d => '"' + d + '"').join(', ') + ']',
-    'labels: [' + labels.map(l => '"' + l + '"').join(', ') + ']',
+    'dependencies: [' + deps.map((d) => '"' + d + '"').join(', ') + ']',
+    'labels: [' + labels.map((l) => '"' + l + '"').join(', ') + ']',
     'status: open',
     '---',
-    ''
+    '',
   ].join('\n');
 
   const depsDisplay = deps.length ? deps.join(', ') : '无';
-  const labelsDisplay = labels.length ? labels.map(l => '`' + l + '`').join(' ') : '`unlabeled`';
-  const milestoneNote = (meta['Milestone'] || '').trim()
-    ? ''
-    : ' *(自动从 Epic 推导)*';
+  const labelsDisplay = labels.length ? labels.map((l) => '`' + l + '`').join(' ') : '`unlabeled`';
+  const milestoneNote = (meta['Milestone'] || '').trim() ? '' : ' *(自动从 Epic 推导)*';
 
   const file = [
     frontmatter,
@@ -172,7 +181,7 @@ for (const t of tickets) {
     '---',
     '',
     '> 自动生成自 `tickets.md` v1.0 · 关联 `PRD.md` / `TDD.md` / `Wireframes.md`',
-    ''
+    '',
   ].join('\n');
 
   fs.writeFileSync(path.join(OUT, t.id + '.md'), file);
@@ -195,7 +204,27 @@ for (const t of tickets) {
   const estimate = parseEstimate(meta);
   const epic = getEpicMilestone(t.id).epic;
   const milestone = resolveMilestone(meta, t.id);
-  indexLines.push('| [' + t.id + '](./' + t.id + '.md) | ' + t.title + ' | ' + (meta['Type'] || '') + ' | ' + (meta['Priority'] || '') + ' | ' + estimate + ' pt | ' + (meta['Owner'] || '') + ' | ' + epic + ' | ' + milestone + ' |');
+  indexLines.push(
+    '| [' +
+      t.id +
+      '](./' +
+      t.id +
+      '.md) | ' +
+      t.title +
+      ' | ' +
+      (meta['Type'] || '') +
+      ' | ' +
+      (meta['Priority'] || '') +
+      ' | ' +
+      estimate +
+      ' pt | ' +
+      (meta['Owner'] || '') +
+      ' | ' +
+      epic +
+      ' | ' +
+      milestone +
+      ' |',
+  );
 }
 indexLines.push('', '## 按 Epic 分组', '');
 
@@ -208,7 +237,17 @@ for (const g of groups) {
   indexLines.push('');
 }
 
-indexLines.push('---', '', '## 配套文件', '', '- `tickets.csv` — 适用于 GitHub Issues 批量导入、Linear / Jira', '- `tickets.json` — 适用于 API 集成、CI 自动化', '- `SG-XXX.md` — 单个 ticket 的完整内容（带 YAML frontmatter），可直接 `gh issue create --body-file`', '- `push-to-github.sh` — 自动创建 labels / milestones / issues 的 shell 脚本', '');
+indexLines.push(
+  '---',
+  '',
+  '## 配套文件',
+  '',
+  '- `tickets.csv` — 适用于 GitHub Issues 批量导入、Linear / Jira',
+  '- `tickets.json` — 适用于 API 集成、CI 自动化',
+  '- `SG-XXX.md` — 单个 ticket 的完整内容（带 YAML frontmatter），可直接 `gh issue create --body-file`',
+  '- `push-to-github.sh` — 自动创建 labels / milestones / issues 的 shell 脚本',
+  '',
+);
 
 fs.writeFileSync(path.join(OUT, 'INDEX.md'), indexLines.join('\n'));
 console.log('✓ Generated INDEX.md');
@@ -240,11 +279,27 @@ function groupByEpic(tickets) {
     if (!groups[epic]) groups[epic] = [];
     groups[epic].push(t);
   }
-  return Object.keys(epicMap).filter(k => groups[k]).map(k => ({ epic: k, title: epicMap[k], tickets: groups[k] }));
+  return Object.keys(epicMap)
+    .filter((k) => groups[k])
+    .map((k) => ({ epic: k, title: epicMap[k], tickets: groups[k] }));
 }
 
 // ---------- 5. Generate tickets.csv ----------
-const csvHeader = ['id', 'title', 'type', 'priority', 'estimate', 'owner', 'epic', 'dependencies', 'labels', 'milestone', 'description', 'acceptance_criteria', 'technical_notes'];
+const csvHeader = [
+  'id',
+  'title',
+  'type',
+  'priority',
+  'estimate',
+  'owner',
+  'epic',
+  'dependencies',
+  'labels',
+  'milestone',
+  'description',
+  'acceptance_criteria',
+  'technical_notes',
+];
 const csvRows = [csvHeader.join(',')];
 
 for (const t of tickets) {
@@ -277,7 +332,7 @@ fs.writeFileSync(path.join(OUT, 'tickets.csv'), csvRows.join('\n') + '\n');
 console.log('✓ Generated tickets.csv');
 
 // ---------- 6. Generate tickets.json ----------
-const json = tickets.map(t => {
+const json = tickets.map((t) => {
   const body = t.lines.join('\n');
   const meta = getMeta(body);
   return {
@@ -357,7 +412,7 @@ const pushSh = [
   'echo ""',
   'echo "✅ 全部 issue 创建完成"',
   'echo "查看: gh issue list --label prio:P0"',
-  ''
+  '',
 ].join('\n');
 
 fs.writeFileSync(path.join(OUT, 'push-to-github.sh'), pushSh);

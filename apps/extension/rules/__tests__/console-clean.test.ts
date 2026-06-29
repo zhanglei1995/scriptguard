@@ -4,18 +4,18 @@
  * SG-017: 6 MVP Rule Executors
  */
 
-import { describe, it, expect, beforeEach } from 'vitest'
-import { ConsoleCleanExecutor } from '../executors/console-clean'
-import type { CheckRule, ExecutionContext } from '../types'
+import { describe, it, expect, beforeEach } from 'vitest';
+import { ConsoleCleanExecutor } from '../executors/console-clean';
+import type { CheckRule, ExecutionContext } from '../types';
 
 describe('ConsoleCleanExecutor', () => {
-  let executor: ConsoleCleanExecutor
-  let doc: Document
-  let ctx: ExecutionContext
+  let executor: ConsoleCleanExecutor;
+  let doc: Document;
+  let ctx: ExecutionContext;
 
   beforeEach(() => {
-    executor = new ConsoleCleanExecutor()
-    doc = document.implementation.createHTMLDocument('test')
+    executor = new ConsoleCleanExecutor();
+    doc = document.implementation.createHTMLDocument('test');
     ctx = {
       url: 'https://example.com',
       document: doc,
@@ -29,12 +29,12 @@ describe('ConsoleCleanExecutor', () => {
       signal: new AbortController().signal,
       capturedErrors: [],
       capturedRequests: [],
-    }
-  })
+    };
+  });
 
   it('has correct type', () => {
-    expect(executor.type).toBe('console_clean')
-  })
+    expect(executor.type).toBe('console_clean');
+  });
 
   it('passes when no errors captured', async () => {
     const rule: CheckRule = {
@@ -43,11 +43,11 @@ describe('ConsoleCleanExecutor', () => {
       type: 'console_clean',
       config: {},
       required: true,
-    }
+    };
 
-    const result = await executor.execute(rule, ctx)
-    expect(result.status).toBe('passed')
-  })
+    const result = await executor.execute(rule, ctx);
+    expect(result.status).toBe('passed');
+  });
 
   it('fails when errors are captured', async () => {
     ctx.capturedErrors = [
@@ -57,7 +57,7 @@ describe('ConsoleCleanExecutor', () => {
         message: 'Script failed to load',
         timestamp: Date.now(),
       },
-    ]
+    ];
 
     const rule: CheckRule = {
       id: 'r1',
@@ -65,11 +65,11 @@ describe('ConsoleCleanExecutor', () => {
       type: 'console_clean',
       config: {},
       required: true,
-    }
+    };
 
-    const result = await executor.execute(rule, ctx)
-    expect(result.status).toBe('failed')
-  })
+    const result = await executor.execute(rule, ctx);
+    expect(result.status).toBe('failed');
+  });
 
   it('passes when only non-error types captured', async () => {
     ctx.capturedErrors = [
@@ -79,7 +79,7 @@ describe('ConsoleCleanExecutor', () => {
         message: 'Promise rejected',
         timestamp: Date.now(),
       },
-    ]
+    ];
 
     const rule: CheckRule = {
       id: 'r1',
@@ -87,11 +87,11 @@ describe('ConsoleCleanExecutor', () => {
       type: 'console_clean',
       config: {},
       required: true,
-    }
+    };
 
-    const result = await executor.execute(rule, ctx)
-    expect(result.status).toBe('passed')
-  })
+    const result = await executor.execute(rule, ctx);
+    expect(result.status).toBe('passed');
+  });
 
   it('passes when errors match ignore patterns', async () => {
     ctx.capturedErrors = [
@@ -101,7 +101,7 @@ describe('ConsoleCleanExecutor', () => {
         message: 'Third-party script error',
         timestamp: Date.now(),
       },
-    ]
+    ];
 
     const rule: CheckRule = {
       id: 'r1',
@@ -109,11 +109,11 @@ describe('ConsoleCleanExecutor', () => {
       type: 'console_clean',
       config: { ignorePatterns: ['Third-party'] },
       required: true,
-    }
+    };
 
-    const result = await executor.execute(rule, ctx)
-    expect(result.status).toBe('passed')
-  })
+    const result = await executor.execute(rule, ctx);
+    expect(result.status).toBe('passed');
+  });
 
   it('fails when errors do not match all ignore patterns', async () => {
     ctx.capturedErrors = [
@@ -123,7 +123,7 @@ describe('ConsoleCleanExecutor', () => {
         message: 'Critical app error',
         timestamp: Date.now(),
       },
-    ]
+    ];
 
     const rule: CheckRule = {
       id: 'r1',
@@ -131,11 +131,11 @@ describe('ConsoleCleanExecutor', () => {
       type: 'console_clean',
       config: { ignorePatterns: ['Third-party'] },
       required: true,
-    }
+    };
 
-    const result = await executor.execute(rule, ctx)
-    expect(result.status).toBe('failed')
-  })
+    const result = await executor.execute(rule, ctx);
+    expect(result.status).toBe('failed');
+  });
 
   it('handles multiple errors with mixed ignore status', async () => {
     ctx.capturedErrors = [
@@ -151,7 +151,7 @@ describe('ConsoleCleanExecutor', () => {
         message: 'App runtime error',
         timestamp: Date.now(),
       },
-    ]
+    ];
 
     const rule: CheckRule = {
       id: 'r1',
@@ -159,11 +159,11 @@ describe('ConsoleCleanExecutor', () => {
       type: 'console_clean',
       config: { ignorePatterns: ['Third-party'] },
       required: true,
-    }
+    };
 
-    const result = await executor.execute(rule, ctx)
-    expect(result.status).toBe('failed')
-  })
+    const result = await executor.execute(rule, ctx);
+    expect(result.status).toBe('failed');
+  });
 
   it('passes when all errors match ignore patterns', async () => {
     ctx.capturedErrors = [
@@ -179,7 +179,7 @@ describe('ConsoleCleanExecutor', () => {
         message: 'Third-party analytics error',
         timestamp: Date.now(),
       },
-    ]
+    ];
 
     const rule: CheckRule = {
       id: 'r1',
@@ -187,11 +187,11 @@ describe('ConsoleCleanExecutor', () => {
       type: 'console_clean',
       config: { ignorePatterns: ['Third-party'] },
       required: true,
-    }
+    };
 
-    const result = await executor.execute(rule, ctx)
-    expect(result.status).toBe('passed')
-  })
+    const result = await executor.execute(rule, ctx);
+    expect(result.status).toBe('passed');
+  });
 
   it('fails when ignorePatterns is empty and errors exist', async () => {
     ctx.capturedErrors = [
@@ -201,7 +201,7 @@ describe('ConsoleCleanExecutor', () => {
         message: 'Some error',
         timestamp: Date.now(),
       },
-    ]
+    ];
 
     const rule: CheckRule = {
       id: 'r1',
@@ -209,9 +209,9 @@ describe('ConsoleCleanExecutor', () => {
       type: 'console_clean',
       config: { ignorePatterns: [] },
       required: true,
-    }
+    };
 
-    const result = await executor.execute(rule, ctx)
-    expect(result.status).toBe('failed')
-  })
-})
+    const result = await executor.execute(rule, ctx);
+    expect(result.status).toBe('failed');
+  });
+});

@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 /**
  * ScriptGuard Tailwind 配置
@@ -61,13 +61,7 @@ const config: Config = {
           'system-ui',
           'sans-serif',
         ],
-        mono: [
-          '"JetBrains Mono"',
-          '"Fira Code"',
-          'Menlo',
-          'Monaco',
-          'monospace',
-        ],
+        mono: ['"JetBrains Mono"', '"Fira Code"', 'Menlo', 'Monaco', 'monospace'],
       },
       fontSize: {
         xs: '12px',
@@ -136,6 +130,6 @@ const config: Config = {
     },
   },
   plugins: [],
-}
+};
 
-export default config
+export default config;

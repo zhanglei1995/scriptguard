@@ -9,11 +9,7 @@
     "epic": "E1",
     "milestone": "Alpha",
     "dependencies": [],
-    "labels": [
-      "area:infra",
-      "type:chore",
-      "m:foundation"
-    ],
+    "labels": ["area:infra", "type:chore", "m:foundation"],
     "description": "搭建 pnpm + Turborepo 的 Monorepo 结构，初始化 Git、EditorConfig、.gitignore、README、CONTRIBUTING。",
     "acceptance_criteria": "- [ ] `pnpm-workspace.yaml` 定义 `apps/*` 和 `packages/*`\n- [ ] `turbo.json` 配置 build / test / lint / typecheck pipeline\n- [ ] 根目录 `.gitignore` / `.editorconfig` / `.prettierrc` 完整\n- [ ] README 包含项目介绍、本地开发指南、目录结构\n- [ ] `pnpm install` 在干净环境一次成功\n- [ ] `pnpm build` 跑通空 pipeline",
     "technical_notes": "参考 TDD §11.1 仓库结构。"
@@ -27,14 +23,8 @@
     "owner": "FE",
     "epic": "E1",
     "milestone": "Foundation",
-    "dependencies": [
-      "SG-001"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:foundation"
-    ],
+    "dependencies": ["SG-001"],
+    "labels": ["area:plugin", "type:feature", "m:foundation"],
     "description": "初始化 Plasmo 浏览器插件项目（`apps/extension`），配置 Manifest V3、TypeScript、React 18、Tailwind CSS。",
     "acceptance_criteria": "- [ ] Plasmo 项目创建成功，可 `pnpm dev` 启动\n- [ ] Manifest V3 配置正确（permissions、host_permissions）\n- [ ] TypeScript 5.4+ 配置，strict 模式开启\n- [ ] Tailwind 集成，自定义设计 token 生效\n- [ ] Background SW、Content Script、Popup 三个 entrypoint 存在\n- [ ] 可在 Chrome `chrome://extensions` 加载 unpacked 扩展\n- [ ] `pnpm build` 输出 `build/chrome-mv3-prod` 目录",
     "technical_notes": "参考 TDD §1.1 选型 + Wireframes §1 设计 Token。"
@@ -48,14 +38,8 @@
     "owner": "BE",
     "epic": "E1",
     "milestone": "Foundation",
-    "dependencies": [
-      "SG-001"
-    ],
-    "labels": [
-      "area:server",
-      "type:feature",
-      "m:foundation"
-    ],
+    "dependencies": ["SG-001"],
+    "labels": ["area:server", "type:feature", "m:foundation"],
     "description": "初始化 Fastify 服务项目（`apps/server`），集成 Drizzle ORM、Pino 日志、",
     "acceptance_criteria": "- [ ] Fastify 服务可在 `localhost:3000` 启动\n- [ ] `/health` 端点返回 `{ status: 'ok' }`\n- [ ] `/docs` Swagger UI 可访问\n- [ ] Pino 日志 JSON 格式输出\n- [ ]",
     "technical_notes": "参考 TDD §5.2 REST API 约定。"
@@ -69,16 +53,8 @@
     "owner": "DO",
     "epic": "E1",
     "milestone": "Foundation",
-    "dependencies": [
-      "SG-001",
-      "SG-002",
-      "SG-003"
-    ],
-    "labels": [
-      "area:infra",
-      "type:chore",
-      "m:foundation"
-    ],
+    "dependencies": ["SG-001", "SG-002", "SG-003"],
+    "labels": ["area:infra", "type:chore", "m:foundation"],
     "description": "建立 PR + push 触发的 CI 工作流：安装依赖、类型检查、Lint、单元测试、构建、E2E（仅 main 分支）。",
     "acceptance_criteria": "- [ ] PR 触发：typecheck + lint + test:unit + build\n- [ ] push main 触发：上述 + test:e2e + docker build\n- [ ] 覆盖率上传到 Codecov\n- [ ] 构建产物在 GitHub Actions 中可下载\n- [ ] Status check 阻塞 PR 合并",
     "technical_notes": "参考 TDD §11.2 YAML 模板。"
@@ -92,14 +68,8 @@
     "owner": "DO",
     "epic": "E1",
     "milestone": "Foundation",
-    "dependencies": [
-      "SG-003"
-    ],
-    "labels": [
-      "area:infra",
-      "type:chore",
-      "m:foundation"
-    ],
+    "dependencies": ["SG-003"],
+    "labels": ["area:infra", "type:chore", "m:foundation"],
     "description": "编写 `docker-compose.yml`，启动 PostgreSQL 16 + Redis 7 服务，供本地开发。",
     "acceptance_criteria": "- [ ] `docker compose up -d` 一键启动 PG + Redis\n- [ ] 服务健康检查通过\n- [ ] 数据卷持久化\n- [ ] `.env.example` 列出所有配置项\n- [ ] README 包含初始化步骤",
     "technical_notes": ""
@@ -113,14 +83,8 @@
     "owner": "FE + DS",
     "epic": "E1",
     "milestone": "Foundation",
-    "dependencies": [
-      "SG-002"
-    ],
-    "labels": [
-      "area:design",
-      "type:chore",
-      "m:foundation"
-    ],
+    "dependencies": ["SG-002"],
+    "labels": ["area:design", "type:chore", "m:foundation"],
     "description": "把 Wireframes §1 的设计 Token 落地为 Tailwind 配置 + CSS 变量。",
     "acceptance_criteria": "- [ ] `tailwind.config.ts` 包含所有颜色、字体、间距、圆角 token\n- [ ] CSS 变量在 `:root` 与 `.dark` 定义\n- [ ] 提供 `getToken()` TS 工具函数\n- [ ] Storybook 或展示页验证 token 生效\n- [ ] 暗色模式跟随 `prefers-color-scheme`",
     "technical_notes": "参考 Wireframes §1.1-1.4 完整 token 列表。"
@@ -134,14 +98,8 @@
     "owner": "FE",
     "epic": "E1",
     "milestone": "Foundation",
-    "dependencies": [
-      "SG-006"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:chore",
-      "m:foundation"
-    ],
+    "dependencies": ["SG-006"],
+    "labels": ["area:plugin", "type:chore", "m:foundation"],
     "description": "按需添加 shadcn/ui 组件：Button、Card、Badge、Input、Switch、Dialog、Drawer、Tabs、Table、Toast、Tooltip、Empty、Skeleton、Command。",
     "acceptance_criteria": "- [ ] `components.json` 配置正确\n- [ ] 14+ 基础组件添加到 `components/ui/`\n- [ ] 所有组件在 Popup 中可见可用\n- [ ] 主题切换（亮/暗）正常",
     "technical_notes": "参考 Wireframes §2 组件库约定。"
@@ -156,11 +114,7 @@
     "epic": "E1",
     "milestone": "Foundation",
     "dependencies": [],
-    "labels": [
-      "area:design",
-      "type:feature",
-      "m:foundation"
-    ],
+    "labels": ["area:design", "type:feature", "m:foundation"],
     "description": "设计 ScriptGuard Logo（SVG）、Favicon、Chrome Web Store 图标（16/32/48/128）、营销海报。",
     "acceptance_criteria": "- [ ] Logo SVG 矢量文件\n- [ ] 4 种尺寸 PNG 图标\n- [ ] 暗色模式适配\n- [ ] 品牌色规范文档\n- [ ] 简单使用说明 README",
     "technical_notes": ""
@@ -174,14 +128,8 @@
     "owner": "BE",
     "epic": "E1",
     "milestone": "Foundation",
-    "dependencies": [
-      "SG-003"
-    ],
-    "labels": [
-      "area:db",
-      "type:feature",
-      "m:foundation"
-    ],
+    "dependencies": ["SG-003"],
+    "labels": ["area:db", "type:feature", "m:foundation"],
     "description": "实现 TDD §4.2.2 的完整 Drizzle Schema，含 users、teams、scripts、check_rules、test_schedules、test_runs、alerts、notify_channels、script_versions 九张表与所有索引。",
     "acceptance_criteria": "- [ ] `apps/server/src/db/schema.ts` 包含所有表定义\n- [ ] 所有 enum 类型定义（plan、health_status、run_at、alert_level）\n- [ ] 外键 + 索引 + 唯一约束齐全\n- [ ] `pnpm db:generate` 生成迁移文件\n- [ ] `pnpm db:migrate` 在干净库成功执行\n- [ ] Seed 脚本可创建测试用户 + 脚本",
     "technical_notes": "参考 TDD §4.2 Drizzle Schema + §4.2.3 索引。"
@@ -195,14 +143,8 @@
     "owner": "FE",
     "epic": "E1",
     "milestone": "Foundation",
-    "dependencies": [
-      "SG-002"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:foundation"
-    ],
+    "dependencies": ["SG-002"],
+    "labels": ["area:plugin", "type:feature", "m:foundation"],
     "description": "封装 chrome.storage（结构化配置）+ IndexedDB（via Dexie，日志和快照）+ chrome.storage.session（临时态）。提供统一 Store API。",
     "acceptance_criteria": "- [ ] `storage/chrome.ts` 封装 chrome.storage.local，提供 KV API\n- [ ] `storage/db.ts` 用 Dexie 定义 checks / snapshots / alerts 三张表\n- [ ] `storage/session.ts` 封装 chrome.storage.session\n- [ ]",
     "technical_notes": "参考 TDD §4.1 客户端存储分层。"
@@ -216,14 +158,8 @@
     "owner": "FE",
     "epic": "E2",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-010"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-010"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "搭建 Background SW 核心：消息路由、Tab 注册表、生命周期管理（休眠处理）。",
     "acceptance_criteria": "- [ ] `background/index.ts` 入口\n- [ ] `background/router.ts` 类型化消息路由\n- [ ] `background/registry.ts` Tab 状态注册表\n- [ ] `background/alarms.ts` chrome.alarms 封装\n- [ ] `chrome.runtime.onInstalled` / `onStartup` 处理\n- [ ] 关键状态写入 storage，不依赖内存\n- [ ] E2E 测试：发送消息 → 路由 → 响应正确",
     "technical_notes": "参考 TDD §3.1.1 + §6.2。"
@@ -237,14 +173,8 @@
     "owner": "FE",
     "epic": "E2",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-011"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-011"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "实现 Content Script 框架：URL 匹配 → 注入用户脚本 → 错误捕获 → 上报。",
     "acceptance_criteria": "- [ ] Content Script 在 `document_start` 注入\n- [ ] 错误捕获脚本 `< 1KB`（error + unhandledrejection）\n- [ ] ISOLATED world 与 MAIN world 通信\n- [ ] 注入用户脚本超时保护（默认 10s 可配置）\n- [ ] 通过 `chrome.runtime.sendMessage` 获取当前 URL 匹配脚本\n- [ ] 注入完成后上报 `{ status, failedRules, error }`",
     "technical_notes": "参考 TDD §3.1.2 + §9.4 错误隔离。"
@@ -258,14 +188,8 @@
     "owner": "FE",
     "epic": "E2",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-011"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-011"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "实现 URL 匹配引擎：通配符、正则、域名匹配。",
     "acceptance_criteria": "- [ ] `matcher/index.ts` 导出 `matchScript(url, rules)` 函数\n- [ ] 支持通配符 `*` 和 `?`\n- [ ] 支持正则 `/pattern/`\n- [ ] 支持纯域名 `example.com`\n- [ ] 支持 Tampermonkey `@match` 语法（简化版）\n- [ ] 100 个匹配规则 < 5ms 完成匹配\n- [ ] 单元测试覆盖率 100%",
     "technical_notes": ""
@@ -279,15 +203,8 @@
     "owner": "FE",
     "epic": "E2",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-010",
-      "SG-013"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-010", "SG-013"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "实现脚本元数据的本地 CRUD：创建、读取、更新、删除、启用、禁用、分组、标签。",
     "acceptance_criteria": "- [ ] `store/scripts.ts`",
     "technical_notes": "参考 TDD §6.1 客户端 Store。"
@@ -301,15 +218,8 @@
     "owner": "FE",
     "epic": "E2",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-012",
-      "SG-014"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-012", "SG-014"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "Content Script 获取匹配的脚本后，按 `runAt` 时机注入到目标页面。",
     "acceptance_criteria": "- [ ] 支持 `document_start` / `document_idle` / `document_end` / `manual` 四种时机\n- [ ] 注入方式：`page.evaluate` 或 `chrome.scripting.executeScript`\n- [ ] 注入超时保护\n- [ ] 注入失败时记录错误日志\n- [ ] 注入成功时记录开始时间\n- [ ] 执行完成后自动运行关联规则",
     "technical_notes": ""
@@ -323,14 +233,8 @@
     "owner": "FE",
     "epic": "E2",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-015"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-015"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "定义规则执行器接口 `RuleExecutor`、执行上下文 `ExecutionContext`、结果 `RuleResult`。",
     "acceptance_criteria": "- [ ] `rules/types.ts` 定义所有接口\n- [ ] `rules/base.ts` 提供 `BaseExecutor` 抽象类\n- [ ] `rules/registry.ts` 维护 type → executor 映射\n- [ ] 单元测试覆盖接口契约\n- [ ] JSDoc 完整",
     "technical_notes": "参考 TDD §3.2.1 执行器接口定义。"
@@ -344,14 +248,8 @@
     "owner": "FE",
     "epic": "E2",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-016"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-016"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "实现 MVP 必做的 6 类规则执行器：`selector_exists`、`selector_visible`、`selector_text`、`js_assertion`、`console_clean`、`duration`。",
     "acceptance_criteria": "- [ ] 6 个执行器实现完整\n- [ ] 每个执行器单元测试覆盖率 ≥ 90%\n- [ ] 性能：单规则 < 100ms\n- [ ] 错误信息友好\n- [ ] 集成测试：综合场景",
     "technical_notes": "MVP 阶段先实现 6 类，剩余 `selector_clickable` / `selector_inputable` / `url_match` / `network_status` 放到 v1.5（SG-051）。"
@@ -365,15 +263,8 @@
     "owner": "FE",
     "epic": "E2",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-014",
-      "SG-011"
-    ],
-    "labels": [
-      "area:popup",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-014", "SG-011"],
+    "labels": ["area:popup", "type:feature", "m:alpha"],
     "description": "实现 Popup 页面（W1）：当前 URL、匹配脚本列表、状态、立即测试、打开后台。",
     "acceptance_criteria": "- [ ] 380×500px 固定窗口\n- [ ] 当前 URL 显示（域名 + 路径截断）\n- [ ] 匹配脚本列表（状态 + 版本 + 时间）\n- [ ] \"立即测试\" 按钮触发手动测试\n- [ ] \"打开后台\" 跳转到 Options 页\n- [ ] 首屏 < 500ms\n- [ ] 离线可用",
     "technical_notes": "参考 Wireframes W1。"
@@ -387,15 +278,8 @@
     "owner": "FE + DS",
     "epic": "E3",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-012",
-      "SG-017"
-    ],
-    "labels": [
-      "area:overlay",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-012", "SG-017"],
+    "labels": ["area:overlay", "type:feature", "m:alpha"],
     "description": "实现页面内失效浮层（W11）：成功/降级/失败/展开 4 种状态。",
     "acceptance_criteria": "- [ ] 浮层在目标页右上角，z-index 最高\n- [ ] 4 种状态视觉区分（颜色 + 图标）\n- [ ] 失败时常驻 + 微抖动动画\n- [ ] 成功 3s 后自动收起\n- [ ] 拖拽到任意位置（位置持久化）\n- [ ] ESC 关闭，方向键切换多个浮层\n- [ ] 点击\"详情\"打开 Options 详情页",
     "technical_notes": "参考 Wireframes W11 全部状态。"
@@ -409,14 +293,8 @@
     "owner": "FE",
     "epic": "E4",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-019"
-    ],
-    "labels": [
-      "area:notify",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-019"],
+    "labels": ["area:notify", "type:feature", "m:alpha"],
     "description": "实现 `chrome.notifications` 桌面通知，含失败通知与恢复通知。",
     "acceptance_criteria": "- [ ] 失败时发送桌面通知（含脚本名、原因、链接）\n- [ ] 恢复时发送\"已恢复\"通知\n- [ ] 点击通知跳转到 Options 详情页\n- [ ] 用户可在设置中关闭\n- [ ] 通知包含图标（128x128）",
     "technical_notes": ""
@@ -430,15 +308,8 @@
     "owner": "FE",
     "epic": "E4",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-017",
-      "SG-018"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-017", "SG-018"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "实现\"立即测试\"功能：手动触发当前页面的健康检查，立即返回结果。",
     "acceptance_criteria": "- [ ] Popup 立即测试按钮可用\n- [ ] 后台执行规则，实时显示进度\n- [ ] 完成后显示结果摘要（通过/失败/规则详情）\n- [ ] 失败时自动弹出浮层\n- [ ] 测试记录写入 IndexedDB",
     "technical_notes": ""
@@ -452,15 +323,8 @@
     "owner": "FE",
     "epic": "E4",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-010",
-      "SG-021"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-010", "SG-021"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "",
     "acceptance_criteria": "- [ ] `db.checks` 写入 CheckRecord\n- [ ] Options 页\"日志\" Tab 展示列表\n- [ ] 支持按脚本、时间、状态筛选\n- [ ] 失败日志可查看 DOM 快照\n- [ ] 30 天自动清理\n- [ ] 导出 CSV",
     "technical_notes": "参考 TDD §4.1.2 Dexie Schema。"
@@ -474,15 +338,8 @@
     "owner": "FE",
     "epic": "E4",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-021",
-      "SG-011"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-021", "SG-011"],
+    "labels": ["area:plugin", "type:feature", "m:alpha"],
     "description": "实现本地定时检测：`chrome.alarms` 按用户设定的频率静默打开后台标签页测试。",
     "acceptance_criteria": "- [ ] 每个脚本可配置 `checkInterval`（秒）\n- [ ] `chrome.alarms` 注册 `check:<scriptId>` 定时器\n- [ ] 定时到点时打开后台标签页（无痕），注入并执行\n- [ ] 完成后关闭标签页，释放资源\n- [ ] 失败时走通知策略\n- [ ] SW 休眠后 alarms 仍能触发",
     "technical_notes": ""
@@ -496,14 +353,8 @@
     "owner": "FE",
     "epic": "E4",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-018"
-    ],
-    "labels": [
-      "area:options",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-018"],
+    "labels": ["area:options", "type:feature", "m:alpha"],
     "description": "实现 Options 后台骨架（W2/W3）：侧边栏、路由、布局、Header。",
     "acceptance_criteria": "- [ ] React Router 6 路由配置\n- [ ] 侧边栏 7 个 Tab：概览 / 脚本 / 测试 / 告警 / 日志 / 设置 / 关于\n- [ ] Header 含搜索、通知、用户头像\n- [ ] 总览页（W2）显示统计卡 + 环形图 + 趋势图\n- [ ] 响应式：平板 2 列、桌面 3-4 列\n- [ ] 暗色模式",
     "technical_notes": "参考 Wireframes W2 完整设计。"
@@ -517,15 +368,8 @@
     "owner": "FE",
     "epic": "E4",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-024",
-      "SG-014"
-    ],
-    "labels": [
-      "area:options",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-024", "SG-014"],
+    "labels": ["area:options", "type:feature", "m:alpha"],
     "description": "实现脚本列表（W3）+ 详情页（W6）的基础版本。",
     "acceptance_criteria": "- [ ] 列表页：状态卡 + 筛选 + 搜索\n- [ ] 详情页：基本信息 + 趋势图（30 天）\n- [ ] \"编辑\" 跳转到编辑器\n- [ ] \"立即测试\" 触发测试\n- [ ] \"删除\" 二级确认\n- [ ] 批量操作：启用/禁用/删除/导出",
     "technical_notes": "参考 Wireframes W3 + W6。"
@@ -539,14 +383,8 @@
     "owner": "FE",
     "epic": "E4",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-025"
-    ],
-    "labels": [
-      "area:options",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-025"],
+    "labels": ["area:options", "type:feature", "m:alpha"],
     "description": "实现脚本编辑器（W4）：基本信息和 Monaco 代码编辑。",
     "acceptance_criteria": "- [ ] 基本信息表单（名称、版本、URL、运行时机、超时）\n- [ ] Monaco Editor 集成（JS/TS 高亮）\n- [ ] Tabs：代码 / 配置 / 版本 / 历史\n- [ ] ⌘S 保存，弹 changelog\n- [ ] 5 秒自动保存草稿\n- [ ] 保存前 checklist（规则、lint、测试）",
     "technical_notes": "参考 Wireframes W4。"
@@ -560,15 +398,8 @@
     "owner": "FE + DS",
     "epic": "E4",
     "milestone": "Alpha",
-    "dependencies": [
-      "SG-025",
-      "SG-017"
-    ],
-    "labels": [
-      "area:options",
-      "type:feature",
-      "m:alpha"
-    ],
+    "dependencies": ["SG-025", "SG-017"],
+    "labels": ["area:options", "type:feature", "m:alpha"],
     "description": "实现健康检查规则配置 UI（W5）：规则列表、表单、添加、删除、排序。",
     "acceptance_criteria": "- [ ] 规则列表（拖拽排序）\n- [ ] 6 类规则的可视化配置表单\n- [ ] \"在页面上选择\" 按钮触发 W14\n- [ ] \"全部测试\" 按钮\n- [ ] 组合逻辑选择（AND/OR）\n- [ ] 超时配置\n- [ ] 必需/可选切换",
     "technical_notes": "参考 Wireframes W5 + W14。"
@@ -582,15 +413,8 @@
     "owner": "BE",
     "epic": "E5",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-003",
-      "SG-009"
-    ],
-    "labels": [
-      "area:server",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-003", "SG-009"],
+    "labels": ["area:server", "type:feature", "m:beta"],
     "description": "搭建 Fastify 路由结构 +",
     "acceptance_criteria": "- [ ] `/v1/scripts` 等 30+ 端点的",
     "technical_notes": "参考 TDD §5.2 REST API 完整端点表。"
@@ -604,15 +428,8 @@
     "owner": "BE",
     "epic": "E5",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-028",
-      "SG-009"
-    ],
-    "labels": [
-      "area:server",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-028", "SG-009"],
+    "labels": ["area:server", "type:feature", "m:beta"],
     "description": "实现邮箱密码注册登录 + JWT 颁发与校验。",
     "acceptance_criteria": "- [ ] `POST /v1/auth/register` 注册\n- [ ] `POST /v1/auth/login` 登录返回 JWT\n- [ ] `POST /v1/auth/refresh` 刷新 token\n- [ ] `POST /v1/auth/logout` 登出\n- [ ] bcrypt 哈希密码（cost 12）\n- [ ] JWT 包含 userId / plan / exp\n- [ ] Fastify hook 校验所有受保护端点\n- [ ] 速率限制（5 次/分钟/IP）",
     "technical_notes": ""
@@ -626,15 +443,8 @@
     "owner": "BE",
     "epic": "E5",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-028",
-      "SG-029"
-    ],
-    "labels": [
-      "area:server",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-028", "SG-029"],
+    "labels": ["area:server", "type:feature", "m:beta"],
     "description": "",
     "acceptance_criteria": "- [ ] 实现 TDD §5.2.1 的 8 个端点\n- [ ] 团队空间支持（team_id 关联）\n- [ ] 分页（cursor-based）\n- [ ] 软删除（`deletedAt`）\n- [ ] 集成测试",
     "technical_notes": ""
@@ -648,16 +458,8 @@
     "owner": "FS",
     "epic": "E5",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-010",
-      "SG-030"
-    ],
-    "labels": [
-      "area:server",
-      "area:plugin",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-010", "SG-030"],
+    "labels": ["area:server", "area:plugin", "type:feature", "m:beta"],
     "description": "实现客户端 ↔ 云端的双向同步协议：增量推送、增量拉取、冲突检测与解决。",
     "acceptance_criteria": "- [ ] `POST /v1/sync/push` 推送本地变更\n- [ ] `POST /v1/sync/pull` 拉取云端变更（基于 lastSyncAt）\n- [ ] 冲突返回 `conflicts[]` 数组\n- [ ] 客户端弹冲突解决弹窗\n- [ ] last-write-wins 默认策略\n- [ ] E2E 测试双向同步",
     "technical_notes": "参考 TDD §4.3 同步协议。"
@@ -671,14 +473,8 @@
     "owner": "BE",
     "epic": "E5",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-030"
-    ],
-    "labels": [
-      "area:server",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-030"],
+    "labels": ["area:server", "type:feature", "m:beta"],
     "description": "",
     "acceptance_criteria": "- [ ] TDD §5.2.2 全部端点\n- [ ] 规则与脚本级联删除\n- [ ] order 字段支持拖拽排序",
     "technical_notes": ""
@@ -692,15 +488,8 @@
     "owner": "BE",
     "epic": "E5",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-030",
-      "SG-032"
-    ],
-    "labels": [
-      "area:server",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-030", "SG-032"],
+    "labels": ["area:server", "type:feature", "m:beta"],
     "description": "",
     "acceptance_criteria": "- [ ] TDD §5.2.3 全部端点\n- [ ] 创建 schedule 时校验 cron 格式\n- [ ] 立即执行（`run-now`）触发 BullMQ 任务\n- [ ] run 历史分页查询",
     "technical_notes": ""
@@ -715,11 +504,7 @@
     "epic": "E5",
     "milestone": "Beta",
     "dependencies": [],
-    "labels": [
-      "area:server",
-      "type:spike",
-      "m:beta"
-    ],
+    "labels": ["area:server", "type:spike", "m:beta"],
     "description": "验证 BullMQ 选型合理性，评估 Inngest / Trigger.dev 等替代方案。",
     "acceptance_criteria": "- [ ] 输出对比文档（功能、性能、成本、生态）\n- [ ] BullMQ POC：实现一个 repeat job\n- [ ] 给出最终决策与理由",
     "technical_notes": ""
@@ -733,15 +518,8 @@
     "owner": "BE",
     "epic": "E6",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-003"
-    ],
-    "labels": [
-      "area:server",
-      "area:runner",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-003"],
+    "labels": ["area:server", "area:runner", "type:feature", "m:beta"],
     "description": "搭建 BullMQ：Redis 连接、Worker、Queue、Schedule、监控。",
     "acceptance_criteria": "- [ ] `test-runs` queue + worker\n- [ ] repeat jobs 支持 cron\n- [ ] 并发控制（默认 3）\n- [ ] 失败重试（指数退避）\n- [ ] 队列深度指标（Prometheus）\n- [ ] Bull Board UI（开发环境）",
     "technical_notes": ""
@@ -755,14 +533,8 @@
     "owner": "BE",
     "epic": "E6",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-035"
-    ],
-    "labels": [
-      "area:runner",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-035"],
+    "labels": ["area:runner", "type:feature", "m:beta"],
     "description": "实现 Playwright Runner：Docker 镜像、Worker 消费任务、启动浏览器、执行检测。",
     "acceptance_criteria": "- [ ] `Dockerfile.runner` 基于 `mcr.microsoft.com/playwright`\n- [ ] Worker 启动 chromium + 监听 jobs\n- [ ] 注入错误捕获脚本\n- [ ] `page.goto` + `addScriptTag` 注入用户脚本\n- [ ] 执行 SDK.check() 序列\n- [ ] 收集结果 + 截图 + DOM 快照\n- [ ] 资源控制：context 30s 超时 + 强制 close\n- [ ] 单 Runner 最多 3 context",
     "technical_notes": "参考 TDD §3.2.3 Runner 设计。"
@@ -776,15 +548,8 @@
     "owner": "BE",
     "epic": "E6",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-033",
-      "SG-036"
-    ],
-    "labels": [
-      "area:server",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-033", "SG-036"],
+    "labels": ["area:server", "type:feature", "m:beta"],
     "description": "",
     "acceptance_criteria": "- [ ] `test_runs` 表写入完成\n- [ ] 截图上传到 S3\n- [ ] DOM 快照上传到 S3\n- [ ] 失败时按告警策略触发通知\n- [ ] 历史归档任务（月度）",
     "technical_notes": ""
@@ -798,15 +563,8 @@
     "owner": "FE",
     "epic": "E6",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-024",
-      "SG-037"
-    ],
-    "labels": [
-      "area:options",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-024", "SG-037"],
+    "labels": ["area:options", "type:feature", "m:beta"],
     "description": "实现测试报告页（W7）：截图、规则结果、错误日志、网络请求、DOM 快照。",
     "acceptance_criteria": "- [ ] 顶部摘要：状态、耗时、URL、模式\n- [ ] 截图缩略图（点击放大）\n- [ ] 检查结果列表（pass/fail + 详情）\n- [ ] 错误日志面板\n- [ ] 网络请求列表（可展开）\n- [ ] \"下载报告\" / \"重跑\" 按钮",
     "technical_notes": "参考 Wireframes W7。"
@@ -820,16 +578,8 @@
     "owner": "BE",
     "epic": "E6",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-033",
-      "SG-037"
-    ],
-    "labels": [
-      "area:server",
-      "area:notify",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-033", "SG-037"],
+    "labels": ["area:server", "area:notify", "type:feature", "m:beta"],
     "description": "",
     "acceptance_criteria": "- [ ] `alerts` 表写入（失败 / 恢复 / 降级）\n- [ ] TDD §5.2.4 端点\n- [ ] 指数退避策略执行\n- [ ] 静默窗口检查\n- [ ] 告警合并逻辑",
     "technical_notes": ""
@@ -843,14 +593,8 @@
     "owner": "FS",
     "epic": "E7",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-039"
-    ],
-    "labels": [
-      "area:notify",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-039"],
+    "labels": ["area:notify", "type:feature", "m:beta"],
     "description": "实现通知分发中心：浏览器通知、邮件、Webhook 等通道的统一抽象。",
     "acceptance_criteria": "- [ ] `NotificationChannel` 接口\n- [ ] `BrowserNotificationChannel`（插件端）\n- [ ] `EmailChannel`（服务端）\n- [ ] `WebhookChannel`（服务端）\n- [ ] `dispatcher.ts` 路由到正确通道\n- [ ] 失败重试（指数退避 3 次）",
     "technical_notes": "参考 TDD §3.2.4 通知服务。"
@@ -864,14 +608,8 @@
     "owner": "FS",
     "epic": "E7",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-040"
-    ],
-    "labels": [
-      "area:notify",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-040"],
+    "labels": ["area:notify", "type:feature", "m:beta"],
     "description": "",
     "acceptance_criteria": "- [ ] 4 套模板：飞书、钉钉、Slack、通用\n- [ ] 用户选择模板后自动渲染\n- [ ] `POST /v1/channels/:id/test` 发送测试消息\n- [ ] HMAC 签名支持\n- [ ] 集成测试每个通道",
     "technical_notes": "参考 TDD §5.3 模板定义。"
@@ -885,14 +623,8 @@
     "owner": "BE",
     "epic": "E7",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-040"
-    ],
-    "labels": [
-      "area:notify",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-040"],
+    "labels": ["area:notify", "type:feature", "m:beta"],
     "description": "",
     "acceptance_criteria": "- [ ] SMTP 配置（支持主流供应商）\n- [ ] HTML 邮件模板\n- [ ] 每日 09:00 摘要邮件\n- [ ] 失败立即邮件\n- [ ] 退订链接",
     "technical_notes": ""
@@ -906,15 +638,8 @@
     "owner": "FS",
     "epic": "E7",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-037",
-      "SG-039"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-037", "SG-039"],
+    "labels": ["area:plugin", "type:feature", "m:beta"],
     "description": "实现 GH Actions 集成：用户生成 YAML 模板 → 仓库运行 → 回传结果。",
     "acceptance_criteria": "- [ ] Options 页 W13 向导：4 步流程\n- [ ] 生成 `.github/workflows/scriptguard.yml`\n- [ ] 公开 `scriptguard/action@v1` Docker action\n- [ ] Action 接收 SG_TOKEN + script-id\n- [ ] 结果通过 `POST /v1/webhook/gh-actions/:token` 回传\n- [ ] 签名验证\n- [ ] 文档完整",
     "technical_notes": ""
@@ -928,15 +653,8 @@
     "owner": "FE",
     "epic": "E8",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-024",
-      "SG-039"
-    ],
-    "labels": [
-      "area:options",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-024", "SG-039"],
+    "labels": ["area:options", "type:feature", "m:beta"],
     "description": "实现告警中心页面（W8）：告警列表、级别筛选、静默规则。",
     "acceptance_criteria": "- [ ] 4 个级别 Tab\n- [ ] 告警卡片（级别 + 时间 + 脚本 + 操作）\n- [ ] \"确认告警\" 按钮\n- [ ] \"静默 1 小时\" 按钮\n- [ ] 静默规则配置",
     "technical_notes": "参考 Wireframes W8。"
@@ -950,14 +668,8 @@
     "owner": "FE",
     "epic": "E8",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-024"
-    ],
-    "labels": [
-      "area:options",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-024"],
+    "labels": ["area:options", "type:feature", "m:beta"],
     "description": "实现设置页（W9 + W10）：通知渠道、检测设置、存储、主题、快捷键、调试。",
     "acceptance_criteria": "- [ ] W9 通知设置：9 种渠道开关 + Webhook 配置弹窗\n- [ ] W10 通用设置：检测频率、存储、主题、快捷键\n- [ ] 配置保存到 chrome.storage\n- [ ] 修改即时生效",
     "technical_notes": "参考 Wireframes W9 + W10。"
@@ -971,14 +683,8 @@
     "owner": "FE",
     "epic": "E8",
     "milestone": "Beta",
-    "dependencies": [
-      "SG-027"
-    ],
-    "labels": [
-      "area:options",
-      "type:feature",
-      "m:beta"
-    ],
+    "dependencies": ["SG-027"],
+    "labels": ["area:options", "type:feature", "m:beta"],
     "description": "实现\"在页面上选择\"功能（W14）：点选元素生成稳定选择器。",
     "acceptance_criteria": "- [ ] 激活选择模式后悬停高亮元素\n- [ ] 点击后生成选择器\n- [ ] 按 9 级优先级降级\n- [ ] 稳定性评分（0-100）\n- [ ] 多候选展示\n- [ ] 验证匹配数量\n- [ ] \"确认选择\" 保存为规则",
     "technical_notes": "参考 Wireframes W14 + TDD §3.2.2 选择器生成器算法。"
@@ -992,15 +698,8 @@
     "owner": "QA",
     "epic": "E9",
     "milestone": "GA",
-    "dependencies": [
-      "SG-024",
-      "SG-027",
-      "SG-038"
-    ],
-    "labels": [
-      "type:test",
-      "m:ga"
-    ],
+    "dependencies": ["SG-024", "SG-027", "SG-038"],
+    "labels": ["type:test", "m:ga"],
     "description": "用 Playwright 编写 5 个关键流程的 E2E 测试。",
     "acceptance_criteria": "- [ ] 流程 1：安装插件 → 创建脚本 → 配置规则 → 访问目标页 → 浮层弹出\n- [ ] 流程 2：定时任务 → 云端执行 → 报告生成\n- [ ] 流程 3：失败 → 通知 → 告警中心 → 确认\n- [ ] 流程 4：Tampermonkey 导入 .user.js\n- [ ] 流程 5：GitHub Actions 触发 + 回传\n- [ ] CI 中每次 PR 跑通",
     "technical_notes": "参考 TDD §10.4 E2E 测试。"
@@ -1014,15 +713,8 @@
     "owner": "FE",
     "epic": "E9",
     "milestone": "GA",
-    "dependencies": [
-      "SG-024",
-      "SG-027"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:chore",
-      "m:ga"
-    ],
+    "dependencies": ["SG-024", "SG-027"],
+    "labels": ["area:plugin", "type:chore", "m:ga"],
     "description": "优化插件 Bundle 体积与首屏加载时间。",
     "acceptance_criteria": "- [ ] Background SW < 50KB\n- [ ] Content Script < 30KB\n- [ ] Popup 首屏 < 500ms\n- [ ] Options 首屏 < 1s\n- [ ] 路由懒加载\n- [ ] 重型库按需加载（Monaco）",
     "technical_notes": "参考 TDD §8 性能优化。"
@@ -1036,13 +728,8 @@
     "owner": "QA",
     "epic": "E9",
     "milestone": "GA",
-    "dependencies": [
-      "SG-002"
-    ],
-    "labels": [
-      "type:test",
-      "m:ga"
-    ],
+    "dependencies": ["SG-002"],
+    "labels": ["type:test", "m:ga"],
     "description": "",
     "acceptance_criteria": "- [ ] Chrome 120+ 全部通过\n- [ ] Edge 120+ 全部通过\n- [ ] Firefox 115+ 全部通过\n- [ ] Firefox 兼容性修复（如 `browser.*` vs `chrome.*`）\n- [ ] 隐身模式测试\n- [ ] 多标签页并发测试",
     "technical_notes": ""
@@ -1057,10 +744,7 @@
     "epic": "E9",
     "milestone": "GA",
     "dependencies": [],
-    "labels": [
-      "type:docs",
-      "m:ga"
-    ],
+    "labels": ["type:docs", "m:ga"],
     "description": "搭建 Vercel + Fumadocs 文档站，覆盖快速开始、用户指南、API、SDK、FAQ。",
     "acceptance_criteria": "- [ ] 快速开始（5 分钟跑通）\n- [ ] 用户指南（所有功能）\n- [ ] API 文档（自动从 OpenAPI 生成）\n- [ ] SDK 文档\n- [ ] FAQ\n- [ ] 中英双语\n- [ ] 搜索功能",
     "technical_notes": ""
@@ -1074,15 +758,8 @@
     "owner": "DO + DS",
     "epic": "E9",
     "milestone": "GA",
-    "dependencies": [
-      "SG-002",
-      "SG-008"
-    ],
-    "labels": [
-      "area:infra",
-      "type:feature",
-      "m:ga"
-    ],
+    "dependencies": ["SG-002", "SG-008"],
+    "labels": ["area:infra", "type:feature", "m:ga"],
     "description": "",
     "acceptance_criteria": "- [ ] Chrome Web Store 开发者账号注册\n- [ ] 商品详情：标题、描述、截图（1280×800，5 张）\n- [ ] 隐私政策页面\n- [ ] 权限说明文档\n- [ ] 一次性付费 $5 注册费\n- [ ] 提交审核\n- [ ] 通过审核 → 公开",
     "technical_notes": ""
@@ -1096,16 +773,8 @@
     "owner": "DO",
     "epic": "E9",
     "milestone": "GA",
-    "dependencies": [
-      "SG-003",
-      "SG-005",
-      "SG-009"
-    ],
-    "labels": [
-      "area:infra",
-      "type:chore",
-      "m:ga"
-    ],
+    "dependencies": ["SG-003", "SG-005", "SG-009"],
+    "labels": ["area:infra", "type:chore", "m:ga"],
     "description": "部署 Fastify + PG + Redis + Runner 到生产环境（Hetzner / DigitalOcean）。",
     "acceptance_criteria": "- [ ] 生产环境机器初始化\n- [ ] Docker Compose 部署所有服务\n- [ ] Nginx 反代 + SSL（Let's Encrypt）\n- [ ] 数据库备份策略（每日）\n- [ ] 监控接入（Sentry + Grafana）\n- [ ] 健康检查 + 自动重启\n- [ ] 域名 + DNS 配置",
     "technical_notes": ""
@@ -1119,14 +788,8 @@
     "owner": "DS",
     "epic": "E9",
     "milestone": "GA",
-    "dependencies": [
-      "SG-008"
-    ],
-    "labels": [
-      "area:design",
-      "type:feature",
-      "m:ga"
-    ],
+    "dependencies": ["SG-008"],
+    "labels": ["area:design", "type:feature", "m:ga"],
     "description": "",
     "acceptance_criteria": "- [ ] 首页（Hero + 特性 + 用户场景 + 截图 + 价格 + FAQ）\n- [ ] 定价页\n- [ ] 文档入口\n- [ ] 博客模板\n- [ ] SEO 优化\n- [ ] GA / Plausible 统计",
     "technical_notes": ""
@@ -1140,14 +803,8 @@
     "owner": "FE",
     "epic": "E9",
     "milestone": "GA",
-    "dependencies": [
-      "SG-017"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:ga"
-    ],
+    "dependencies": ["SG-017"],
+    "labels": ["area:plugin", "type:feature", "m:ga"],
     "description": "补齐剩余 4 类规则：`selector_clickable`、`selector_inputable`、`url_match`、`network_status`。",
     "acceptance_criteria": "- [ ] 4 个执行器实现\n- [ ] 单元测试覆盖率 ≥ 85%\n- [ ] 与现有 6 类无缝集成\n- [ ] 文档更新",
     "technical_notes": ""
@@ -1161,15 +818,8 @@
     "owner": "FE",
     "epic": "E9",
     "milestone": "GA",
-    "dependencies": [
-      "SG-014",
-      "SG-046"
-    ],
-    "labels": [
-      "area:plugin",
-      "type:feature",
-      "m:ga"
-    ],
+    "dependencies": ["SG-014", "SG-046"],
+    "labels": ["area:plugin", "type:feature", "m:ga"],
     "description": "支持从 Tampermonkey 导入 .user.js 文件，解析 `@name`、`@version`、`@match` 等元信息。",
     "acceptance_criteria": "- [ ] 拖拽 / 选择 .user.js 文件\n- [ ] 解析 Tampermonkey 元信息头\n- [ ] 自动填充表单\n- [ ] 智能生成基础规则（基于常见模式）\n- [ ] 跨插件通信检测（`externally_connectable`）",
     "technical_notes": "参考 PRD §2.2 F1 脚本管理。"

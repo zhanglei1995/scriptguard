@@ -5,15 +5,15 @@
  * Checks if current URL matches a pattern (glob/regex/exact)
  */
 
-import { BaseExecutor } from '../base'
-import type { CheckRule, ExecutionContext } from '../types'
+import { BaseExecutor } from '../base';
+import type { CheckRule, ExecutionContext } from '../types';
 
 /**
  * Configuration for url_match rule
  */
 interface UrlMatchConfig {
   /** URL pattern to match against */
-  pattern?: string
+  pattern?: string;
 }
 
 /**
@@ -33,31 +33,28 @@ interface UrlMatchConfig {
  * ```
  */
 export class UrlMatchExecutor extends BaseExecutor {
-  readonly type = 'url_match'
+  readonly type = 'url_match';
 
-  protected async evaluate(
-    rule: CheckRule,
-    ctx: ExecutionContext
-  ): Promise<boolean> {
-    const config = rule.config as UrlMatchConfig
-    const pattern = config.pattern
+  protected async evaluate(rule: CheckRule, ctx: ExecutionContext): Promise<boolean> {
+    const config = rule.config as UrlMatchConfig;
+    const pattern = config.pattern;
 
     if (!pattern) {
-      return false
+      return false;
     }
 
-    const url = ctx.url
+    const url = ctx.url;
 
     // Check for regex pattern: /pattern/flags
     if (pattern.startsWith('/') && pattern.lastIndexOf('/') > 0) {
-      const lastSlash = pattern.lastIndexOf('/')
-      const body = pattern.slice(1, lastSlash)
-      const flags = pattern.slice(lastSlash + 1)
+      const lastSlash = pattern.lastIndexOf('/');
+      const body = pattern.slice(1, lastSlash);
+      const flags = pattern.slice(lastSlash + 1);
 
       try {
-        return new RegExp(body, flags).test(url)
+        return new RegExp(body, flags).test(url);
       } catch {
-        return false
+        return false;
       }
     }
 
@@ -65,12 +62,12 @@ export class UrlMatchExecutor extends BaseExecutor {
     const regexStr = pattern
       .replace(/[.+^${}()|[\]\\]/g, '\\$&')
       .replace(/\*/g, '.*')
-      .replace(/\?/g, '.')
+      .replace(/\?/g, '.');
 
     try {
-      return new RegExp(`^${regexStr}$`, 'i').test(url)
+      return new RegExp(`^${regexStr}$`, 'i').test(url);
     } catch {
-      return false
+      return false;
     }
   }
 }

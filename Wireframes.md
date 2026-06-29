@@ -2,14 +2,14 @@
 
 ## Wireframes & Design Specs v1.0
 
-| 字段 | 值 |
-|------|-----|
+| 字段     | 值                                                       |
+| -------- | -------------------------------------------------------- |
 | 关联文档 | [PRD.md](./PRD.md) v1.0-merged · [TDD.md](./TDD.md) v1.0 |
-| 文档版本 | v1.0 |
-| 创建日期 | 2026-06-17 |
-| 作者 | 设计 + 产品 |
-| 文档状态 | 设计稿 - 待评审 |
-| 工具 | ASCII Wireframe（手绘示意）+ 后续 Figma 高保真 |
+| 文档版本 | v1.0                                                     |
+| 创建日期 | 2026-06-17                                               |
+| 作者     | 设计 + 产品                                              |
+| 文档状态 | 设计稿 - 待评审                                          |
+| 工具     | ASCII Wireframe（手绘示意）+ 后续 Figma 高保真           |
 
 ---
 
@@ -42,79 +42,79 @@
 
 #### 主色
 
-| Token | Light | Dark | 用途 |
-|---|---|---|---|
-| `--primary` | `#3B82F6` | `#60A5FA` | 品牌主色、CTA、链接 |
-| `--primary-foreground` | `#FFFFFF` | `#0F172A` | 主色上的文字 |
+| Token                  | Light     | Dark      | 用途                |
+| ---------------------- | --------- | --------- | ------------------- |
+| `--primary`            | `#3B82F6` | `#60A5FA` | 品牌主色、CTA、链接 |
+| `--primary-foreground` | `#FFFFFF` | `#0F172A` | 主色上的文字        |
 
 #### 状态色（健康状态）
 
-| 状态 | Token | 色值 | 用途 |
-|---|---|---|---|
-| ✅ Healthy | `--success` | `#10B981` (emerald-500) | 正常 |
-| ⚠️ Degraded | `--warning` | `#F59E0B` (amber-500) | 降级 |
-| ❌ Failed | `--destructive` | `#EF4444` (red-500) | 失效 |
-| 🔘 Unknown | `--muted` | `#6B7280` (gray-500) | 未检测 |
+| 状态        | Token           | 色值                    | 用途   |
+| ----------- | --------------- | ----------------------- | ------ |
+| ✅ Healthy  | `--success`     | `#10B981` (emerald-500) | 正常   |
+| ⚠️ Degraded | `--warning`     | `#F59E0B` (amber-500)   | 降级   |
+| ❌ Failed   | `--destructive` | `#EF4444` (red-500)     | 失效   |
+| 🔘 Unknown  | `--muted`       | `#6B7280` (gray-500)    | 未检测 |
 
 #### 报警级别
 
-| Level | Token | 色值 | 用途 |
-|---|---|---|---|
-| 🟢 Low | `--alert-low` | `#10B981` | 提示 |
-| 🟡 Medium | `--alert-medium` | `#F59E0B` | 警告 |
-| 🟠 High | `--alert-high` | `#F97316` | 严重 |
+| Level       | Token              | 色值      | 用途 |
+| ----------- | ------------------ | --------- | ---- |
+| 🟢 Low      | `--alert-low`      | `#10B981` | 提示 |
+| 🟡 Medium   | `--alert-medium`   | `#F59E0B` | 警告 |
+| 🟠 High     | `--alert-high`     | `#F97316` | 严重 |
 | 🔴 Critical | `--alert-critical` | `#DC2626` | 紧急 |
 
 #### 中性色
 
-| Token | Light | Dark | 用途 |
-|---|---|---|---|
-| `--background` | `#FFFFFF` | `#0F172A` | 页面背景 |
-| `--foreground` | `#0F172A` | `#F1F5F9` | 主文字 |
-| `--muted` | `#F1F5F9` | `#1E293B` | 次要背景 |
+| Token                | Light     | Dark      | 用途     |
+| -------------------- | --------- | --------- | -------- |
+| `--background`       | `#FFFFFF` | `#0F172A` | 页面背景 |
+| `--foreground`       | `#0F172A` | `#F1F5F9` | 主文字   |
+| `--muted`            | `#F1F5F9` | `#1E293B` | 次要背景 |
 | `--muted-foreground` | `#64748B` | `#94A3B8` | 次要文字 |
-| `--border` | `#E2E8F0` | `#334155` | 边框 |
-| `--card` | `#FFFFFF` | `#1E293B` | 卡片背景 |
+| `--border`           | `#E2E8F0` | `#334155` | 边框     |
+| `--card`             | `#FFFFFF` | `#1E293B` | 卡片背景 |
 
 ### 1.2 字体
 
-| Token | 值 | 用途 |
-|---|---|---|
-| `--font-sans` | `Inter, "PingFang SC", -apple-system, system-ui, sans-serif` | UI 主字体 |
-| `--font-mono` | `JetBrains Mono, "Fira Code", monospace` | 代码、版本号、URL |
-| `--font-size-xs` | 12px / 16px | 辅助信息 |
-| `--font-size-sm` | 14px / 20px | 次要文字 |
-| `--font-size-base` | 16px / 24px | 正文 |
-| `--font-size-lg` | 18px / 28px | 强调 |
-| `--font-size-xl` | 20px / 28px | 小标题 |
-| `--font-size-2xl` | 24px / 32px | 标题 |
-| `--font-size-3xl` | 30px / 36px | 大标题 |
-| `--font-weight-normal` | 400 | - |
-| `--font-weight-medium` | 500 | 强调 |
-| `--font-weight-semibold` | 600 | 标题 |
-| `--font-weight-bold` | 700 | 关键 |
+| Token                    | 值                                                           | 用途              |
+| ------------------------ | ------------------------------------------------------------ | ----------------- |
+| `--font-sans`            | `Inter, "PingFang SC", -apple-system, system-ui, sans-serif` | UI 主字体         |
+| `--font-mono`            | `JetBrains Mono, "Fira Code", monospace`                     | 代码、版本号、URL |
+| `--font-size-xs`         | 12px / 16px                                                  | 辅助信息          |
+| `--font-size-sm`         | 14px / 20px                                                  | 次要文字          |
+| `--font-size-base`       | 16px / 24px                                                  | 正文              |
+| `--font-size-lg`         | 18px / 28px                                                  | 强调              |
+| `--font-size-xl`         | 20px / 28px                                                  | 小标题            |
+| `--font-size-2xl`        | 24px / 32px                                                  | 标题              |
+| `--font-size-3xl`        | 30px / 36px                                                  | 大标题            |
+| `--font-weight-normal`   | 400                                                          | -                 |
+| `--font-weight-medium`   | 500                                                          | 强调              |
+| `--font-weight-semibold` | 600                                                          | 标题              |
+| `--font-weight-bold`     | 700                                                          | 关键              |
 
 ### 1.3 间距 / 圆角 / 阴影
 
-| 类别 | Token | 值 |
-|---|---|---|
+| 类别 | Token                  | 值                                                   |
+| ---- | ---------------------- | ---------------------------------------------------- |
 | 间距 | `space-1` ~ `space-16` | 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128 px |
-| 圆角 | `--radius-sm` | 4px |
-| | `--radius-md` | 6px |
-| | `--radius-lg` | 8px |
-| | `--radius-xl` | 12px |
-| 阴影 | `--shadow-sm` | `0 1px 2px 0 rgb(0 0 0 / 0.05)` |
-| | `--shadow-md` | `0 4px 6px -1px rgb(0 0 0 / 0.1)` |
-| | `--shadow-lg` | `0 10px 15px -3px rgb(0 0 0 / 0.1)` |
+| 圆角 | `--radius-sm`          | 4px                                                  |
+|      | `--radius-md`          | 6px                                                  |
+|      | `--radius-lg`          | 8px                                                  |
+|      | `--radius-xl`          | 12px                                                 |
+| 阴影 | `--shadow-sm`          | `0 1px 2px 0 rgb(0 0 0 / 0.05)`                      |
+|      | `--shadow-md`          | `0 4px 6px -1px rgb(0 0 0 / 0.1)`                    |
+|      | `--shadow-lg`          | `0 10px 15px -3px rgb(0 0 0 / 0.1)`                  |
 
 ### 1.4 动效
 
-| Token | 值 | 用途 |
-|---|---|---|
-| `--ease-out` | `cubic-bezier(0.16, 1, 0.3, 1)` | 元素进入 |
-| `--duration-fast` | 150ms | hover、focus |
-| `--duration-base` | 250ms | 弹窗、过渡 |
-| `--duration-slow` | 400ms | 浮层、抽屉 |
+| Token             | 值                              | 用途         |
+| ----------------- | ------------------------------- | ------------ |
+| `--ease-out`      | `cubic-bezier(0.16, 1, 0.3, 1)` | 元素进入     |
+| `--duration-fast` | 150ms                           | hover、focus |
+| `--duration-base` | 250ms                           | 弹窗、过渡   |
+| `--duration-slow` | 400ms                           | 浮层、抽屉   |
 
 ### 1.5 图标
 
@@ -129,24 +129,24 @@
 
 基于 **shadcn/ui**（复制源码定制），关键组件：
 
-| 组件 | 用途 | 变体 |
-|---|---|---|
-| `Button` | 按钮 | default / outline / ghost / destructive / link；sm / md / lg / icon |
-| `Card` | 卡片 | default / hover / selected |
-| `Badge` | 状态徽章 | success / warning / destructive / muted |
-| `Input` / `Textarea` | 表单 | default / error / disabled |
-| `Select` | 下拉 | default / searchable / multi |
-| `Dialog` | 模态 | sm / md / lg / fullscreen |
-| `Drawer` | 抽屉 | right / bottom |
-| `Toast` | 通知 | success / warning / error / info |
-| `Tabs` | 标签页 | default / pills |
-| `Table` | 表格 | sortable / selectable |
-| `Switch` | 开关 | sm / md |
-| `Tooltip` | 提示 | default / rich |
-| `Empty` | 空态 | illustration + title + description + action |
-| `Skeleton` | 加载 | block / circle / text |
-| `Command` | 命令面板 | ⌘K 全局搜索 |
-| `Chart` | 图表 | line / bar / donut / sparkline（Recharts 封装） |
+| 组件                 | 用途     | 变体                                                                |
+| -------------------- | -------- | ------------------------------------------------------------------- |
+| `Button`             | 按钮     | default / outline / ghost / destructive / link；sm / md / lg / icon |
+| `Card`               | 卡片     | default / hover / selected                                          |
+| `Badge`              | 状态徽章 | success / warning / destructive / muted                             |
+| `Input` / `Textarea` | 表单     | default / error / disabled                                          |
+| `Select`             | 下拉     | default / searchable / multi                                        |
+| `Dialog`             | 模态     | sm / md / lg / fullscreen                                           |
+| `Drawer`             | 抽屉     | right / bottom                                                      |
+| `Toast`              | 通知     | success / warning / error / info                                    |
+| `Tabs`               | 标签页   | default / pills                                                     |
+| `Table`              | 表格     | sortable / selectable                                               |
+| `Switch`             | 开关     | sm / md                                                             |
+| `Tooltip`            | 提示     | default / rich                                                      |
+| `Empty`              | 空态     | illustration + title + description + action                         |
+| `Skeleton`           | 加载     | block / circle / text                                               |
+| `Command`            | 命令面板 | ⌘K 全局搜索                                                         |
+| `Chart`              | 图表     | line / bar / donut / sparkline（Recharts 封装）                     |
 
 ### 2.1 状态徽章规范
 
@@ -202,6 +202,7 @@
 ```
 
 **交互**：
+
 - 卡片 hover：阴影加深，点击进入详情
 - ⚙ 弹出 mini 设置（检测频率、此页脚本开关）
 - ＋ 快速新建脚本（预填当前 URL）
@@ -294,6 +295,7 @@
 ```
 
 **交互**：
+
 - 4 个统计卡：点击进入对应详情页
 - 状态环形图：悬停显示具体数量
 - 告警时间线：点击进入告警详情
@@ -341,6 +343,7 @@
 ```
 
 **交互**：
+
 - 卡片 hover：阴影 + 浅边框高亮
 - ⋯ 菜单：编辑、复制、导出、版本历史、删除
 - 状态颜色：左侧 4px 边框对应状态色
@@ -421,6 +424,7 @@
 ```
 
 **交互**：
+
 - Tabs 切换：代码 / 配置 / 版本 / 历史
 - Monaco 集成：语法高亮、自动补全、错误提示、查找替换
 - 实时保存：每 5 秒自动保存为草稿
@@ -1191,15 +1195,15 @@
 
 ### 17.1 通用状态
 
-| 状态 | 设计 |
-|---|---|
-| **Hover** | 阴影从 sm → md，过渡 150ms |
-| **Focus** | 2px primary 描边（键盘可见） |
-| **Active** | 缩放 0.98，按钮下沉 |
-| **Disabled** | opacity 0.5，cursor not-allowed |
-| **Loading** | 骨架屏 + 旋转图标，不阻塞布局 |
-| **Error** | 红色边框 + 错误图标 + 错误说明文字 |
-| **Success** | 绿色边框（短暂）+ ✓ 图标 |
+| 状态         | 设计                               |
+| ------------ | ---------------------------------- |
+| **Hover**    | 阴影从 sm → md，过渡 150ms         |
+| **Focus**    | 2px primary 描边（键盘可见）       |
+| **Active**   | 缩放 0.98，按钮下沉                |
+| **Disabled** | opacity 0.5，cursor not-allowed    |
+| **Loading**  | 骨架屏 + 旋转图标，不阻塞布局      |
+| **Error**    | 红色边框 + 错误图标 + 错误说明文字 |
+| **Success**  | 绿色边框（短暂）+ ✓ 图标           |
 
 ### 17.2 加载态
 
@@ -1217,14 +1221,14 @@
 
 ### 17.3 空态
 
-| 场景 | 图标 | 文案 | 行动 |
-|---|---|---|---|
-| 无脚本 | 📝 | 还没有任何脚本 | [导入 .user.js] [新建] |
-| 无告警 | 🔔 | 一切正常，没有告警 | - |
-| 无日志 | 📋 | 还没有运行记录 | [立即测试] |
-| 无规则 | ⚙ | 添加规则开始监控 | [＋ 添加规则] |
-| 无测试任务 | ⏰ | 配置定时自动测试 | [＋ 创建任务] |
-| 搜索无结果 | 🔍 | 没有匹配 "{keyword}" | [清除筛选] |
+| 场景       | 图标 | 文案                 | 行动                   |
+| ---------- | ---- | -------------------- | ---------------------- |
+| 无脚本     | 📝   | 还没有任何脚本       | [导入 .user.js] [新建] |
+| 无告警     | 🔔   | 一切正常，没有告警   | -                      |
+| 无日志     | 📋   | 还没有运行记录       | [立即测试]             |
+| 无规则     | ⚙    | 添加规则开始监控     | [＋ 添加规则]          |
+| 无测试任务 | ⏰   | 配置定时自动测试     | [＋ 创建任务]          |
+| 搜索无结果 | 🔍   | 没有匹配 "{keyword}" | [清除筛选]             |
 
 ### 17.4 错误态
 
@@ -1265,27 +1269,27 @@
 
 ### 18.1 无障碍（WCAG 2.1 AA）
 
-| 维度 | 要求 |
-|---|---|
-| **对比度** | 文字 ≥ 4.5:1，大字 ≥ 3:1 |
-| **键盘** | 所有交互可键盘操作；Tab 顺序合理；ESC 关闭弹窗；Enter 确认 |
-| **焦点可见** | 2px 实色焦点环，永不 `outline: none` |
-| **ARIA** | 弹窗 `role="dialog"` + `aria-modal`；Tab `aria-selected`；状态 `aria-live="polite"` |
-| **语义化** | 使用 `<button>`、`<nav>`、`<main>` 而非 `<div>` |
-| **表单** | `<label>` 关联、错误用 `aria-describedby`、必填 `aria-required` |
-| **替代文本** | 所有图标按钮有 `aria-label`；图表有 `aria-label` 摘要 |
-| **动画** | 尊重 `prefers-reduced-motion`，关闭动画 |
-| **跳转链接** | 页面顶部"跳到主内容"链接 |
+| 维度         | 要求                                                                                |
+| ------------ | ----------------------------------------------------------------------------------- |
+| **对比度**   | 文字 ≥ 4.5:1，大字 ≥ 3:1                                                            |
+| **键盘**     | 所有交互可键盘操作；Tab 顺序合理；ESC 关闭弹窗；Enter 确认                          |
+| **焦点可见** | 2px 实色焦点环，永不 `outline: none`                                                |
+| **ARIA**     | 弹窗 `role="dialog"` + `aria-modal`；Tab `aria-selected`；状态 `aria-live="polite"` |
+| **语义化**   | 使用 `<button>`、`<nav>`、`<main>` 而非 `<div>`                                     |
+| **表单**     | `<label>` 关联、错误用 `aria-describedby`、必填 `aria-required`                     |
+| **替代文本** | 所有图标按钮有 `aria-label`；图表有 `aria-label` 摘要                               |
+| **动画**     | 尊重 `prefers-reduced-motion`，关闭动画                                             |
+| **跳转链接** | 页面顶部"跳到主内容"链接                                                            |
 
 ### 18.2 响应式断点
 
-| 断点 | 宽度 | 设备 | 布局 |
-|---|---|---|---|
-| `xs` | < 480px | 手机 | 单列、底部 Tab |
-| `sm` | ≥ 640px | 大手机 | 单列 |
-| `md` | ≥ 768px | 平板 | 2 列 |
-| `lg` | ≥ 1024px | 桌面 | 3 列 + 侧边栏 |
-| `xl` | ≥ 1280px | 大屏 | 4 列 |
+| 断点  | 宽度     | 设备   | 布局              |
+| ----- | -------- | ------ | ----------------- |
+| `xs`  | < 480px  | 手机   | 单列、底部 Tab    |
+| `sm`  | ≥ 640px  | 大手机 | 单列              |
+| `md`  | ≥ 768px  | 平板   | 2 列              |
+| `lg`  | ≥ 1024px | 桌面   | 3 列 + 侧边栏     |
+| `xl`  | ≥ 1280px | 大屏   | 4 列              |
 | `2xl` | ≥ 1536px | 超大屏 | 4 列 + 固定侧边栏 |
 
 ### 18.3 关键响应式规则
@@ -1316,22 +1320,22 @@
 
 ## 附录 A：页面清单与优先级
 
-| 编号 | 页面 | 优先级 | MVP |
-|------|------|:---:|:---:|
-| W1 | Popup | P0 | ✅ |
-| W2 | Dashboard 总览 | P0 | ✅ |
-| W3 | 脚本列表 | P0 | ✅ |
-| W4 | 脚本编辑器 | P0 | ✅ |
-| W5 | 健康检查规则 | P0 | ✅ |
-| W6 | 脚本详情 | P0 | ✅ |
-| W7 | 测试报告 | P0 | ✅ |
-| W8 | 告警中心 | P0 | ✅ |
-| W9 | 设置-通知 | P0 | ✅ |
-| W10 | 设置-通用 | P0 | ✅ |
-| W11 | 页面内浮层 | P0 | ✅ |
-| W12 | PWA 移动端 | P1 | ⬜ |
-| W13 | GitHub Actions 向导 | P1 | ✅ |
-| W14 | 选择器采集 | P1 | ✅ |
+| 编号 | 页面                | 优先级 | MVP |
+| ---- | ------------------- | :----: | :-: |
+| W1   | Popup               |   P0   | ✅  |
+| W2   | Dashboard 总览      |   P0   | ✅  |
+| W3   | 脚本列表            |   P0   | ✅  |
+| W4   | 脚本编辑器          |   P0   | ✅  |
+| W5   | 健康检查规则        |   P0   | ✅  |
+| W6   | 脚本详情            |   P0   | ✅  |
+| W7   | 测试报告            |   P0   | ✅  |
+| W8   | 告警中心            |   P0   | ✅  |
+| W9   | 设置-通知           |   P0   | ✅  |
+| W10  | 设置-通用           |   P0   | ✅  |
+| W11  | 页面内浮层          |   P0   | ✅  |
+| W12  | PWA 移动端          |   P1   | ⬜  |
+| W13  | GitHub Actions 向导 |   P1   | ✅  |
+| W14  | 选择器采集          |   P1   | ✅  |
 
 ---
 
@@ -1349,4 +1353,4 @@
 
 ---
 
-*ScriptGuard Wireframes v1.0 · 2026-06-17 · 与 PRD v1.0-merged / TDD v1.0 配套*
+_ScriptGuard Wireframes v1.0 · 2026-06-17 · 与 PRD v1.0-merged / TDD v1.0 配套_

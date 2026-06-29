@@ -18,7 +18,7 @@ export type RuleType =
   | 'js_assertion'
   | 'console_clean'
   | 'duration'
-  | 'network_status'
+  | 'network_status';
 
 // ====== Check Rule ======
 
@@ -28,15 +28,15 @@ export type RuleType =
  */
 export interface CheckRule {
   /** Unique rule identifier */
-  id: string
+  id: string;
   /** Human-readable rule name */
-  name: string
+  name: string;
   /** Rule type determining which executor to use */
-  type: RuleType
+  type: RuleType;
   /** Rule-specific configuration */
-  config: Record<string, unknown>
+  config: Record<string, unknown>;
   /** Whether failure of this rule causes script to be marked as failed */
-  required: boolean
+  required: boolean;
 }
 
 // ====== Page Context ======
@@ -47,11 +47,11 @@ export interface CheckRule {
  */
 export interface PageContextProxy {
   /** Get page title */
-  getTitle(): string
+  getTitle(): string;
   /** Get meta tag content by name */
-  getMeta(name: string): string | null
+  getMeta(name: string): string | null;
   /** Get element count matching selector */
-  getElementCount(selector: string): number
+  getElementCount(selector: string): number;
 }
 
 // ====== Execution Context ======
@@ -61,21 +61,21 @@ export interface PageContextProxy {
  */
 export interface ExecutionContext {
   /** Current page URL */
-  url: string
+  url: string;
   /** DOM document for querying elements */
-  document: Document
+  document: Document;
   /** Window object for computed styles */
-  window: Window
+  window: Window;
   /** Page context proxy */
-  pageContext: PageContextProxy
+  pageContext: PageContextProxy;
   /** Timeout in milliseconds for rule execution */
-  timeout: number
+  timeout: number;
   /** Abort signal for cancellation */
-  signal: AbortSignal
+  signal: AbortSignal;
   /** Captured page errors */
-  capturedErrors: ErrorCapture[]
+  capturedErrors: ErrorCapture[];
   /** Captured network requests */
-  capturedRequests: NetworkRequest[]
+  capturedRequests: NetworkRequest[];
 }
 
 // ====== Error Capture ======
@@ -84,13 +84,13 @@ export interface ExecutionContext {
  * A captured page error from error-capture.ts
  */
 export interface ErrorCapture {
-  source: string
-  type: 'error' | 'unhandledrejection'
-  message: string
-  filename?: string
-  lineno?: number
-  colno?: number
-  timestamp: number
+  source: string;
+  type: 'error' | 'unhandledrejection';
+  message: string;
+  filename?: string;
+  lineno?: number;
+  colno?: number;
+  timestamp: number;
 }
 
 // ====== Network Request ======
@@ -99,10 +99,10 @@ export interface ErrorCapture {
  * A captured network request
  */
 export interface NetworkRequest {
-  url: string
-  method: string
-  status?: number
-  timestamp: number
+  url: string;
+  method: string;
+  status?: number;
+  timestamp: number;
 }
 
 // ====== Rule Result ======
@@ -112,17 +112,17 @@ export interface NetworkRequest {
  */
 export interface RuleResult {
   /** Rule identifier */
-  ruleId: string
+  ruleId: string;
   /** Execution status */
-  status: 'passed' | 'failed' | 'skipped' | 'timeout'
+  status: 'passed' | 'failed' | 'skipped' | 'timeout';
   /** Execution duration in milliseconds */
-  duration: number
+  duration: number;
   /** Error message if failed */
-  errorMessage?: string
+  errorMessage?: string;
   /** Error stack trace if failed */
-  errorStack?: string
+  errorStack?: string;
   /** Additional context data */
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>;
 }
 
 // ====== Rule Executor Interface ======
@@ -133,7 +133,7 @@ export interface RuleResult {
  */
 export interface RuleExecutor {
   /** The rule type this executor handles */
-  readonly type: string
+  readonly type: string;
 
   /**
    * Execute a rule against the given context
@@ -141,7 +141,7 @@ export interface RuleExecutor {
    * @param ctx - Execution context
    * @returns Promise resolving to rule result
    */
-  execute(rule: CheckRule, ctx: ExecutionContext): Promise<RuleResult>
+  execute(rule: CheckRule, ctx: ExecutionContext): Promise<RuleResult>;
 }
 
 // ====== Execution Options ======
@@ -151,7 +151,7 @@ export interface RuleExecutor {
  */
 export interface ExecutionOptions {
   /** Timeout per rule in milliseconds (default: 5000) */
-  timeout?: number
+  timeout?: number;
   /** Whether to skip failed rules (default: false) */
-  continueOnError?: boolean
+  continueOnError?: boolean;
 }

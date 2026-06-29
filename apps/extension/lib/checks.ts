@@ -3,19 +3,19 @@
  * 关联: TDD §5.1 消息协议 + §9.4 错误隔离
  */
 
-import { injectErrorCapture, type PageError } from '~content/error-capture'
+import { injectErrorCapture, type PageError } from '~content/error-capture';
 
-export type HealthStatus = 'healthy' | 'degraded' | 'failed' | 'unknown'
+export type HealthStatus = 'healthy' | 'degraded' | 'failed' | 'unknown';
 
 export interface CheckReport {
-  scriptId: string
-  url: string
-  status: HealthStatus
-  startedAt: number
-  endedAt: number
-  duration: number
-  failedRules: string[]
-  errorMessage?: string
+  scriptId: string;
+  url: string;
+  status: HealthStatus;
+  startedAt: number;
+  endedAt: number;
+  duration: number;
+  failedRules: string[];
+  errorMessage?: string;
 }
 
 /**
@@ -23,11 +23,8 @@ export interface CheckReport {
  * 在 ISOLATED world 中注入 MAIN world 错误捕获脚本
  * 并监听 MAIN world 发来的错误消息
  */
-export function capturePageError(
-  win: Window,
-  onError?: (error: PageError) => void
-): void {
-  injectErrorCapture()
+export function capturePageError(win: Window, onError?: (error: PageError) => void): void {
+  injectErrorCapture();
 
   win.addEventListener('message', (e: MessageEvent) => {
     if (
@@ -35,10 +32,10 @@ export function capturePageError(
       e.data !== null &&
       e.data.source === 'scriptguard-error-capture'
     ) {
-      console.debug('[SG] page error from MAIN world:', e.data)
-      onError?.(e.data as PageError)
+      console.debug('[SG] page error from MAIN world:', e.data);
+      onError?.(e.data as PageError);
     }
-  })
+  });
 }
 
 /**
@@ -55,5 +52,5 @@ export async function startCheck(report: CheckReport): Promise<void> {
       failedRules: report.failedRules,
       error: report.errorMessage,
     },
-  })
+  });
 }

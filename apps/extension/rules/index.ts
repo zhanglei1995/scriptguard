@@ -28,27 +28,27 @@ export type {
   ErrorCapture,
   NetworkRequest,
   ExecutionOptions,
-} from './types'
+} from './types';
 
 // Base executor
-export { BaseExecutor } from './base'
+export { BaseExecutor } from './base';
 
 // Registry
-export { registry } from './registry'
+export { registry } from './registry';
 
 // Engine
-export { RuleEngine } from './engine'
-export type { AggregateResult } from './engine'
+export { RuleEngine } from './engine';
+export type { AggregateResult } from './engine';
 
 // Executors
-export { SelectorExistsExecutor } from './executors/selector-exists'
-export { SelectorVisibleExecutor } from './executors/selector-visible'
-export { TextContentExecutor } from './executors/text-content'
-export { UrlMatchExecutor } from './executors/url-match'
-export { JsAssertionExecutor } from './executors/js-assertion'
-export { ConsoleCleanExecutor } from './executors/console-clean'
-export { DurationExecutor } from './executors/duration'
-export { NetworkStatusExecutor } from './executors/network-status'
+export { SelectorExistsExecutor } from './executors/selector-exists';
+export { SelectorVisibleExecutor } from './executors/selector-visible';
+export { TextContentExecutor } from './executors/text-content';
+export { UrlMatchExecutor } from './executors/url-match';
+export { JsAssertionExecutor } from './executors/js-assertion';
+export { ConsoleCleanExecutor } from './executors/console-clean';
+export { DurationExecutor } from './executors/duration';
+export { NetworkStatusExecutor } from './executors/network-status';
 
 // Default context factory
-export { createDefaultExecutionContext } from './context'
+export { createDefaultExecutionContext } from './context';

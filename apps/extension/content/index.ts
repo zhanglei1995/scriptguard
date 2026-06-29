@@ -6,29 +6,29 @@
  * SG-015: User Script Injection and Execution
  */
 
-import type { PlasmoCSConfig } from 'plasmo'
-import { capturePageError, startCheck } from '../lib/checks'
-import { injectScript } from './injector'
-import { runScript, type ScriptContext, type RunAt } from './script-runner'
-import type { CheckRule } from './rule-engine'
+import type { PlasmoCSConfig } from 'plasmo';
+import { capturePageError, startCheck } from '../lib/checks';
+import { injectScript } from './injector';
+import { runScript, type ScriptContext, type RunAt } from './script-runner';
+import type { CheckRule } from './rule-engine';
 
 // ====== Plasmo Content Script 配置 ======
 export const config: PlasmoCSConfig = {
   matches: ['<all_urls>'],
   run_at: 'document_start',
   world: 'ISOLATED',
-}
+};
 
 // ====== 错误捕获（最早时机） ======
-const pageErrors: Array<{ type: string; message: string; time: number }> = []
+const pageErrors: Array<{ type: string; message: string; time: number }> = [];
 
 capturePageError(window, (err: { type: string; message: string; reason?: string }) => {
   pageErrors.push({
     type: err.type,
-    message: err.type === 'error' ? err.message : err.reason ?? '',
+    message: err.type === 'error' ? err.message : (err.reason ?? ''),
     time: Date.now(),
-  })
-})
+  });
+});
 
 // ====== 启动 ======
 async function bootstrap() {
@@ -36,15 +36,15 @@ async function bootstrap() {
     const response = await chrome.runtime.sendMessage({
       type: 'GET_SCRIPTS_FOR_URL',
       payload: { url: location.href },
-    })
+    });
 
     if (response?.type === 'SCRIPTS_RESULT' && Array.isArray(response.scripts)) {
       // Separate scripts by runAt timing
-      const immediateScripts: ScriptContext[] = []
-      const deferredScripts: ScriptContext[] = []
+      const immediateScripts: ScriptContext[] = [];
+      const deferredScripts: ScriptContext[] = [];
 
       for (const script of response.scripts) {
-        const runAt: RunAt = script.runAt ?? 'document_idle'
+        const runAt: RunAt = script.runAt ?? 'document_idle';
         const ctx: ScriptContext = {
           id: script.id,
           name: script.name,
@@ -52,10 +52,10 @@ async function bootstrap() {
           runAt,
           timeout: script.timeout,
           rules: (script.rules as CheckRule[] | undefined) ?? [],
-        }
+        };
 
         if (runAt === 'document_start') {
-          immediateScripts.push(ctx)
+          immediateScripts.push(ctx);
         } else if (runAt === 'manual') {
           // Manual scripts: record but don't inject
           await startCheck({
@@ -66,31 +66,23 @@ async function bootstrap() {
             endedAt: Date.now(),
             duration: 0,
             failedRules: [],
-          })
+          });
         } else {
-          deferredScripts.push(ctx)
+          deferredScripts.push(ctx);
         }
       }
 
       // Inject immediate scripts first
-      await Promise.all(
-        immediateScripts.map((ctx) =>
-          runScript(ctx, document, injectScript)
-        )
-      )
+      await Promise.all(immediateScripts.map((ctx) => runScript(ctx, document, injectScript)));
 
       // Then inject deferred scripts (they wait for lifecycle events internally)
-      await Promise.all(
-        deferredScripts.map((ctx) =>
-          runScript(ctx, document, injectScript)
-        )
-      )
+      await Promise.all(deferredScripts.map((ctx) => runScript(ctx, document, injectScript)));
     }
   } catch (err: unknown) {
-    console.debug('[ScriptGuard] Background not available:', err)
+    console.debug('[ScriptGuard] Background not available:', err);
   }
 }
 
-bootstrap()
+bootstrap();
 
-export {}
+export {};

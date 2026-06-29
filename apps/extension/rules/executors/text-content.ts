@@ -5,19 +5,19 @@
  * Checks if element's text content matches expected string
  */
 
-import { BaseExecutor } from '../base'
-import type { CheckRule, ExecutionContext } from '../types'
+import { BaseExecutor } from '../base';
+import type { CheckRule, ExecutionContext } from '../types';
 
 /**
  * Configuration for text_content rule
  */
 interface TextContentConfig {
   /** CSS selector to check */
-  selector?: string
+  selector?: string;
   /** Expected text content */
-  expected?: string
+  expected?: string;
   /** Comparison operator (default: contains) */
-  operator?: 'equals' | 'contains' | 'matches'
+  operator?: 'equals' | 'contains' | 'matches';
 }
 
 /**
@@ -41,44 +41,41 @@ interface TextContentConfig {
  * ```
  */
 export class TextContentExecutor extends BaseExecutor {
-  readonly type = 'text_content'
+  readonly type = 'text_content';
 
-  protected async evaluate(
-    rule: CheckRule,
-    ctx: ExecutionContext
-  ): Promise<boolean> {
-    const config = rule.config as TextContentConfig
-    const selector = config.selector
-    const expected = config.expected
-    const operator = config.operator ?? 'contains'
+  protected async evaluate(rule: CheckRule, ctx: ExecutionContext): Promise<boolean> {
+    const config = rule.config as TextContentConfig;
+    const selector = config.selector;
+    const expected = config.expected;
+    const operator = config.operator ?? 'contains';
 
     if (!selector || expected === undefined) {
-      return false
+      return false;
     }
 
-    const element = ctx.document.querySelector(selector)
+    const element = ctx.document.querySelector(selector);
     if (!element) {
-      return false
+      return false;
     }
 
-    const text = element.textContent ?? ''
+    const text = element.textContent ?? '';
 
     switch (operator) {
       case 'equals':
-        return text.trim() === expected
+        return text.trim() === expected;
 
       case 'contains':
-        return text.includes(expected)
+        return text.includes(expected);
 
       case 'matches':
         try {
-          return new RegExp(expected).test(text)
+          return new RegExp(expected).test(text);
         } catch {
-          return false
+          return false;
         }
 
       default:
-        return false
+        return false;
     }
   }
 }

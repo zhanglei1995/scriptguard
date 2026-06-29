@@ -10,12 +10,7 @@
  * Subclasses only need to implement the evaluate() method
  */
 
-import type {
-  CheckRule,
-  ExecutionContext,
-  RuleExecutor,
-  RuleResult,
-} from './types'
+import type { CheckRule, ExecutionContext, RuleExecutor, RuleResult } from './types';
 
 /**
  * Abstract base class for rule executors
@@ -36,7 +31,7 @@ export abstract class BaseExecutor implements RuleExecutor {
   /**
    * The rule type this executor handles
    */
-  abstract readonly type: string
+  abstract readonly type: string;
 
   /**
    * Execute a rule with timing, timeout detection, and error handling
@@ -46,8 +41,8 @@ export abstract class BaseExecutor implements RuleExecutor {
    * @returns Promise resolving to rule result
    */
   async execute(rule: CheckRule, ctx: ExecutionContext): Promise<RuleResult> {
-    const startTime = Date.now()
-    const ruleTimeout = ctx.timeout
+    const startTime = Date.now();
+    const ruleTimeout = ctx.timeout;
 
     try {
       // Check if already aborted
@@ -57,33 +52,30 @@ export abstract class BaseExecutor implements RuleExecutor {
           status: 'skipped',
           duration: 0,
           errorMessage: 'Execution aborted',
-        }
+        };
       }
 
       // Create timeout promise
       const timeoutPromise = new Promise<never>((_, reject) => {
         const timer = setTimeout(() => {
-          reject(new Error('Rule execution timeout'))
-        }, ruleTimeout)
+          reject(new Error('Rule execution timeout'));
+        }, ruleTimeout);
 
         // Clean up timer if signal aborts
         ctx.signal.addEventListener(
           'abort',
           () => {
-            clearTimeout(timer)
-            reject(new Error('Execution aborted'))
+            clearTimeout(timer);
+            reject(new Error('Execution aborted'));
           },
-          { once: true }
-        )
-      })
+          { once: true },
+        );
+      });
 
       // Execute with timeout race
-      const result = await Promise.race([
-        this.evaluate(rule, ctx),
-        timeoutPromise,
-      ])
+      const result = await Promise.race([this.evaluate(rule, ctx), timeoutPromise]);
 
-      const duration = Date.now() - startTime
+      const duration = Date.now() - startTime;
 
       return {
         ruleId: rule.id,
@@ -93,9 +85,9 @@ export abstract class BaseExecutor implements RuleExecutor {
           ruleType: rule.type,
           config: rule.config,
         },
-      }
+      };
     } catch (error) {
-      const duration = Date.now() - startTime
+      const duration = Date.now() - startTime;
 
       // Handle timeout
       if (error instanceof Error && error.message === 'Rule execution timeout') {
@@ -104,7 +96,7 @@ export abstract class BaseExecutor implements RuleExecutor {
           status: 'timeout',
           duration,
           errorMessage: 'Rule execution timeout',
-        }
+        };
       }
 
       // Handle abort
@@ -114,13 +106,12 @@ export abstract class BaseExecutor implements RuleExecutor {
           status: 'skipped',
           duration,
           errorMessage: 'Execution aborted',
-        }
+        };
       }
 
       // Handle other errors
-      const errorMessage =
-        error instanceof Error ? error.message : String(error)
-      const errorStack = error instanceof Error ? error.stack : undefined
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
 
       return {
         ruleId: rule.id,
@@ -128,7 +119,7 @@ export abstract class BaseExecutor implements RuleExecutor {
         duration,
         errorMessage,
         errorStack,
-      }
+      };
     }
   }
 
@@ -141,8 +132,5 @@ export abstract class BaseExecutor implements RuleExecutor {
    * @param ctx - Execution context
    * @returns Promise resolving to true if rule passes, false if it fails
    */
-  protected abstract evaluate(
-    rule: CheckRule,
-    ctx: ExecutionContext
-  ): Promise<boolean>
+  protected abstract evaluate(rule: CheckRule, ctx: ExecutionContext): Promise<boolean>;
 }

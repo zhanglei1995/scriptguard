@@ -4,4 +4,4 @@ export {
   CreateScriptInput,
   UpdateScriptInput,
   type ScriptsState,
-} from './scripts'
+} from './scripts';

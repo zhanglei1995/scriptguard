@@ -6,7 +6,7 @@
  * 关联: TDD §9.4 Content Script 错误隔离
  */
 
-export const ERROR_CAPTURE_SOURCE = 'scriptguard-error-capture'
+export const ERROR_CAPTURE_SOURCE = 'scriptguard-error-capture';
 
 export const ERROR_CAPTURE_SCRIPT = `(function(){
 var S="${ERROR_CAPTURE_SOURCE}";
@@ -16,16 +16,16 @@ window.postMessage({source:S,type:"error",message:e.message,filename:e.filename,
 window.addEventListener("unhandledrejection",function(e){
 window.postMessage({source:S,type:"unhandledrejection",reason:String(e.reason||'')},'*');
 });
-})();`
+})();`;
 
 export interface PageError {
-  source: typeof ERROR_CAPTURE_SOURCE
-  type: 'error' | 'unhandledrejection'
-  message: string
-  filename?: string
-  lineno?: number
-  colno?: number
-  reason?: string
+  source: typeof ERROR_CAPTURE_SOURCE;
+  type: 'error' | 'unhandledrejection';
+  message: string;
+  filename?: string;
+  lineno?: number;
+  colno?: number;
+  reason?: string;
 }
 
 export function isPageError(data: unknown): data is PageError {
@@ -33,7 +33,7 @@ export function isPageError(data: unknown): data is PageError {
     typeof data === 'object' &&
     data !== null &&
     (data as Record<string, unknown>).source === ERROR_CAPTURE_SOURCE
-  )
+  );
 }
 
 /**
@@ -41,8 +41,8 @@ export function isPageError(data: unknown): data is PageError {
  * 必须在 document_start 时调用
  */
 export function injectErrorCapture(doc: Document = document): void {
-  const script = doc.createElement('script')
-  script.textContent = ERROR_CAPTURE_SCRIPT
-  ;(doc.documentElement || doc.head || doc.body)?.appendChild(script)
-  script.remove()
+  const script = doc.createElement('script');
+  script.textContent = ERROR_CAPTURE_SCRIPT;
+  (doc.documentElement || doc.head || doc.body)?.appendChild(script);
+  script.remove();
 }

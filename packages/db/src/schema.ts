@@ -9,28 +9,23 @@ import {
   pgEnum,
   index,
   uniqueIndex,
-} from 'drizzle-orm/pg-core'
-import { sql } from 'drizzle-orm'
+} from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
-export const planEnum = pgEnum('plan', ['free', 'pro', 'team', 'enterprise'])
+export const planEnum = pgEnum('plan', ['free', 'pro', 'team', 'enterprise']);
 export const healthStatusEnum = pgEnum('health_status', [
   'healthy',
   'degraded',
   'failed',
   'unknown',
-])
+]);
 export const runAtEnum = pgEnum('run_at', [
   'document_start',
   'document_idle',
   'document_end',
   'manual',
-])
-export const alertLevelEnum = pgEnum('alert_level', [
-  'low',
-  'medium',
-  'high',
-  'critical',
-])
+]);
+export const alertLevelEnum = pgEnum('alert_level', ['low', 'medium', 'high', 'critical']);
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -38,14 +33,14 @@ export const users = pgTable('users', {
   passwordHash: text('password_hash'),
   plan: planEnum('plan').notNull().default('free'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+});
 
 export const teams = pgTable('teams', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   plan: planEnum('plan').notNull().default('team'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+});
 
 export const teamMembers = pgTable(
   'team_members',
@@ -59,10 +54,8 @@ export const teamMembers = pgTable(
       .notNull(),
     role: text('role').notNull().default('member'),
   },
-  (t) => [
-    uniqueIndex('idx_team_members_user_team').on(t.userId, t.teamId),
-  ],
-)
+  (t) => [uniqueIndex('idx_team_members_user_team').on(t.userId, t.teamId)],
+);
 
 export const scripts = pgTable(
   'scripts',
@@ -97,7 +90,7 @@ export const scripts = pgTable(
       .on(t.deletedAt)
       .where(sql`${t.deletedAt} IS NULL`),
   ],
-)
+);
 
 export const checkRules = pgTable(
   'check_rules',
@@ -115,7 +108,7 @@ export const checkRules = pgTable(
     order: integer('order').notNull().default(0),
   },
   (t) => [index('idx_check_rules_script').on(t.scriptId)],
-)
+);
 
 export const testSchedules = pgTable(
   'test_schedules',
@@ -126,15 +119,12 @@ export const testSchedules = pgTable(
       .notNull(),
     cron: text('cron').notNull(),
     mode: text('mode').notNull(),
-    config: jsonb('config')
-      .$type<{ cookies?: string; timeout?: number }>()
-      .notNull()
-      .default({}),
+    config: jsonb('config').$type<{ cookies?: string; timeout?: number }>().notNull().default({}),
     enabled: boolean('enabled').notNull().default(true),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (t) => [index('idx_test_schedules_script').on(t.scriptId)],
-)
+);
 
 export const testRuns = pgTable(
   'test_runs',
@@ -162,7 +152,7 @@ export const testRuns = pgTable(
       .on(t.status)
       .where(sql`${t.status} IN ('failed', 'degraded')`),
   ],
-)
+);
 
 export const alerts = pgTable(
   'alerts',
@@ -189,7 +179,7 @@ export const alerts = pgTable(
       .on(t.userId, t.createdAt)
       .where(sql`${t.acknowledged} = false`),
   ],
-)
+);
 
 export const notifyChannels = pgTable(
   'notify_channels',
@@ -204,7 +194,7 @@ export const notifyChannels = pgTable(
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (t) => [index('idx_notify_channels_user').on(t.userId)],
-)
+);
 
 export const scriptVersions = pgTable(
   'script_versions',
@@ -220,4 +210,4 @@ export const scriptVersions = pgTable(
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (t) => [index('idx_script_versions_script').on(t.scriptId)],
-)
+);

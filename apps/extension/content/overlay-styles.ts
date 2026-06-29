@@ -272,4 +272,4 @@ export const OVERLAY_CSS = `
   .sg-overlay__expand-value { color: #e2e8f0; }
   .sg-overlay__stack { background: rgba(255, 255, 255, 0.05); color: #94a3b8; }
 }
-`
+`;

@@ -3,66 +3,66 @@
  * SG-055: Tampermonkey 协同与导入
  */
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef } from 'react';
 import {
   importUserScript,
   parseTampermonkeyBackup,
   backupScriptToImportedScript,
   saveImportedScripts,
   type ImportedScript,
-} from '../lib/tampermonkey'
+} from '../lib/tampermonkey';
 
 interface ImportResult {
-  success: boolean
-  count: number
-  scripts: ImportedScript[]
-  errors: string[]
+  success: boolean;
+  count: number;
+  scripts: ImportedScript[];
+  errors: string[];
 }
 
 export function ImportTab() {
-  const [importing, setImporting] = useState(false)
-  const [result, setResult] = useState<ImportResult | null>(null)
-  const [dragOver, setDragOver] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const backupInputRef = useRef<HTMLInputElement>(null)
+  const [importing, setImporting] = useState(false);
+  const [result, setResult] = useState<ImportResult | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const backupInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileImport = useCallback(async (files: FileList | null) => {
-    if (!files || files.length === 0) return
-    setImporting(true)
-    setResult(null)
+    if (!files || files.length === 0) return;
+    setImporting(true);
+    setResult(null);
 
-    const importedScripts: ImportedScript[] = []
-    const errors: string[] = []
+    const importedScripts: ImportedScript[] = [];
+    const errors: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      if (!file) continue
+      const file = files[i];
+      if (!file) continue;
       try {
-        const content = await file.text()
+        const content = await file.text();
 
         if (file.name.endsWith('.json')) {
           // Tampermonkey backup JSON
-          const backupScripts = parseTampermonkeyBackup(content)
+          const backupScripts = parseTampermonkeyBackup(content);
           for (const bs of backupScripts) {
-            importedScripts.push(backupScriptToImportedScript(bs))
+            importedScripts.push(backupScriptToImportedScript(bs));
           }
         } else if (file.name.endsWith('.js') || file.name.endsWith('.user.js')) {
-          const script = importUserScript(content)
+          const script = importUserScript(content);
           if (script) {
-            importedScripts.push(script)
+            importedScripts.push(script);
           } else {
-            errors.push(`${file.name}: 无法解析 UserScript 元数据`)
+            errors.push(`${file.name}: 无法解析 UserScript 元数据`);
           }
         } else {
-          errors.push(`${file.name}: 不支持的文件格式`)
+          errors.push(`${file.name}: 不支持的文件格式`);
         }
       } catch (err) {
-        errors.push(`${file.name}: ${err instanceof Error ? err.message : '未知错误'}`)
+        errors.push(`${file.name}: ${err instanceof Error ? err.message : '未知错误'}`);
       }
     }
 
     if (importedScripts.length > 0) {
-      await saveImportedScripts(importedScripts)
+      await saveImportedScripts(importedScripts);
     }
 
     setResult({
@@ -70,27 +70,27 @@ export function ImportTab() {
       count: importedScripts.length,
       scripts: importedScripts,
       errors,
-    })
-    setImporting(false)
-  }, [])
+    });
+    setImporting(false);
+  }, []);
 
   const onDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setDragOver(true)
-  }, [])
+    e.preventDefault();
+    setDragOver(true);
+  }, []);
 
   const onDragLeave = useCallback(() => {
-    setDragOver(false)
-  }, [])
+    setDragOver(false);
+  }, []);
 
   const onDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault()
-      setDragOver(false)
-      handleFileImport(e.dataTransfer.files)
+      e.preventDefault();
+      setDragOver(false);
+      handleFileImport(e.dataTransfer.files);
     },
-    [handleFileImport]
-  )
+    [handleFileImport],
+  );
 
   return (
     <div className="space-y-6">
@@ -114,9 +114,7 @@ export function ImportTab() {
       >
         <div className="text-4xl mb-3">📦</div>
         <p className="text-sm font-medium mb-1">拖拽文件到此处</p>
-        <p className="text-xs text-muted-foreground mb-4">
-          或使用下方按钮选择文件
-        </p>
+        <p className="text-xs text-muted-foreground mb-4">或使用下方按钮选择文件</p>
 
         <input
           ref={fileInputRef}
@@ -173,19 +171,14 @@ export function ImportTab() {
           {result.success && (
             <div className="mb-2">
               <p className="font-medium">导入成功</p>
-              <p>
-                已导入 {result.count} 个脚本
-              </p>
+              <p>已导入 {result.count} 个脚本</p>
             </div>
           )}
 
           {result.scripts.length > 0 && (
             <div className="mt-3 space-y-1">
               {result.scripts.map((script) => (
-                <div
-                  key={script.id}
-                  className="flex items-center gap-2 text-xs"
-                >
+                <div key={script.id} className="flex items-center gap-2 text-xs">
                   <span className="text-green-600">✓</span>
                   <span className="font-medium">{script.name}</span>
                   <span className="text-muted-foreground">v{script.version}</span>
@@ -215,14 +208,16 @@ export function ImportTab() {
         <p className="font-medium">支持的格式：</p>
         <ul className="list-disc list-inside space-y-0.5 ml-2">
           <li>
-            <code className="bg-muted px-1 rounded">.user.js</code> - Tampermonkey/Greasemonkey 用户脚本文件
+            <code className="bg-muted px-1 rounded">.user.js</code> - Tampermonkey/Greasemonkey
+            用户脚本文件
           </li>
           <li>
-            <code className="bg-muted px-1 rounded">.json</code> - Tampermonkey 备份文件（包含 scripts 数组）
+            <code className="bg-muted px-1 rounded">.json</code> - Tampermonkey 备份文件（包含
+            scripts 数组）
           </li>
         </ul>
         <p className="mt-2">导入的脚本将自动解析 @match/@include 规则并添加到脚本管理列表中。</p>
       </div>
     </div>
-  )
+  );
 }

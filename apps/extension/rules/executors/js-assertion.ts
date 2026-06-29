@@ -6,38 +6,31 @@
  * Returns truthy/falsy result
  */
 
-import { BaseExecutor } from '../base'
-import type { CheckRule, ExecutionContext } from '../types'
+import { BaseExecutor } from '../base';
+import type { CheckRule, ExecutionContext } from '../types';
 
 interface JsAssertionConfig {
   /** JavaScript expression to evaluate (must return truthy/falsy) */
-  expression?: string
+  expression?: string;
 }
 
 export class JsAssertionExecutor extends BaseExecutor {
-  readonly type = 'js_assertion'
+  readonly type = 'js_assertion';
 
-  protected async evaluate(
-    rule: CheckRule,
-    ctx: ExecutionContext
-  ): Promise<boolean> {
-    const config = rule.config as JsAssertionConfig
-    const expression = config.expression
+  protected async evaluate(rule: CheckRule, ctx: ExecutionContext): Promise<boolean> {
+    const config = rule.config as JsAssertionConfig;
+    const expression = config.expression;
 
     if (!expression) {
-      return false
+      return false;
     }
 
     try {
-      const fn = new Function(
-        'document',
-        'window',
-        `return (${expression});`
-      )
-      const result = fn(ctx.document, ctx.window)
-      return !!result
+      const fn = new Function('document', 'window', `return (${expression});`);
+      const result = fn(ctx.document, ctx.window);
+      return !!result;
     } catch {
-      return false
+      return false;
     }
   }
 }

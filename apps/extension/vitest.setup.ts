@@ -1,9 +1,9 @@
-import { afterEach, beforeAll, vi } from 'vitest'
-import 'fake-indexeddb/auto'
+import { afterEach, beforeAll, vi } from 'vitest';
+import 'fake-indexeddb/auto';
 
 // ====== Chrome Storage Mock ======
-const mockLocalStore: Record<string, unknown> = {}
-const mockSessionStore: Record<string, unknown> = {}
+const mockLocalStore: Record<string, unknown> = {};
+const mockSessionStore: Record<string, unknown> = {};
 
 const chromeMock = {
   tabs: {
@@ -26,25 +26,25 @@ const chromeMock = {
     local: {
       get: vi.fn(async (keys: string | string[]) => {
         if (typeof keys === 'string') {
-          return { [keys]: mockLocalStore[keys] }
+          return { [keys]: mockLocalStore[keys] };
         }
-        const result: Record<string, unknown> = {}
+        const result: Record<string, unknown> = {};
         for (const key of keys) {
           if (mockLocalStore[key] !== undefined) {
-            result[key] = mockLocalStore[key]
+            result[key] = mockLocalStore[key];
           }
         }
-        return result
+        return result;
       }),
       set: vi.fn(async (items: Record<string, unknown>) => {
-        Object.assign(mockLocalStore, items)
+        Object.assign(mockLocalStore, items);
       }),
       remove: vi.fn(async (keys: string | string[]) => {
         if (typeof keys === 'string') {
-          delete mockLocalStore[keys]
+          delete mockLocalStore[keys];
         } else {
           for (const key of keys) {
-            delete mockLocalStore[key]
+            delete mockLocalStore[key];
           }
         }
       }),
@@ -52,25 +52,25 @@ const chromeMock = {
     session: {
       get: vi.fn(async (keys: string | string[]) => {
         if (typeof keys === 'string') {
-          return { [keys]: mockSessionStore[keys] }
+          return { [keys]: mockSessionStore[keys] };
         }
-        const result: Record<string, unknown> = {}
+        const result: Record<string, unknown> = {};
         for (const key of keys) {
           if (mockSessionStore[key] !== undefined) {
-            result[key] = mockSessionStore[key]
+            result[key] = mockSessionStore[key];
           }
         }
-        return result
+        return result;
       }),
       set: vi.fn(async (items: Record<string, unknown>) => {
-        Object.assign(mockSessionStore, items)
+        Object.assign(mockSessionStore, items);
       }),
       remove: vi.fn(async (keys: string | string[]) => {
         if (typeof keys === 'string') {
-          delete mockSessionStore[keys]
+          delete mockSessionStore[keys];
         } else {
           for (const key of keys) {
-            delete mockSessionStore[key]
+            delete mockSessionStore[key];
           }
         }
       }),
@@ -98,19 +98,19 @@ const chromeMock = {
       addListener: vi.fn(),
     },
   },
-}
+};
 
 // @ts-ignore
-globalThis.chrome = chromeMock
+globalThis.chrome = chromeMock;
 
 // ====== 全局测试清理 ======
 afterEach(() => {
   // 清空 chrome storage mocks
   for (const key of Object.keys(mockLocalStore)) {
-    delete mockLocalStore[key]
+    delete mockLocalStore[key];
   }
   for (const key of Object.keys(mockSessionStore)) {
-    delete mockSessionStore[key]
+    delete mockSessionStore[key];
   }
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});

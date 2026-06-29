@@ -26,9 +26,7 @@ export default function Footer() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500 text-white font-bold text-sm">
                 SG
               </div>
-              <span className="text-xl font-bold text-dark dark:text-white">
-                ScriptGuard
-              </span>
+              <span className="text-xl font-bold text-dark dark:text-white">ScriptGuard</span>
             </Link>
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
               Monitor, manage, and protect your userscripts with ease.

@@ -5,7 +5,7 @@
  * Maintains mapping from rule type to executor instance
  */
 
-import type { RuleExecutor } from './types'
+import type { RuleExecutor } from './types';
 
 /**
  * Registry for rule executors
@@ -23,7 +23,7 @@ import type { RuleExecutor } from './types'
  * ```
  */
 class ExecutorRegistry {
-  private executors = new Map<string, RuleExecutor>()
+  private executors = new Map<string, RuleExecutor>();
 
   /**
    * Register an executor for a rule type
@@ -34,9 +34,9 @@ class ExecutorRegistry {
    */
   register(type: string, executor: RuleExecutor): void {
     if (this.executors.has(type)) {
-      throw new Error(`Executor already registered for type: ${type}`)
+      throw new Error(`Executor already registered for type: ${type}`);
     }
-    this.executors.set(type, executor)
+    this.executors.set(type, executor);
   }
 
   /**
@@ -46,7 +46,7 @@ class ExecutorRegistry {
    * @returns The executor instance, or undefined if not registered
    */
   get(type: string): RuleExecutor | undefined {
-    return this.executors.get(type)
+    return this.executors.get(type);
   }
 
   /**
@@ -57,11 +57,11 @@ class ExecutorRegistry {
    * @throws Error if no executor is registered for this type
    */
   getOrThrow(type: string): RuleExecutor {
-    const executor = this.executors.get(type)
+    const executor = this.executors.get(type);
     if (!executor) {
-      throw new Error(`No executor registered for type: ${type}`)
+      throw new Error(`No executor registered for type: ${type}`);
     }
-    return executor
+    return executor;
   }
 
   /**
@@ -71,7 +71,7 @@ class ExecutorRegistry {
    * @returns True if an executor is registered
    */
   has(type: string): boolean {
-    return this.executors.has(type)
+    return this.executors.has(type);
   }
 
   /**
@@ -80,7 +80,7 @@ class ExecutorRegistry {
    * @returns Array of registered rule type strings
    */
   getRegisteredTypes(): string[] {
-    return Array.from(this.executors.keys())
+    return Array.from(this.executors.keys());
   }
 
   /**
@@ -88,11 +88,11 @@ class ExecutorRegistry {
    * Useful for testing
    */
   clear(): void {
-    this.executors.clear()
+    this.executors.clear();
   }
 }
 
 /**
  * Singleton registry instance
  */
-export const registry = new ExecutorRegistry()
+export const registry = new ExecutorRegistry();

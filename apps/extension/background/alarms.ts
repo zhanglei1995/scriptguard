@@ -7,25 +7,25 @@ export async function createCheckAlarm(scriptId: string, intervalSeconds: number
   await chrome.alarms.create(`check:${scriptId}`, {
     delayInMinutes: intervalSeconds / 60,
     periodInMinutes: intervalSeconds / 60,
-  })
+  });
 }
 
 export async function clearCheckAlarm(scriptId: string) {
-  await chrome.alarms.clear(`check:${scriptId}`)
+  await chrome.alarms.clear(`check:${scriptId}`);
 }
 
 export async function clearAllCheckAlarms() {
-  const alarms = await chrome.alarms.getAll()
+  const alarms = await chrome.alarms.getAll();
   for (const alarm of alarms) {
     if (alarm.name.startsWith('check:')) {
-      await chrome.alarms.clear(alarm.name)
+      await chrome.alarms.clear(alarm.name);
     }
   }
 }
 
 export function parseAlarmScriptId(alarmName: string): string | null {
   if (alarmName.startsWith('check:')) {
-    return alarmName.slice(6)
+    return alarmName.slice(6);
   }
-  return null
+  return null;
 }

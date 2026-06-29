@@ -3,43 +3,39 @@
  * SG-031: 客户端弹冲突解决弹窗
  */
 
-import type { Conflict } from './sync'
+import type { Conflict } from './sync';
 
 export interface ConflictResolution {
-  conflictId: string
-  resolution: 'local' | 'server' | 'merge'
+  conflictId: string;
+  resolution: 'local' | 'server' | 'merge';
 }
 
 /**
  * 显示冲突解决弹窗
  * 返回用户对每个冲突的选择
  */
-export async function showConflictDialog(
-  conflicts: Conflict[]
-): Promise<ConflictResolution[]> {
-  const resolutions: ConflictResolution[] = []
+export async function showConflictDialog(conflicts: Conflict[]): Promise<ConflictResolution[]> {
+  const resolutions: ConflictResolution[] = [];
 
   for (const conflict of conflicts) {
-    const resolution = await showSingleConflictDialog(conflict)
+    const resolution = await showSingleConflictDialog(conflict);
     resolutions.push({
       conflictId: conflict.id,
       resolution,
-    })
+    });
   }
 
-  return resolutions
+  return resolutions;
 }
 
 /**
  * 显示单个冲突的解决弹窗
  */
-function showSingleConflictDialog(
-  conflict: Conflict
-): Promise<'local' | 'server' | 'merge'> {
+function showSingleConflictDialog(conflict: Conflict): Promise<'local' | 'server' | 'merge'> {
   return new Promise((resolve) => {
-    const entityLabel = conflict.entity === 'script' ? '脚本' : '规则'
-    const localName = getEntityName(conflict.local)
-    const serverName = getEntityName(conflict.server)
+    const entityLabel = conflict.entity === 'script' ? '脚本' : '规则';
+    const localName = getEntityName(conflict.local);
+    const serverName = getEntityName(conflict.server);
 
     const message = [
       `检测到${entityLabel}冲突:`,
@@ -51,23 +47,23 @@ function showSingleConflictDialog(
       '1. 保留本地版本',
       '2. 保留云端版本',
       '3. 合并',
-    ].join('\n')
+    ].join('\n');
 
-    const choice = prompt(message, '2')
+    const choice = prompt(message, '2');
 
     switch (choice) {
       case '1':
-        resolve('local')
-        break
+        resolve('local');
+        break;
       case '3':
-        resolve('merge')
-        break
+        resolve('merge');
+        break;
       case '2':
       default:
-        resolve('server')
-        break
+        resolve('server');
+        break;
     }
-  })
+  });
 }
 
 /**
@@ -75,7 +71,7 @@ function showSingleConflictDialog(
  */
 function getEntityName(entity: unknown): string {
   if (entity && typeof entity === 'object' && 'name' in entity) {
-    return String((entity as Record<string, unknown>).name)
+    return String((entity as Record<string, unknown>).name);
   }
-  return '未知'
+  return '未知';
 }

@@ -5,13 +5,12 @@ export default function Hero() {
       <div className="section-container relative">
         <div className="mx-auto max-w-3xl text-center animate-fade-in-up">
           <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Keep your userscripts{' '}
-            <span className="text-primary-400">healthy</span> and{' '}
+            Keep your userscripts <span className="text-primary-400">healthy</span> and{' '}
             <span className="text-primary-400">secure</span>
           </h1>
           <p className="mt-6 text-lg text-gray-300 sm:text-xl">
-            ScriptGuard monitors your userscripts in real-time, checks for updates,
-            and alerts you before things break. Never lose a script again.
+            ScriptGuard monitors your userscripts in real-time, checks for updates, and alerts you
+            before things break. Never lose a script again.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a

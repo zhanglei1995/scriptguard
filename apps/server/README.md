@@ -26,12 +26,12 @@ pnpm test
 
 ## 📍 端点
 
-| 路径 | 方法 | 说明 |
-|---|---|---|
-| `/` | GET | API 根信息 |
-| `/api/v1/health` | GET | Liveness probe |
-| `/api/v1/ready` | GET | Readiness probe (DB/Redis) |
-| `/docs` | GET | Swagger UI |
+| 路径             | 方法 | 说明                       |
+| ---------------- | ---- | -------------------------- |
+| `/`              | GET  | API 根信息                 |
+| `/api/v1/health` | GET  | Liveness probe             |
+| `/api/v1/ready`  | GET  | Readiness probe (DB/Redis) |
+| `/docs`          | GET  | Swagger UI                 |
 
 ## 🐳 Docker
 

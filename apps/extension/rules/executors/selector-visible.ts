@@ -5,15 +5,15 @@
  * Checks if a matched element is visible in the DOM
  */
 
-import { BaseExecutor } from '../base'
-import type { CheckRule, ExecutionContext } from '../types'
+import { BaseExecutor } from '../base';
+import type { CheckRule, ExecutionContext } from '../types';
 
 /**
  * Configuration for selector_visible rule
  */
 interface SelectorVisibleConfig {
   /** CSS selector to check */
-  selector?: string
+  selector?: string;
 }
 
 /**
@@ -32,33 +32,30 @@ interface SelectorVisibleConfig {
  * ```
  */
 export class SelectorVisibleExecutor extends BaseExecutor {
-  readonly type = 'selector_visible'
+  readonly type = 'selector_visible';
 
-  protected async evaluate(
-    rule: CheckRule,
-    ctx: ExecutionContext
-  ): Promise<boolean> {
-    const config = rule.config as SelectorVisibleConfig
-    const selector = config.selector
+  protected async evaluate(rule: CheckRule, ctx: ExecutionContext): Promise<boolean> {
+    const config = rule.config as SelectorVisibleConfig;
+    const selector = config.selector;
 
     if (!selector) {
-      return false
+      return false;
     }
 
-    const element = ctx.document.querySelector(selector)
+    const element = ctx.document.querySelector(selector);
     if (!element) {
-      return false
+      return false;
     }
 
     // Check offset dimensions first
     if (element instanceof HTMLElement) {
       if (element.offsetWidth > 0 || element.offsetHeight > 0) {
-        return true
+        return true;
       }
     }
 
     // Fall back to computed style
-    const style = ctx.window.getComputedStyle(element)
-    return style.display !== 'none' && style.visibility !== 'hidden'
+    const style = ctx.window.getComputedStyle(element);
+    return style.display !== 'none' && style.visibility !== 'hidden';
   }
 }

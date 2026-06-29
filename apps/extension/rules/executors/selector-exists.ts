@@ -5,15 +5,15 @@
  * Checks if a CSS selector matches at least one element in the DOM
  */
 
-import { BaseExecutor } from '../base'
-import type { CheckRule, ExecutionContext } from '../types'
+import { BaseExecutor } from '../base';
+import type { CheckRule, ExecutionContext } from '../types';
 
 /**
  * Configuration for selector_exists rule
  */
 interface SelectorExistsConfig {
   /** CSS selector to check */
-  selector?: string
+  selector?: string;
 }
 
 /**
@@ -31,20 +31,17 @@ interface SelectorExistsConfig {
  * ```
  */
 export class SelectorExistsExecutor extends BaseExecutor {
-  readonly type = 'selector_exists'
+  readonly type = 'selector_exists';
 
-  protected async evaluate(
-    rule: CheckRule,
-    ctx: ExecutionContext
-  ): Promise<boolean> {
-    const config = rule.config as SelectorExistsConfig
-    const selector = config.selector
+  protected async evaluate(rule: CheckRule, ctx: ExecutionContext): Promise<boolean> {
+    const config = rule.config as SelectorExistsConfig;
+    const selector = config.selector;
 
     if (!selector) {
-      return false
+      return false;
     }
 
-    const element = ctx.document.querySelector(selector)
-    return element !== null
+    const element = ctx.document.querySelector(selector);
+    return element !== null;
   }
 }

@@ -3,33 +3,36 @@
  * SG-045: 设置页面（通知 + 通用）
  */
 
-import { useEffect, useState, useCallback } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card'
-import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
-import { Switch } from '../../components/ui/switch'
+import { useEffect, useState, useCallback } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Switch } from '../../components/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select'
+} from '../../components/ui/select';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '../../components/ui/dialog'
-import { Badge } from '../../components/ui/badge'
-import { Empty } from '../../components/ui/empty'
-import { preferencesStore, channelsStore, defaultPreferences } from '../../storage/chrome'
-import {
-  type UserPreferences as Prefs,
-  type NotifyChannel,
-} from '../../storage/schemas'
+} from '../../components/ui/dialog';
+import { Badge } from '../../components/ui/badge';
+import { Empty } from '../../components/ui/empty';
+import { preferencesStore, channelsStore, defaultPreferences } from '../../storage/chrome';
+import { type UserPreferences as Prefs, type NotifyChannel } from '../../storage/schemas';
 
 export function SettingsTab() {
   return (
@@ -54,32 +57,32 @@ export function SettingsTab() {
         <AccountSettings />
       </TabsContent>
     </Tabs>
-  )
+  );
 }
 
 // ====== General Settings ======
 function GeneralSettings() {
-  const [prefs, setPrefs] = useState<Prefs>(defaultPreferences)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [prefs, setPrefs] = useState<Prefs>(defaultPreferences);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     preferencesStore.get().then((p) => {
-      if (p) setPrefs(p)
-      setLoading(false)
-    })
-  }, [])
+      if (p) setPrefs(p);
+      setLoading(false);
+    });
+  }, []);
 
   const save = async (patch: Partial<Prefs>) => {
-    const updated = { ...prefs, ...patch }
-    setPrefs(updated)
-    setSaving(true)
-    await preferencesStore.set(updated)
-    setSaving(false)
-  }
+    const updated = { ...prefs, ...patch };
+    setPrefs(updated);
+    setSaving(true);
+    await preferencesStore.set(updated);
+    setSaving(false);
+  };
 
   if (loading) {
-    return <div className="text-center py-8 text-sm text-muted-foreground">加载中...</div>
+    return <div className="text-center py-8 text-sm text-muted-foreground">加载中...</div>;
   }
 
   return (
@@ -95,10 +98,7 @@ function GeneralSettings() {
               <div className="text-sm font-medium">主题</div>
               <div className="text-xs text-muted-foreground">选择界面主题</div>
             </div>
-            <Select
-              value={prefs.theme}
-              onValueChange={(v) => save({ theme: v as Prefs['theme'] })}
-            >
+            <Select value={prefs.theme} onValueChange={(v) => save({ theme: v as Prefs['theme'] })}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
               </SelectTrigger>
@@ -115,10 +115,7 @@ function GeneralSettings() {
               <div className="text-sm font-medium">语言</div>
               <div className="text-xs text-muted-foreground">选择界面语言</div>
             </div>
-            <Select
-              value={prefs.language}
-              onValueChange={(v) => save({ language: v })}
-            >
+            <Select value={prefs.language} onValueChange={(v) => save({ language: v })}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
               </SelectTrigger>
@@ -160,66 +157,64 @@ function GeneralSettings() {
               className="w-[100px]"
               value={prefs.defaultIntervalMinutes}
               onChange={(e) => {
-                const v = parseInt(e.target.value, 10)
-                if (v > 0) save({ defaultIntervalMinutes: v })
+                const v = parseInt(e.target.value, 10);
+                if (v > 0) save({ defaultIntervalMinutes: v });
               }}
             />
           </div>
         </CardContent>
       </Card>
 
-      {saving && (
-        <div className="text-xs text-muted-foreground text-center">保存中...</div>
-      )}
+      {saving && <div className="text-xs text-muted-foreground text-center">保存中...</div>}
     </div>
-  )
+  );
 }
 
 // ====== Notification Settings ======
 function NotificationSettings() {
-  const [channels, setChannels] = useState<NotifyChannel[]>([])
-  const [loading, setLoading] = useState(true)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingChannel, setEditingChannel] = useState<NotifyChannel | null>(null)
+  const [channels, setChannels] = useState<NotifyChannel[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingChannel, setEditingChannel] = useState<NotifyChannel | null>(null);
 
   const loadChannels = useCallback(async () => {
-    const data = await channelsStore.get()
-    setChannels(data ?? [])
-    setLoading(false)
-  }, [])
+    const data = await channelsStore.get();
+    setChannels(data ?? []);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    loadChannels()
-  }, [loadChannels])
+    loadChannels();
+  }, [loadChannels]);
 
   const handleAdd = () => {
-    setEditingChannel(null)
-    setDialogOpen(true)
-  }
+    setEditingChannel(null);
+    setDialogOpen(true);
+  };
 
   const handleEdit = (channel: NotifyChannel) => {
-    setEditingChannel(channel)
-    setDialogOpen(true)
-  }
+    setEditingChannel(channel);
+    setDialogOpen(true);
+  };
 
   const handleDelete = async (id: string) => {
-    const updated = channels.filter((c) => c.id !== id)
-    await channelsStore.set(updated)
-    setChannels(updated)
-  }
+    const updated = channels.filter((c) => c.id !== id);
+    await channelsStore.set(updated);
+    setChannels(updated);
+  };
 
   const handleTest = (channel: NotifyChannel) => {
-    alert(`测试通知已发送到 ${channel.type} 渠道`)
-  }
+    alert(`测试通知已发送到 ${channel.type} 渠道`);
+  };
 
   const channelTypeLabel: Record<string, string> = {
     browser: '浏览器通知',
     email: '邮件',
     webhook: 'Webhook',
-  }
+  };
 
   if (loading) {
-    return <div className="text-center py-8 text-sm text-muted-foreground">加载中...</div>
+    return <div className="text-center py-8 text-sm text-muted-foreground">加载中...</div>;
   }
 
   return (
@@ -235,10 +230,7 @@ function NotificationSettings() {
       </div>
 
       {channels.length === 0 ? (
-        <Empty
-          title="暂无通知渠道"
-          description="添加通知渠道以接收脚本告警"
-        />
+        <Empty title="暂无通知渠道" description="添加通知渠道以接收脚本告警" />
       ) : (
         <div className="space-y-2">
           {channels.map((channel) => (
@@ -281,19 +273,19 @@ function NotificationSettings() {
         channel={editingChannel}
         onClose={() => setDialogOpen(false)}
         onSave={async (ch) => {
-          let updated: NotifyChannel[]
+          let updated: NotifyChannel[];
           if (editingChannel) {
-            updated = channels.map((c) => (c.id === ch.id ? ch : c))
+            updated = channels.map((c) => (c.id === ch.id ? ch : c));
           } else {
-            updated = [...channels, ch]
+            updated = [...channels, ch];
           }
-          await channelsStore.set(updated)
-          setChannels(updated)
-          setDialogOpen(false)
+          await channelsStore.set(updated);
+          setChannels(updated);
+          setDialogOpen(false);
         }}
       />
     </div>
-  )
+  );
 }
 
 function ChannelDialog({
@@ -302,39 +294,39 @@ function ChannelDialog({
   onClose,
   onSave,
 }: {
-  open: boolean
-  channel: NotifyChannel | null
-  onClose: () => void
-  onSave: (ch: NotifyChannel) => void
+  open: boolean;
+  channel: NotifyChannel | null;
+  onClose: () => void;
+  onSave: (ch: NotifyChannel) => void;
 }) {
-  const [type, setType] = useState<string>(channel?.type ?? 'browser')
+  const [type, setType] = useState<string>(channel?.type ?? 'browser');
   const [configStr, setConfigStr] = useState(
-    channel ? JSON.stringify(channel.config, null, 2) : '{}'
-  )
+    channel ? JSON.stringify(channel.config, null, 2) : '{}',
+  );
 
   useEffect(() => {
     if (channel) {
-      setType(channel.type)
-      setConfigStr(JSON.stringify(channel.config, null, 2))
+      setType(channel.type);
+      setConfigStr(JSON.stringify(channel.config, null, 2));
     } else {
-      setType('browser')
-      setConfigStr('{}')
+      setType('browser');
+      setConfigStr('{}');
     }
-  }, [channel])
+  }, [channel]);
 
   const handleSave = () => {
     try {
-      const config = JSON.parse(configStr) as Record<string, string>
+      const config = JSON.parse(configStr) as Record<string, string>;
       onSave({
         id: channel?.id ?? crypto.randomUUID(),
         type: type as NotifyChannel['type'],
         enabled: channel?.enabled ?? true,
         config,
-      })
+      });
     } catch {
-      alert('配置 JSON 格式错误')
+      alert('配置 JSON 格式错误');
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -372,14 +364,12 @@ function ChannelDialog({
             <Button variant="outline" onClick={onClose}>
               取消
             </Button>
-            <Button onClick={handleSave}>
-              保存
-            </Button>
+            <Button onClick={handleSave}>保存</Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 // ====== Integration Settings ======
@@ -416,7 +406,7 @@ function IntegrationSettings() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 // ====== Account Settings ======
@@ -455,5 +445,5 @@ function AccountSettings() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

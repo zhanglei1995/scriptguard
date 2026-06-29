@@ -2,7 +2,7 @@
  * 环境变量配置 - Zod 校验启动时
  * 关联: TDD §1.1 / §5.2
  */
-import { z } from 'zod'
+import { z } from 'zod';
 
 const ConfigSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -33,18 +33,18 @@ const ConfigSchema = z.object({
   SMTP_USER: z.string().default(''),
   SMTP_PASS: z.string().default(''),
   SMTP_FROM: z.string().default(''),
-})
+});
 
-export type Config = z.infer<typeof ConfigSchema>
+export type Config = z.infer<typeof ConfigSchema>;
 
 function loadConfig(): Config {
-  const parsed = ConfigSchema.safeParse(process.env)
+  const parsed = ConfigSchema.safeParse(process.env);
   if (!parsed.success) {
-    console.error('❌ Invalid environment variables:')
-    console.error(parsed.error.flatten().fieldErrors)
-    process.exit(1)
+    console.error('❌ Invalid environment variables:');
+    console.error(parsed.error.flatten().fieldErrors);
+    process.exit(1);
   }
-  return parsed.data
+  return parsed.data;
 }
 
-export const config = loadConfig()
+export const config = loadConfig();
